@@ -1,13 +1,13 @@
 /**
- * AC0 Generated Driver API Header File
+ * AC1 Generated Driver API Header File
  * 
- * @file ac0.h
+ * @file ac1.h
  * 
- * @defgroup  ac0 AC0
+ * @defgroup  ac1 AC1
  * 
- * @brief Contains the API prototypes for the AC0 driver.
+ * @brief Contains the API prototypes for the AC1 driver.
  *
- * @version AC0 Driver Version 1.0.0
+ * @version AC1 Driver Version 1.0.0
 */
 /*
 © [2024] Microchip Technology Inc. and its subsidiaries.
@@ -31,8 +31,8 @@
 */
 
 
-#ifndef AC0_H_INCLUDED
-#define AC0_H_INCLUDED
+#ifndef AC1_H_INCLUDED
+#define AC1_H_INCLUDED
  
 #include "../system/utils/compiler.h"
 
@@ -41,7 +41,7 @@ extern "C" {
 #endif
 
 /**
- * @ingroup ac0
+ * @ingroup ac1
  * @brief Pointer to a function to be used as a callback handler when a comparator interrupt occurs.
  * @param None.
  * @return None.
@@ -49,52 +49,52 @@ extern "C" {
 typedef void (*ac_cb_t)(void);
 
 /**
- * @ingroup ac0
- * @brief Initializes the AC0. This routine is called only once during system initialization, before calling other APIs.
+ * @ingroup ac1
+ * @brief Initializes the AC1. This routine is called only once during system initialization, before calling other APIs.
  * @param None.
  * @return None.
 */
-int8_t AC0_Initialize(void);
+int8_t AC1_Initialize(void);
 
 /**
- * @ingroup ac0
- * @brief Controls the input signal to the positive and negative inputs of the AC0.
- * @pre Initialize the AC0 with AC0_Initialize() before calling this API.
+ * @ingroup ac1
+ * @brief Controls the input signal to the positive and negative inputs of the AC1.
+ * @pre Initialize the AC1 with AC1_Initialize() before calling this API.
  * @param uint8_t Mode.
  * @return None.
  */
-void AC0_MuxSet(uint8_t);
+void AC1_MuxSet(uint8_t);
 
 /**
- * @ingroup ac0
- * @brief Returns the OUT signal state for the AC0.
- * @pre Initialize the AC0 with AC0_Initialize() before calling this API.
+ * @ingroup ac1
+ * @brief Returns the OUT signal state for the AC1.
+ * @pre Initialize the AC1 with AC1_Initialize() before calling this API.
  * @param None.
  * @retval True - The AC OUT signal is high.
  * @retval False - the AC OUT signal is low.
  */
-bool AC0_Read(void);
+bool AC1_Read(void);
 
 /**
- * @ingroup ac0
- * @brief Setter function for the AC0 comparator callback.
+ * @ingroup ac1
+ * @brief Setter function for the AC1 comparator callback.
  * @pre None.
  * @param CallbackHandler - Pointer to custom callback.
  * @return None.
  */
-void AC0_CallbackRegister(ac_cb_t);
+void AC1_CallbackRegister(ac_cb_t);
 
 /**
- * @ingroup ac0
- * @brief Sets the DAC voltage reference (DACREF) data value for the AC0.
- * @pre Initialize the AC0 with AC0_Initialize() before calling this API.
+ * @ingroup ac1
+ * @brief Sets the DAC voltage reference (DACREF) data value for the AC1.
+ * @pre Initialize the AC1 with AC1_Initialize() before calling this API.
  * @param uint8_t- Value to be written to the DACREF register.
  * @return None.
  */
-void AC0_DACRefValueSet(uint8_t);
+void AC1_DACRefValueSet(uint8_t);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif  /* AC0_H_INCLUDED */
+#endif  /* AC1_H_INCLUDED */

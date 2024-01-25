@@ -12,7 +12,11 @@ static volatile bool WDT_ready = false;
 //Interrupt for an elapsed hour
 void Application_onHourTick(void)
 {
+    //Increment hours count
     warmupHours++;
+    
+    //Print status
+    printf("Warmup time remaining: %d / %d hrs\r\n", warmupHours, WARM_UP_HOURS);
     
     //Check to see if sensor is ready
     if (Application_isSensorReady())
@@ -48,4 +52,30 @@ bool Application_shouldSelfTest(void)
 void Application_clearSelfTestFlag(void)
 {
     WDT_ready = false;
+}
+
+//Connect the comparator to the gas sensor 
+void Application_connectToSensor(void)
+{
+    //Clear the MUXPOS bits
+    AC1.MUXCTRL &= ~(AC_MUXPOS_gm);
+    
+    //AN1 (sensor) is on PD4, AINP2
+    AC1.MUXCTRL |= AC_MUXPOS_AINP2_gc;
+}
+
+//Connect the comparator to the DAC output
+void Application_connectToDAC(void)
+{
+    //Clear the MUXPOS bits
+    AC1.MUXCTRL &= ~(AC_MUXPOS_gm);
+    
+    //DAC0 is on PD6, AINP3
+    AC1.MUXCTRL |= AC_MUXPOS_AINP3_gc;
+}
+
+//Gets the current DACREF on AC1
+uint8_t Application_getDACREF(void)
+{
+    return AC1.DACREF;
 }

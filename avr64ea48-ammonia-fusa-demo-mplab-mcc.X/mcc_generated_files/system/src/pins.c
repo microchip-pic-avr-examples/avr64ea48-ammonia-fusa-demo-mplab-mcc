@@ -37,6 +37,7 @@
 static void (*BUZZER_InterruptHandler)(void);
 static void (*UART_RX_InterruptHandler)(void);
 static void (*UART_TX_InterruptHandler)(void);
+static void (*IO_PD4_InterruptHandler)(void);
 static void (*IO_DAC_TEST_InterruptHandler)(void);
 static void (*SW0_InterruptHandler)(void);
 static void (*LED0_InterruptHandler)(void);
@@ -47,7 +48,7 @@ void PIN_MANAGER_Initialize()
     PORTA.DIR = 0x0;
     PORTB.DIR = 0x8;
     PORTC.DIR = 0x1;
-    PORTD.DIR = 0x2;
+    PORTD.DIR = 0x42;
     PORTE.DIR = 0x0;
     PORTF.DIR = 0x0;
 
@@ -88,9 +89,9 @@ void PIN_MANAGER_Initialize()
     PORTD.PIN1CTRL = 0x0;
     PORTD.PIN2CTRL = 0x0;
     PORTD.PIN3CTRL = 0x0;
-    PORTD.PIN4CTRL = 0x0;
+    PORTD.PIN4CTRL = 0x4;
     PORTD.PIN5CTRL = 0x0;
-    PORTD.PIN6CTRL = 0x4;
+    PORTD.PIN6CTRL = 0x0;
     PORTD.PIN7CTRL = 0x0;
     PORTE.PIN0CTRL = 0x0;
     PORTE.PIN1CTRL = 0x0;
@@ -132,6 +133,7 @@ void PIN_MANAGER_Initialize()
     BUZZER_SetInterruptHandler(BUZZER_DefaultInterruptHandler);
     UART_RX_SetInterruptHandler(UART_RX_DefaultInterruptHandler);
     UART_TX_SetInterruptHandler(UART_TX_DefaultInterruptHandler);
+    IO_PD4_SetInterruptHandler(IO_PD4_DefaultInterruptHandler);
     IO_DAC_TEST_SetInterruptHandler(IO_DAC_TEST_DefaultInterruptHandler);
     SW0_SetInterruptHandler(SW0_DefaultInterruptHandler);
     LED0_SetInterruptHandler(LED0_DefaultInterruptHandler);
@@ -175,6 +177,19 @@ void UART_TX_DefaultInterruptHandler(void)
 {
     // add your UART_TX interrupt custom code
     // or set custom function using UART_TX_SetInterruptHandler()
+}
+/**
+  Allows selecting an interrupt handler for IO_PD4 at application runtime
+*/
+void IO_PD4_SetInterruptHandler(void (* interruptHandler)(void)) 
+{
+    IO_PD4_InterruptHandler = interruptHandler;
+}
+
+void IO_PD4_DefaultInterruptHandler(void)
+{
+    // add your IO_PD4 interrupt custom code
+    // or set custom function using IO_PD4_SetInterruptHandler()
 }
 /**
   Allows selecting an interrupt handler for IO_DAC_TEST at application runtime
@@ -257,6 +272,10 @@ ISR(PORTD_PORT_vect)
     if(VPORTD.INTFLAGS & PORT_INT1_bm)
     {
        BUZZER_InterruptHandler(); 
+    }
+    if(VPORTD.INTFLAGS & PORT_INT4_bm)
+    {
+       IO_PD4_InterruptHandler(); 
     }
     if(VPORTD.INTFLAGS & PORT_INT6_bm)
     {

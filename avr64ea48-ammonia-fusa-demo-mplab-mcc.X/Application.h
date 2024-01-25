@@ -34,6 +34,15 @@ extern "C" {
     //Clears the self-test flag
     void Application_clearSelfTestFlag(void);
     
+    //Connect the comparator to the gas sensor 
+    void Application_connectToSensor(void);
+    
+    //Connect the comparator to the DAC output
+    void Application_connectToDAC(void);
+    
+    //Gets the current DACREF on AC1
+    uint8_t Application_getDACREF(void);
+    
 #ifdef	__cplusplus
 }
 #endif

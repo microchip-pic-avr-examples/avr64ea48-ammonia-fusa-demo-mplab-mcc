@@ -40,7 +40,8 @@
 */
 
 //This is the checksum used for the system memory
-const uint32_t memChecksum;
+//Inserted by the compiler at runtime
+const uint32_t memChecksum = 0x00000000;
 
 //This is called if a failure occurs
 //Periodically sound the alarm, but do not do anything else.
@@ -57,6 +58,10 @@ int main(void)
     SYSTEM_Initialize();
     
     printf("AVR64EA48 Ammonia Gas Functional Safety Demo\r\n");
+    
+#ifdef DEVELOP_MODE
+    printf("WARNING: Device is in develop mode. System will power-up if errors occur and skip sensor warm-up period.\r\nDO NOT USE FOR PRODUCTION\r\n");
+#endif
     
     //Run system self-test
     Fusa_runStartupSelfTest();

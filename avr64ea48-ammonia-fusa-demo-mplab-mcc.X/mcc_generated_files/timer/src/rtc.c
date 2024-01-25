@@ -49,7 +49,7 @@ int8_t RTC_Initialize(void)
     RTC.CNT = 0x0;
 
     //Period
-    RTC.PER = 0x8C9F;
+    RTC.PER = 0xE0F;
 
     //Clock selection
     RTC.CLKSEL = 0x0;

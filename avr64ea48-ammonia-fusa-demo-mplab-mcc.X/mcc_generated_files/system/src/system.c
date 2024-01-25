@@ -42,7 +42,7 @@ void SYSTEM_Initialize(void)
 {
     CLOCK_Initialize();
     PIN_MANAGER_Initialize();
-    AC0_Initialize();
+    AC1_Initialize();
     ADC0_Initialize();
     BOD_Initialize();
     CRC_Initialize();

@@ -44,7 +44,7 @@ extern "C" {
 #include "config_bits.h"
 #include "../system/clock.h"
 #include "../system/pins.h"
-#include "../ac/ac0.h"
+#include "../ac/ac1.h"
 #include "../adc/adc0.h"
 #include "../crc/crc.h"
 #include "../dac/dac0.h"
