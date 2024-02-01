@@ -79,3 +79,22 @@ uint8_t Application_getDACREF(void)
 {
     return AC1.DACREF;
 }
+
+//Sets a new DACREF on AC1
+void Application_setDACREF(uint8_t val)
+{
+    //Disable Interrupts
+    AC1.INTCTRL &= ~AC_CMP_bm;
+    
+    //Update DACREF for AC1
+    AC1_DACRefValueSet(val);
+    
+    //Wait a few microseconds...
+    DELAY_microseconds(10);
+    
+    //Clear ISR Flag
+    AC1.STATUS |= AC_CMPIF_bm;
+    
+    //Re-enable Interrupts
+    AC1.INTCTRL |= AC_CMP_bm;
+}

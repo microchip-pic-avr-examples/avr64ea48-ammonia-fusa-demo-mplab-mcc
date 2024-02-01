@@ -95,24 +95,24 @@
 #define UART_TX_EnableInterruptForLowLevelSensing() do { PORTC.PIN0CTRL = (PORTC.PIN0CTRL & ~PORT_ISC_gm) | 0x5 ; } while(0)
 #define PC0_SetInterruptHandler UART_TX_SetInterruptHandler
 
-//get/set IO_PD4 aliases
-#define IO_PD4_SetHigh() do { PORTD_OUTSET = 0x10; } while(0)
-#define IO_PD4_SetLow() do { PORTD_OUTCLR = 0x10; } while(0)
-#define IO_PD4_Toggle() do { PORTD_OUTTGL = 0x10; } while(0)
-#define IO_PD4_GetValue() (VPORTD.IN & (0x1 << 4))
-#define IO_PD4_SetDigitalInput() do { PORTD_DIRCLR = 0x10; } while(0)
-#define IO_PD4_SetDigitalOutput() do { PORTD_DIRSET = 0x10; } while(0)
-#define IO_PD4_SetPullUp() do { PORTD_PIN4CTRL  |= PORT_PULLUPEN_bm; } while(0)
-#define IO_PD4_ResetPullUp() do { PORTD_PIN4CTRL  &= ~PORT_PULLUPEN_bm; } while(0)
-#define IO_PD4_SetInverted() do { PORTD_PIN4CTRL  |= PORT_INVEN_bm; } while(0)
-#define IO_PD4_ResetInverted() do { PORTD_PIN4CTRL  &= ~PORT_INVEN_bm; } while(0)
-#define IO_PD4_DisableInterruptOnChange() do { PORTD.PIN4CTRL = (PORTD.PIN4CTRL & ~PORT_ISC_gm) | 0x0 ; } while(0)
-#define IO_PD4_EnableInterruptForBothEdges() do { PORTD.PIN4CTRL = (PORTD.PIN4CTRL & ~PORT_ISC_gm) | 0x1 ; } while(0)
-#define IO_PD4_EnableInterruptForRisingEdge() do { PORTD.PIN4CTRL = (PORTD.PIN4CTRL & ~PORT_ISC_gm) | 0x2 ; } while(0)
-#define IO_PD4_EnableInterruptForFallingEdge() do { PORTD.PIN4CTRL = (PORTD.PIN4CTRL & ~PORT_ISC_gm) | 0x3 ; } while(0)
-#define IO_PD4_DisableDigitalInputBuffer() do { PORTD.PIN4CTRL = (PORTD.PIN4CTRL & ~PORT_ISC_gm) | 0x4 ; } while(0)
-#define IO_PD4_EnableInterruptForLowLevelSensing() do { PORTD.PIN4CTRL = (PORTD.PIN4CTRL & ~PORT_ISC_gm) | 0x5 ; } while(0)
-#define PD4_SetInterruptHandler IO_PD4_SetInterruptHandler
+//get/set AMMONIA_OUT aliases
+#define AMMONIA_OUT_SetHigh() do { PORTD_OUTSET = 0x10; } while(0)
+#define AMMONIA_OUT_SetLow() do { PORTD_OUTCLR = 0x10; } while(0)
+#define AMMONIA_OUT_Toggle() do { PORTD_OUTTGL = 0x10; } while(0)
+#define AMMONIA_OUT_GetValue() (VPORTD.IN & (0x1 << 4))
+#define AMMONIA_OUT_SetDigitalInput() do { PORTD_DIRCLR = 0x10; } while(0)
+#define AMMONIA_OUT_SetDigitalOutput() do { PORTD_DIRSET = 0x10; } while(0)
+#define AMMONIA_OUT_SetPullUp() do { PORTD_PIN4CTRL  |= PORT_PULLUPEN_bm; } while(0)
+#define AMMONIA_OUT_ResetPullUp() do { PORTD_PIN4CTRL  &= ~PORT_PULLUPEN_bm; } while(0)
+#define AMMONIA_OUT_SetInverted() do { PORTD_PIN4CTRL  |= PORT_INVEN_bm; } while(0)
+#define AMMONIA_OUT_ResetInverted() do { PORTD_PIN4CTRL  &= ~PORT_INVEN_bm; } while(0)
+#define AMMONIA_OUT_DisableInterruptOnChange() do { PORTD.PIN4CTRL = (PORTD.PIN4CTRL & ~PORT_ISC_gm) | 0x0 ; } while(0)
+#define AMMONIA_OUT_EnableInterruptForBothEdges() do { PORTD.PIN4CTRL = (PORTD.PIN4CTRL & ~PORT_ISC_gm) | 0x1 ; } while(0)
+#define AMMONIA_OUT_EnableInterruptForRisingEdge() do { PORTD.PIN4CTRL = (PORTD.PIN4CTRL & ~PORT_ISC_gm) | 0x2 ; } while(0)
+#define AMMONIA_OUT_EnableInterruptForFallingEdge() do { PORTD.PIN4CTRL = (PORTD.PIN4CTRL & ~PORT_ISC_gm) | 0x3 ; } while(0)
+#define AMMONIA_OUT_DisableDigitalInputBuffer() do { PORTD.PIN4CTRL = (PORTD.PIN4CTRL & ~PORT_ISC_gm) | 0x4 ; } while(0)
+#define AMMONIA_OUT_EnableInterruptForLowLevelSensing() do { PORTD.PIN4CTRL = (PORTD.PIN4CTRL & ~PORT_ISC_gm) | 0x5 ; } while(0)
+#define PD4_SetInterruptHandler AMMONIA_OUT_SetInterruptHandler
 
 //get/set IO_DAC_TEST aliases
 #define IO_DAC_TEST_SetHigh() do { PORTD_OUTSET = 0x40; } while(0)
@@ -170,6 +170,25 @@
 #define LED0_DisableDigitalInputBuffer() do { PORTB.PIN3CTRL = (PORTB.PIN3CTRL & ~PORT_ISC_gm) | 0x4 ; } while(0)
 #define LED0_EnableInterruptForLowLevelSensing() do { PORTB.PIN3CTRL = (PORTB.PIN3CTRL & ~PORT_ISC_gm) | 0x5 ; } while(0)
 #define PB3_SetInterruptHandler LED0_SetInterruptHandler
+
+//get/set HEATER aliases
+#define HEATER_SetHigh() do { PORTD_OUTSET = 0x1; } while(0)
+#define HEATER_SetLow() do { PORTD_OUTCLR = 0x1; } while(0)
+#define HEATER_Toggle() do { PORTD_OUTTGL = 0x1; } while(0)
+#define HEATER_GetValue() (VPORTD.IN & (0x1 << 0))
+#define HEATER_SetDigitalInput() do { PORTD_DIRCLR = 0x1; } while(0)
+#define HEATER_SetDigitalOutput() do { PORTD_DIRSET = 0x1; } while(0)
+#define HEATER_SetPullUp() do { PORTD_PIN0CTRL  |= PORT_PULLUPEN_bm; } while(0)
+#define HEATER_ResetPullUp() do { PORTD_PIN0CTRL  &= ~PORT_PULLUPEN_bm; } while(0)
+#define HEATER_SetInverted() do { PORTD_PIN0CTRL  |= PORT_INVEN_bm; } while(0)
+#define HEATER_ResetInverted() do { PORTD_PIN0CTRL  &= ~PORT_INVEN_bm; } while(0)
+#define HEATER_DisableInterruptOnChange() do { PORTD.PIN0CTRL = (PORTD.PIN0CTRL & ~PORT_ISC_gm) | 0x0 ; } while(0)
+#define HEATER_EnableInterruptForBothEdges() do { PORTD.PIN0CTRL = (PORTD.PIN0CTRL & ~PORT_ISC_gm) | 0x1 ; } while(0)
+#define HEATER_EnableInterruptForRisingEdge() do { PORTD.PIN0CTRL = (PORTD.PIN0CTRL & ~PORT_ISC_gm) | 0x2 ; } while(0)
+#define HEATER_EnableInterruptForFallingEdge() do { PORTD.PIN0CTRL = (PORTD.PIN0CTRL & ~PORT_ISC_gm) | 0x3 ; } while(0)
+#define HEATER_DisableDigitalInputBuffer() do { PORTD.PIN0CTRL = (PORTD.PIN0CTRL & ~PORT_ISC_gm) | 0x4 ; } while(0)
+#define HEATER_EnableInterruptForLowLevelSensing() do { PORTD.PIN0CTRL = (PORTD.PIN0CTRL & ~PORT_ISC_gm) | 0x5 ; } while(0)
+#define PD0_SetInterruptHandler HEATER_SetInterruptHandler
 
 /**
  * @ingroup  pinsdriver
@@ -244,24 +263,24 @@ void UART_TX_SetInterruptHandler(void (* interruptHandler)(void)) ;
 
 /**
  * @ingroup  pinsdriver
- * @brief Default Interrupt Handler for IO_PD4 pin. 
- *        This is a predefined interrupt handler to be used together with the IO_PD4_SetInterruptHandler() method.
- *        This handler is called every time the IO_PD4 ISR is executed. 
+ * @brief Default Interrupt Handler for AMMONIA_OUT pin. 
+ *        This is a predefined interrupt handler to be used together with the AMMONIA_OUT_SetInterruptHandler() method.
+ *        This handler is called every time the AMMONIA_OUT ISR is executed. 
  * @pre PIN_MANAGER_Initialize() has been called at least once
  * @param none
  * @return none
  */
-void IO_PD4_DefaultInterruptHandler(void);
+void AMMONIA_OUT_DefaultInterruptHandler(void);
 
 /**
  * @ingroup  pinsdriver
- * @brief Interrupt Handler Setter for IO_PD4 pin input-sense-config functionality.
- *        Allows selecting an interrupt handler for IO_PD4 at application runtime
+ * @brief Interrupt Handler Setter for AMMONIA_OUT pin input-sense-config functionality.
+ *        Allows selecting an interrupt handler for AMMONIA_OUT at application runtime
  * @pre PIN_MANAGER_Initialize() has been called at least once
  * @param InterruptHandler function pointer.
  * @return none
  */
-void IO_PD4_SetInterruptHandler(void (* interruptHandler)(void)) ; 
+void AMMONIA_OUT_SetInterruptHandler(void (* interruptHandler)(void)) ; 
 
 /**
  * @ingroup  pinsdriver
@@ -325,4 +344,25 @@ void LED0_DefaultInterruptHandler(void);
  * @return none
  */
 void LED0_SetInterruptHandler(void (* interruptHandler)(void)) ; 
+
+/**
+ * @ingroup  pinsdriver
+ * @brief Default Interrupt Handler for HEATER pin. 
+ *        This is a predefined interrupt handler to be used together with the HEATER_SetInterruptHandler() method.
+ *        This handler is called every time the HEATER ISR is executed. 
+ * @pre PIN_MANAGER_Initialize() has been called at least once
+ * @param none
+ * @return none
+ */
+void HEATER_DefaultInterruptHandler(void);
+
+/**
+ * @ingroup  pinsdriver
+ * @brief Interrupt Handler Setter for HEATER pin input-sense-config functionality.
+ *        Allows selecting an interrupt handler for HEATER at application runtime
+ * @pre PIN_MANAGER_Initialize() has been called at least once
+ * @param InterruptHandler function pointer.
+ * @return none
+ */
+void HEATER_SetInterruptHandler(void (* interruptHandler)(void)) ; 
 #endif /* PINS_H_INCLUDED */

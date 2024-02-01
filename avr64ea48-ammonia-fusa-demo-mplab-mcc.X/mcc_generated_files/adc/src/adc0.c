@@ -39,8 +39,8 @@ adc_irq_cb_t ADC0_ErrorCallback = NULL;
 
 int8_t ADC0_Initialize(void)
 {     
-    //PRESC System clock divided by 2; 
-    ADC0.CTRLB = 0x0;
+    //PRESC System clock divided by 32; 
+    ADC0.CTRLB = 0xB;
 
     //CHOPPING DISABLE; FREERUN disabled; LEFTADJ disabled; SAMPNUM No accumulation; 
     ADC0.CTRLF = 0x0;
@@ -51,8 +51,8 @@ int8_t ADC0_Initialize(void)
     //WINCM No Window Comparison; WINSRC RESULT; 
     ADC0.CTRLD = 0x0;
 
-    //SAMPDUR 0; 
-    ADC0.CTRLE = 0x0;
+    //SAMPDUR 2; 
+    ADC0.CTRLE = 0x2;
 
     //GAIN 1x gain; PGABIASSEL 100% BIAS current.; PGAEN disabled; 
     ADC0.PGACTRL = 0x0;
@@ -60,17 +60,17 @@ int8_t ADC0_Initialize(void)
     //DBGRUN disabled; 
     ADC0.DBGCTRL = 0x0;
 
-    //DIFF disabled; MODE SINGLE_8BIT; START Stop an ongoing conversion; 
-    ADC0.COMMAND = 0x0;
+    //DIFF disabled; MODE SINGLE_12BIT; START Stop an ongoing conversion; 
+    ADC0.COMMAND = 0x10;
 
     //RESOVR disabled; RESRDY disabled; SAMPOVR disabled; SAMPRDY disabled; TRIGOVR disabled; WCMP disabled; 
     ADC0.INTCTRL = 0x0;
 
-    //MUXPOS ADC input pin 0; VIA Inputs connected directly to ADC; 
-    ADC0.MUXPOS = 0x0;
+    //MUXPOS ADC input pin 4; VIA Inputs connected directly to ADC; 
+    ADC0.MUXPOS = 0x4;
 
-    //MUXNEG ADC input pin 0; VIA Inputs connected directly to ADC; 
-    ADC0.MUXNEG = 0x0;
+    //MUXNEG Ground; VIA Inputs connected directly to ADC; 
+    ADC0.MUXNEG = 0x30;
 
     // Window comparator high threshold 
     ADC0.WINHT = 0x0;
@@ -78,8 +78,8 @@ int8_t ADC0_Initialize(void)
     // Window comparator low threshold 
     ADC0.WINLT = 0x0;
 
-    //ENABLE disabled; LOWLAT disabled; RUNSTDBY disabled; 
-    ADC0.CTRLA = 0x0;
+    //ENABLE enabled; LOWLAT disabled; RUNSTDBY disabled; 
+    ADC0.CTRLA = 0x1;
 
 
     return 0;

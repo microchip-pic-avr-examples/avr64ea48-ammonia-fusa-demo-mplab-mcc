@@ -41,21 +41,14 @@
 
 //This is the checksum used for the system memory
 //Inserted by the compiler at runtime
-const uint32_t memChecksum = 0x00000000;
-
-//This is called if a failure occurs
-//Periodically sound the alarm, but do not do anything else.
-void System_onFailure(void)
-{
-    while (1)
-    {
-        DELAY_milliseconds(750);
-    }
-}
+const uint32_t flashChecksum = 0x00000000;
 
 int main(void)
 {
     SYSTEM_Initialize();
+    
+    //Start the sensor heater
+    HEATER_SetHigh();
     
     printf("AVR64EA48 Ammonia Gas Functional Safety Demo\r\n");
     
@@ -89,6 +82,5 @@ int main(void)
             //Run periodic self-check
             Fusa_runPeriodicSelfCheck();
         }
-        
     }    
 }

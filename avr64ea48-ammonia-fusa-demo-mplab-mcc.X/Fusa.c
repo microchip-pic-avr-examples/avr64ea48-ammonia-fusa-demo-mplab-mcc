@@ -68,14 +68,29 @@ bool Fusa_runStartupSelfTest(void)
         //This can fail - user will have to calibrate
     }
     
-    //In develop mode, ignore startup errors
+    //In develop mode, ignore startup errors and accelerate warm-up
 #ifdef DEVELOP_MODE
+    //Stop the RTC
+    RTC_Stop();
+    
+    //Min period
+    RTC_WritePeriod(1);
+    
+    //Clear counter
+    RTC_WriteCounter(0);
+    
+    //REQUIRED DELAY
+    //TO BE FIXED IN LATER MCC VERSIONS
+    DELAY_microseconds(100);
+    
+    //Restart the RTC
+    RTC_Start();
+    
     if (sysState == SYS_ERROR)
     {
         printf("\r\nWARNING: Start-up test failed. Continuing startup...\r\n");
         sysState = SYS_WARMUP;
     }
-    
 #endif
     
     //Disable the buzzer at the end of self-test
@@ -140,13 +155,20 @@ bool Fusa_testAC(void)
     
     //Set to DACREF + MARGIN
     int16_t testVal = (Application_getDACREF() << 2) + TEST_MARGIN;
+    
+    //Limit to a 10-bit number
+    if (testVal >= 0x3FF)
+    {
+        testVal = 0x3FF;
+    }
+    
     DAC0_SetOutput(testVal);
     
     //Wait 7us (DAC0 Settling) + 0.15us (AC Response)
     DELAY_microseconds(8);
     
-    //Is the signal LOW?
-    if (!AC1_Read())
+    //Is the signal HIGH?
+    if (AC1_Read())
     {
         //AC0 is malfunctioning, change to SYS_ERROR
         sysState = SYS_ERROR;
@@ -155,13 +177,20 @@ bool Fusa_testAC(void)
     
     //Set to DACREF - TEST_MARGIN
     testVal = (Application_getDACREF() << 2) - TEST_MARGIN;
+    
+    //If less than 0, set to 0
+    if (testVal < 0)
+    {
+        testVal = 0;
+    }
+    
     DAC0_SetOutput(testVal);
     
     //Wait 7us (DAC0 Settling) + 0.15us (AC Response)
     DELAY_microseconds(8);
     
-    //Is the signal HIGH?
-    if (AC1_Read())
+    //Is the signal LOW?
+    if (!AC1_Read())
     {
         //AC0 is malfunctioning, change to SYS_ERROR
         sysState = SYS_ERROR;
@@ -199,20 +228,78 @@ void Fusa_runPeriodicSelfCheck(void)
             //Sensor is now ready
             if (Application_isSensorReady())
             {
-                //Ready to begin active monitoring
-                sysState = SYS_MONITOR;
+                printf("\r\nWarmup complete.\r\n");
+                
+                if (GasSensor_isEEPROMValid())
+                {
+                    //Ready to begin active monitoring
+                    sysState = SYS_MONITOR;
+                }
+                else
+                {
+                    //Calibration Required
+                    printf("Calibration data not found. Press SW0 to set new zero-point.\r\n");
+                    sysState = SYS_CALIBRATE;
+                }
+            }
+            
+            break;
+        }
+        case SYS_CALIBRATE:
+        {
+            //Need to calibrate
+            
+            //If SW0 was pressed
+            if (SW0_GetValue())
+            {
+                //Run calibration
+                
+                printf("Running calibration.\r\n");
+                
+                if (GasSensor_calibrate())
+                {
+                    //No errors
+                    
+                    printf("Calibration complete. System is now ready.\r\n");
+                    sysState = SYS_MONITOR;
+                }
+                else
+                {
+                    //Something went wrong
+                    
+                    printf("Calibration failed to complete.\r\n");
+                    sysState = SYS_ERROR;
+                }
+                
             }
             
             break;
         }
         case SYS_MONITOR:
         {
+            LED0_Toggle();
+            
+            uint16_t meas = GasSensor_getCurrentValue();
+            
             //System is running
+            printf("[MONITOR] ADC Result: 0x%x\r\n", meas);
+            printf("Estimated Ammonia: %d ppm\r\n", GasSensor_convertToPPM(meas, GasSensor_getReferenceValue()));
+            printf("DACREF: 0x%x\r\n", Application_getDACREF());
             
             //Did the alarm activate?
             if (GasSensor_isTripped())
             {
+                printf("Alarm is tripped!\r\n");
                 sysState = SYS_ALARM;
+            }
+            else
+            {
+                //Run self-test
+                if (!Fusa_testAC())
+                {
+                    printf("AC failed self-check.\r\n");
+                    sysState = SYS_ERROR;
+                }
             }
                 
             break;
@@ -221,9 +308,16 @@ void Fusa_runPeriodicSelfCheck(void)
         {
             //System alarm is tripped
             
+            uint16_t meas = GasSensor_getCurrentValue();
+            
+            printf("[ALARM] ADC Result: 0x%x\r\n", meas);
+            printf("Estimated Ammonia: %d ppm\r\n", GasSensor_convertToPPM(meas, GasSensor_getReferenceValue()));
+            printf("DACREF: 0x%x\r\n", Application_getDACREF());
+            
             //Did the alarm go off?
             if (!GasSensor_isTripped())
             {
+                printf("Alarm has cleared!\r\n");
                 sysState = SYS_MONITOR;
             }
             

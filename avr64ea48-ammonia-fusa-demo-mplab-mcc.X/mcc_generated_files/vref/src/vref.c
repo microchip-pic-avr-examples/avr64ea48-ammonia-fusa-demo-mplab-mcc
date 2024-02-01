@@ -34,12 +34,12 @@
 
 int8_t VREF_Initialize(void)
 {
-    // ALWAYSON disabled; REFSEL Internal 1.024V reference; 
-    VREF.ACREF = 0x0;
+    // ALWAYSON disabled; REFSEL Internal 2.048V reference; 
+    VREF.ACREF = 0x1;
     
     
-    // ALWAYSON disabled; REFSEL Internal 1.024V reference; 
-    VREF.DAC0REF = 0x0;
+    // ALWAYSON disabled; REFSEL Internal 2.048V reference; 
+    VREF.DAC0REF = 0x1;
     
 	return 0;
 }

@@ -37,10 +37,11 @@
 static void (*BUZZER_InterruptHandler)(void);
 static void (*UART_RX_InterruptHandler)(void);
 static void (*UART_TX_InterruptHandler)(void);
-static void (*IO_PD4_InterruptHandler)(void);
+static void (*AMMONIA_OUT_InterruptHandler)(void);
 static void (*IO_DAC_TEST_InterruptHandler)(void);
 static void (*SW0_InterruptHandler)(void);
 static void (*LED0_InterruptHandler)(void);
+static void (*HEATER_InterruptHandler)(void);
 
 void PIN_MANAGER_Initialize()
 {
@@ -48,7 +49,7 @@ void PIN_MANAGER_Initialize()
     PORTA.DIR = 0x0;
     PORTB.DIR = 0x8;
     PORTC.DIR = 0x1;
-    PORTD.DIR = 0x42;
+    PORTD.DIR = 0x43;
     PORTE.DIR = 0x0;
     PORTF.DIR = 0x0;
 
@@ -91,7 +92,7 @@ void PIN_MANAGER_Initialize()
     PORTD.PIN3CTRL = 0x0;
     PORTD.PIN4CTRL = 0x4;
     PORTD.PIN5CTRL = 0x0;
-    PORTD.PIN6CTRL = 0x0;
+    PORTD.PIN6CTRL = 0x4;
     PORTD.PIN7CTRL = 0x0;
     PORTE.PIN0CTRL = 0x0;
     PORTE.PIN1CTRL = 0x0;
@@ -133,10 +134,11 @@ void PIN_MANAGER_Initialize()
     BUZZER_SetInterruptHandler(BUZZER_DefaultInterruptHandler);
     UART_RX_SetInterruptHandler(UART_RX_DefaultInterruptHandler);
     UART_TX_SetInterruptHandler(UART_TX_DefaultInterruptHandler);
-    IO_PD4_SetInterruptHandler(IO_PD4_DefaultInterruptHandler);
+    AMMONIA_OUT_SetInterruptHandler(AMMONIA_OUT_DefaultInterruptHandler);
     IO_DAC_TEST_SetInterruptHandler(IO_DAC_TEST_DefaultInterruptHandler);
     SW0_SetInterruptHandler(SW0_DefaultInterruptHandler);
     LED0_SetInterruptHandler(LED0_DefaultInterruptHandler);
+    HEATER_SetInterruptHandler(HEATER_DefaultInterruptHandler);
 }
 
 /**
@@ -179,17 +181,17 @@ void UART_TX_DefaultInterruptHandler(void)
     // or set custom function using UART_TX_SetInterruptHandler()
 }
 /**
-  Allows selecting an interrupt handler for IO_PD4 at application runtime
+  Allows selecting an interrupt handler for AMMONIA_OUT at application runtime
 */
-void IO_PD4_SetInterruptHandler(void (* interruptHandler)(void)) 
+void AMMONIA_OUT_SetInterruptHandler(void (* interruptHandler)(void)) 
 {
-    IO_PD4_InterruptHandler = interruptHandler;
+    AMMONIA_OUT_InterruptHandler = interruptHandler;
 }
 
-void IO_PD4_DefaultInterruptHandler(void)
+void AMMONIA_OUT_DefaultInterruptHandler(void)
 {
-    // add your IO_PD4 interrupt custom code
-    // or set custom function using IO_PD4_SetInterruptHandler()
+    // add your AMMONIA_OUT interrupt custom code
+    // or set custom function using AMMONIA_OUT_SetInterruptHandler()
 }
 /**
   Allows selecting an interrupt handler for IO_DAC_TEST at application runtime
@@ -229,6 +231,19 @@ void LED0_DefaultInterruptHandler(void)
 {
     // add your LED0 interrupt custom code
     // or set custom function using LED0_SetInterruptHandler()
+}
+/**
+  Allows selecting an interrupt handler for HEATER at application runtime
+*/
+void HEATER_SetInterruptHandler(void (* interruptHandler)(void)) 
+{
+    HEATER_InterruptHandler = interruptHandler;
+}
+
+void HEATER_DefaultInterruptHandler(void)
+{
+    // add your HEATER interrupt custom code
+    // or set custom function using HEATER_SetInterruptHandler()
 }
 ISR(PORTA_PORT_vect)
 { 
@@ -275,11 +290,15 @@ ISR(PORTD_PORT_vect)
     }
     if(VPORTD.INTFLAGS & PORT_INT4_bm)
     {
-       IO_PD4_InterruptHandler(); 
+       AMMONIA_OUT_InterruptHandler(); 
     }
     if(VPORTD.INTFLAGS & PORT_INT6_bm)
     {
        IO_DAC_TEST_InterruptHandler(); 
+    }
+    if(VPORTD.INTFLAGS & PORT_INT0_bm)
+    {
+       HEATER_InterruptHandler(); 
     }
     /* Clear interrupt flags */
     VPORTD.INTFLAGS = 0xff;

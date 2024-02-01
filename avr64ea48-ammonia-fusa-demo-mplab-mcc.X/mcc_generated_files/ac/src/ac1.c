@@ -40,14 +40,14 @@ int8_t AC1_Initialize(void)
     //WINSEL Window function disabled; 
     AC1.CTRLB = 0x0;
 
-    //DACREF 62; 
-    AC1.DACREF = 0x3E;
+    //DACREF 31; 
+    AC1.DACREF = 0x1F;
     
     //CMP enabled; INTMODE Positive input goes above negative input; 
     AC1.INTCTRL = 0x31;
     
-    //INITVAL LOW; INVERT disabled; MUXNEG DAC Reference; MUXPOS Positive Pin 2;   
-    AC1.MUXCTRL = 0x14;
+    //INITVAL LOW; INVERT enabled; MUXNEG DAC Reference; MUXPOS Positive Pin 2;   
+    AC1.MUXCTRL = 0x94;
     
     //ENABLE enabled; HYSMODE No hysteresis; OUTEN disabled; POWER Power profile 0, Fastest response time, highest consumption; RUNSTDBY disabled; 
     AC1.CTRLA = 0x1;

@@ -43,6 +43,10 @@ extern "C" {
     //Gets the current DACREF on AC1
     uint8_t Application_getDACREF(void);
     
+    //Sets a new DACREF on AC1
+    //Disables AC1 interrupt, updates value, waits, then re-enables
+    void Application_setDACREF(uint8_t val);
+    
 #ifdef	__cplusplus
 }
 #endif

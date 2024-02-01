@@ -47,6 +47,7 @@ void SYSTEM_Initialize(void)
     BOD_Initialize();
     CRC_Initialize();
     DAC0_Initialize();
+    NVM_Initialize();
     RTC_Initialize();
     TCA0_Initialize();
     TCB0_Initialize();

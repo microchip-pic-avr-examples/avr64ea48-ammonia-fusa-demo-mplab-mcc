@@ -19,6 +19,9 @@
         <logicalFolder name="dac" displayName="dac" projectFiles="true">
           <itemPath>mcc_generated_files/dac/dac0.h</itemPath>
         </logicalFolder>
+        <logicalFolder name="nvm" displayName="nvm" projectFiles="true">
+          <itemPath>mcc_generated_files/nvm/nvm.h</itemPath>
+        </logicalFolder>
         <logicalFolder name="reset" displayName="reset" projectFiles="true">
           <itemPath>mcc_generated_files/reset/rstctrl.h</itemPath>
         </logicalFolder>
@@ -63,6 +66,13 @@
       <itemPath>Fusa.h</itemPath>
       <itemPath>Application.h</itemPath>
       <itemPath>GasSensor.h</itemPath>
+      <itemPath>EEPROM.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="true">
+      <itemPath>Makefile</itemPath>
+      <itemPath>avr64ea48-ammonia-fusa-demo-mplab-mcc.mc3</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -92,6 +102,11 @@
         <logicalFolder name="dac" displayName="dac" projectFiles="true">
           <logicalFolder name="src" displayName="src" projectFiles="true">
             <itemPath>mcc_generated_files/dac/src/dac0.c</itemPath>
+          </logicalFolder>
+        </logicalFolder>
+        <logicalFolder name="nvm" displayName="nvm" projectFiles="true">
+          <logicalFolder name="src" displayName="src" projectFiles="true">
+            <itemPath>mcc_generated_files/nvm/src/nvm.c</itemPath>
           </logicalFolder>
         </logicalFolder>
         <logicalFolder name="system" displayName="system" projectFiles="true">
@@ -127,12 +142,6 @@
       <itemPath>Fusa.c</itemPath>
       <itemPath>Application.c</itemPath>
       <itemPath>GasSensor.c</itemPath>
-    </logicalFolder>
-    <logicalFolder name="ExternalFiles"
-                   displayName="Important Files"
-                   projectFiles="false">
-      <itemPath>Makefile</itemPath>
-      <itemPath>avr64ea48-ammonia-fusa-demo-mplab-mcc.mc3</itemPath>
     </logicalFolder>
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>

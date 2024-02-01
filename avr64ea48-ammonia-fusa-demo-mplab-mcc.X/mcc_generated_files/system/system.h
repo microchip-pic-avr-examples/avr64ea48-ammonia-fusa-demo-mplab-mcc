@@ -48,6 +48,7 @@ extern "C" {
 #include "../adc/adc0.h"
 #include "../crc/crc.h"
 #include "../dac/dac0.h"
+#include "../nvm/nvm.h"
 #include "../timer/rtc.h"
 #include "../timer/tca0.h"
 #include "../timer/tcb0.h"
