@@ -9,6 +9,8 @@
 #include "EEPROM.h"
 #include "Application.h"
 
+static volatile float R_L = 0.0;
+
 bool _writeEEPROM8(uint16_t addr, uint8_t val)
 {
     //Write the byte
@@ -115,23 +117,32 @@ bool GasSensor_calibrate(void)
     uint16_t result = GasSensor_getCurrentValue();
 
     //Write data to EEPROM
-    if (!GasSensor_writeEEPROM(result))
-        return false;
+//    if (!GasSensor_writeEEPROM(result))
+//        return false;
+        
+    //Pre-calculate ADC constant for R_L
+    //V_S / V_REF * 2^n (n = ADC Resolution)
+    const float K = (SENSOR_BIAS_VOLTAGE / ADC_VREF) * ADC_BITS;
     
-    //12-bit result must be shifted to 8-bit
-    result >>= 4;
+    //Sensor resistance at 0 ppm (computed from DS)
+    const float R0 = SENSOR_R0;
+    
+    //Load Resistance
+    R_L = R0 / ((K / result) - 1);
+    printf("Load Resistance = %f\r\n", R_L);
     
     //Find the threshold
-    result = round((float) result * ALARM_THRESHOLD);
+    float fraction = R_L / (R_L + SENSOR_ALARM_R0);
+    uint16_t setPt = round(fraction * UINT8_MAX);
     
     //If bigger than the max allowed
-    if (result > UINT8_MAX)
+    if (setPt > UINT8_MAX)
     {
-        result = 0xFF;
+        setPt = 0xFF;
     }
     
     //Set the new DACREF
-    Application_setDACREF(result);
+    Application_setDACREF(setPt);
     
     //Success!    
     return true;
@@ -151,28 +162,38 @@ uint16_t GasSensor_getReferenceValue(void)
 }
 
 //Converts a measurement value into PPM
-uint8_t GasSensor_convertToPPM(uint16_t measurement, uint16_t reference)
+uint16_t GasSensor_convertToPPM(uint16_t measurement)
 {
     uint16_t result = UINT16_MAX;
     
-    //If the measurement is 0, return the max PPM
+    //Check for bad conditions
     if (measurement == 0)
     {
+        //If the measurement is 0, return max PPM
+        return UINT8_MAX;
+    }
+    else if (R_L <= 0)
+    {
+        //If the load resistance is not set (error state), return max PPM
         return UINT8_MAX;
     }
     
-    //Ratio of reference to measurement
-    float ratio = ((float) reference) / measurement;
+    const float precalc = (ADC_BITS * SENSOR_BIAS_VOLTAGE) / ADC_VREF;
+    
+    //Sensor Resistance
+//    volatile float R_S = ((precalc / result) - 1) * R_L;
+    volatile float R_S = (precalc / (float) (measurement));
+    R_S -= 1.0;
+    R_S *= R_L;
+    printf("Sensor Resistance = %f\r\n", R_S);
 
+    //Compute ratio against R0
+    float ratio = R_S / SENSOR_R0;
+    printf("Sensor Ratio (R_S / R_0) = %f\r\n", ratio);
+    
     //Constants are from a best-fit plot of the provided sensor data
     //PPM = 0.1282 * result^(-3.833)
     result = round(0.1282 * powf(ratio, -3.833));
-    
-    //If above 8-bit size, return max size
-    if (result > UINT8_MAX)
-    {
-        result = UINT8_MAX;
-    }
     
     return result;
 }

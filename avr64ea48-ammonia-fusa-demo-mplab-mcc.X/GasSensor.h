@@ -12,6 +12,19 @@ extern "C" {
 //Set to the 50 ppm point on the MQ-137 response curve
 #define ALARM_THRESHOLD 0.205
     
+//This is the sensor resistance at 0ppm, calculated from the provided datasheet
+#define SENSOR_R0 28871.42857
+    
+//Bias voltage on the sensor
+#define SENSOR_BIAS_VOLTAGE 5.0
+    
+//ADC Parameters
+#define ADC_VREF 2.048    
+#define ADC_BITS 4096
+
+//This is the sensor resistance at the alarm point
+#define SENSOR_ALARM_R0 (SENSOR_R0 * ALARM_THRESHOLD)
+    
 //Logic for the gas sensor
 #define GAS_SENSOR_LOGIC_TRIPPED false
 #define GAS_SENSOR_LOGIC_NOT_TRIPPED true
@@ -35,7 +48,7 @@ extern "C" {
     uint16_t GasSensor_getReferenceValue(void);
     
     //Converts a measurement value into PPM
-    uint8_t GasSensor_convertToPPM(uint16_t measurement, uint16_t reference);
+    uint16_t GasSensor_convertToPPM(uint16_t measurement);
     
     //Called whenever a rising edge occurs on the AC
     void GasSensor_onAlert(void);

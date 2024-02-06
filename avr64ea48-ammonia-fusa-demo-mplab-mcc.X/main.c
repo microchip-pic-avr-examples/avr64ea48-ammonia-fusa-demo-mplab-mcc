@@ -35,14 +35,6 @@
 #include "Fusa.h"
 #include "Application.h"
 
-/*
-    Main application
-*/
-
-//This is the checksum used for the system memory
-//Inserted by the compiler at runtime
-const uint32_t flashChecksum = 0x00000000;
-
 int main(void)
 {
     SYSTEM_Initialize();

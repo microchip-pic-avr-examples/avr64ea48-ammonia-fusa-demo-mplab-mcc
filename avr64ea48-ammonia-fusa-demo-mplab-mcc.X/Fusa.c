@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include <avr/io.h>
+
 #include "mcc_generated_files/system/system.h"
 #include "mcc_generated_files/timer/delay.h"
 
@@ -12,6 +14,21 @@
 #define PASS_STRING "OK\r\n"
 #define FAIL_STRING "FAIL\r\n"
 #define NOT_FOUND_STRING "NOT FOUND\r\n"
+
+#ifndef TEST_CHECKSUM
+/* This is the checksum used for the system memory
+ * CRC-32 at end of Application Memory
+ * Inserted by the compiler at runtime
+ * Note: __at is in bytes, not words */
+extern const uint32_t flashChecksum __at((0xFFFC));
+
+#else
+/*
+ * This is a checksum used for testing ONLY
+ */
+static volatile const uint32_t flashChecksum __at((0xFFFC)) = 0x12345678;
+
+#endif
 
 static volatile SystemState sysState = SYS_ERROR;
 
@@ -136,11 +153,11 @@ bool Fusa_testAC(void)
      * 12. Return to previous state
      */
     
-    if (Application_getDACREF() < DACREF_MIN_ALLOWED)
-    {
-        sysState = SYS_ERROR;
-        return false;
-    }
+//    if (Application_getDACREF() < DACREF_MIN_ALLOWED)
+//    {
+//        sysState = SYS_ERROR;
+//        return false;
+//    }
     
     //Save current state
     SystemState prevState = sysState;
@@ -209,7 +226,43 @@ bool Fusa_testAC(void)
 //Run a memory self-check
 bool Fusa_testMemory(void)
 {
+#ifdef TEST_CHECKSUM
+    //This line is required due to an issue with volatile being optimized out
+    printf("Test Checksum = 0x%08lx\r\n", flashChecksum);
+#endif
+    
+    //TODO - Run CRC Scan
+    //Returned value should be 0 if CRC is valid, so no need to compare
+    uint32_t refChecksum = Fusa_getChecksumFromPFM();
+    
+    printf("Expected Checksum = 0x%08lx\r\n", refChecksum);
+    asm("NOP");
     return false;
+}
+
+//Gets the 32-bit CRC from memory
+uint32_t Fusa_getChecksumFromPFM(void)
+{
+    uint32_t sum;
+    
+    uint32_t addr = 0xFFFC;
+    
+    //Top Byte
+    sum = FLASH_Read(addr + 3);
+    sum <<= 8;
+    
+    //Upper Byte
+    sum |= FLASH_Read(addr + 2);
+    sum <<= 8;
+    
+    //High Byte
+    sum |= FLASH_Read(addr + 1);
+    sum <<= 8;
+    
+    //Low Byte
+    sum |= FLASH_Read(addr);
+    
+    return sum;
 }
     
 //Runs the periodic self-test of the system
@@ -283,7 +336,7 @@ void Fusa_runPeriodicSelfCheck(void)
             
             //System is running
             printf("[MONITOR] ADC Result: 0x%x\r\n", meas);
-            printf("Estimated Ammonia: %d ppm\r\n", GasSensor_convertToPPM(meas, GasSensor_getReferenceValue()));
+            printf("Estimated Ammonia: %d ppm\r\n", GasSensor_convertToPPM(meas));
             printf("DACREF: 0x%x\r\n", Application_getDACREF());
             
             //Did the alarm activate?
@@ -311,7 +364,7 @@ void Fusa_runPeriodicSelfCheck(void)
             uint16_t meas = GasSensor_getCurrentValue();
             
             printf("[ALARM] ADC Result: 0x%x\r\n", meas);
-            printf("Estimated Ammonia: %d ppm\r\n", GasSensor_convertToPPM(meas, GasSensor_getReferenceValue()));
+            printf("Estimated Ammonia: %d ppm\r\n", GasSensor_convertToPPM(meas));
             printf("DACREF: 0x%x\r\n", Application_getDACREF());
             
             //Did the alarm go off?

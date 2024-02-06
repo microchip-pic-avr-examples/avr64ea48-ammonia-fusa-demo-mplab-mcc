@@ -13,7 +13,7 @@ extern "C" {
     
 //Minimum DACREF Value in bits. Should be bigger than or equal to TEST_MARGIN
 #define DACREF_MIN_ALLOWED 16
-    
+        
     typedef enum {
         SYS_ERROR = -1, SYS_INIT = 0, SYS_WARMUP, 
         SYS_CALIBRATE, SYS_MONITOR, SYS_TEST, SYS_ALARM
@@ -30,6 +30,9 @@ extern "C" {
     
     //Run a memory self-check
     bool Fusa_testMemory(void);
+    
+    //Gets the 32-bit CRC from memory
+    uint32_t Fusa_getChecksumFromPFM(void);
     
     //Runs the periodic self-test of the system
     void Fusa_runPeriodicSelfCheck(void);
