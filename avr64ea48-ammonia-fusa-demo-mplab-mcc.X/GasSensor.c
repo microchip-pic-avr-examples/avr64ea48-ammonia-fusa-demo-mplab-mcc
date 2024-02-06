@@ -9,7 +9,7 @@
 #include "EEPROM.h"
 #include "Application.h"
 
-static volatile float R_L = 0.0;
+static float R_L = 0.0;
 
 bool _writeEEPROM8(uint16_t addr, uint8_t val)
 {
@@ -66,6 +66,12 @@ uint16_t _readEEPROM16(uint16_t addr)
     val |= _readEEPROM8(addr + 1);
     
     return val;
+}
+
+//Initialize the constants and parameters for the sensor
+bool GasSensor_init(void)
+{
+    return false;
 }
 
 //Is the calibration EEPROM valid?
@@ -164,27 +170,25 @@ uint16_t GasSensor_getReferenceValue(void)
 //Converts a measurement value into PPM
 uint16_t GasSensor_convertToPPM(uint16_t measurement)
 {
-    uint16_t result = UINT16_MAX;
-    
     //Check for bad conditions
     if (measurement == 0)
     {
         //If the measurement is 0, return max PPM
-        return UINT8_MAX;
+        return UINT16_MAX;
     }
     else if (R_L <= 0)
     {
         //If the load resistance is not set (error state), return max PPM
-        return UINT8_MAX;
+        return UINT16_MAX;
     }
     
     const float precalc = (ADC_BITS * SENSOR_BIAS_VOLTAGE) / ADC_VREF;
     
     //Sensor Resistance
-//    volatile float R_S = ((precalc / result) - 1) * R_L;
-    volatile float R_S = (precalc / (float) (measurement));
-    R_S -= 1.0;
-    R_S *= R_L;
+    float R_S = ((precalc / measurement) - 1) * R_L;
+//    float R_S = (precalc / (float) (measurement));
+//    R_S -= 1.0;
+//    R_S *= R_L;
     printf("Sensor Resistance = %f\r\n", R_S);
 
     //Compute ratio against R0
@@ -193,7 +197,7 @@ uint16_t GasSensor_convertToPPM(uint16_t measurement)
     
     //Constants are from a best-fit plot of the provided sensor data
     //PPM = 0.1282 * result^(-3.833)
-    result = round(0.1282 * powf(ratio, -3.833));
+    uint16_t result = round(0.1282 * powf(ratio, -3.833));
     
     return result;
 }

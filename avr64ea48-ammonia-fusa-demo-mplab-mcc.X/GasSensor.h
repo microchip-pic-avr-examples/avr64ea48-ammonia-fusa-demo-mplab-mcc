@@ -29,6 +29,9 @@ extern "C" {
 #define GAS_SENSOR_LOGIC_TRIPPED false
 #define GAS_SENSOR_LOGIC_NOT_TRIPPED true
     
+    //Initialize the constants and parameters for the sensor
+    bool GasSensor_init(void);
+    
     //Is the calibration EEPROM valid?
     bool GasSensor_isEEPROMValid(void);
     

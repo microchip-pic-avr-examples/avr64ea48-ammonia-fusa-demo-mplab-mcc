@@ -36,6 +36,7 @@ static volatile SystemState sysState = SYS_ERROR;
 bool Fusa_runStartupSelfTest(void)
 {
     printf("\r\nRunning Self Test\r\n");
+    printf("Memory Checksum = 0x%lx\r\n", Fusa_getChecksumFromPFM());
     
     //Run the buzzer during self-test
     BUZZER_ENABLE();
@@ -153,11 +154,11 @@ bool Fusa_testAC(void)
      * 12. Return to previous state
      */
     
-//    if (Application_getDACREF() < DACREF_MIN_ALLOWED)
-//    {
-//        sysState = SYS_ERROR;
-//        return false;
-//    }
+    if (Application_getDACREF() < DACREF_MIN_ALLOWED)
+    {
+        sysState = SYS_ERROR;
+        return false;
+    }
     
     //Save current state
     SystemState prevState = sysState;
@@ -233,9 +234,7 @@ bool Fusa_testMemory(void)
     
     //TODO - Run CRC Scan
     //Returned value should be 0 if CRC is valid, so no need to compare
-    uint32_t refChecksum = Fusa_getChecksumFromPFM();
     
-    printf("Expected Checksum = 0x%08lx\r\n", refChecksum);
     asm("NOP");
     return false;
 }
