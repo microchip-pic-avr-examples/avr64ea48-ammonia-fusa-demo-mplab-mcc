@@ -31,6 +31,12 @@ extern "C" {
     //Run a memory self-check
     bool Fusa_testMemory(void);
     
+    //Run a checksum of the EEPROM
+    bool Fusa_testEEPROM(void);
+    
+    //Writes a reference value to memory
+    bool Fusa_storeConstants(uint16_t refValue);
+    
     //Gets the 32-bit CRC from memory
     uint32_t Fusa_getChecksumFromPFM(void);
     

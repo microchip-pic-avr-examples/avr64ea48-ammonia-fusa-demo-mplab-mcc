@@ -10,6 +10,7 @@
 
 #include "Application.h"
 #include "GasSensor.h"
+#include "EEPROM.h"
 
 #define PASS_STRING "OK\r\n"
 #define FAIL_STRING "FAIL\r\n"
@@ -35,8 +36,13 @@ static volatile SystemState sysState = SYS_ERROR;
 //Runs a self-test of the system
 bool Fusa_runStartupSelfTest(void)
 {
+    printf("\r\nFlash Memory Checksum = 0x%lx\r\n", Fusa_getChecksumFromPFM());
+#ifdef TEST_CHECKSUM
+    //This line is required due to an issue with volatile being optimized out
+    printf("Test Checksum = 0x%lx\r\n", flashChecksum);
+#endif
+
     printf("\r\nRunning Self Test\r\n");
-    printf("Memory Checksum = 0x%lx\r\n", Fusa_getChecksumFromPFM());
     
     //Run the buzzer during self-test
     BUZZER_ENABLE();
@@ -78,8 +84,14 @@ bool Fusa_runStartupSelfTest(void)
         
     //Check EEPROM for valid constants
     printf("Calibration data...");
-    if (GasSensor_isEEPROMValid())
+    if (Fusa_testEEPROM())
+    {
+        //EEPROM OK
         printf(PASS_STRING);
+        
+        //Init R_L constant from EEPROM
+        GasSensor_initFromEEPROM();
+    }
     else
     {
         printf(NOT_FOUND_STRING);
@@ -226,17 +238,35 @@ bool Fusa_testAC(void)
 
 //Run a memory self-check
 bool Fusa_testMemory(void)
-{
-#ifdef TEST_CHECKSUM
-    //This line is required due to an issue with volatile being optimized out
-    printf("Test Checksum = 0x%08lx\r\n", flashChecksum);
-#endif
-    
+{    
     //TODO - Run CRC Scan
     //Returned value should be 0 if CRC is valid, so no need to compare
     
     asm("NOP");
     return false;
+}
+
+//Run a checksum of the EEPROM
+bool Fusa_testEEPROM(void)
+{
+    /* Test Procedure:
+     * 1. Verify the EEPROM Version ID matches expected
+     * 2. Verify the EEPROM Checksum
+     */
+    
+    //Verify Version ID
+    if (Memory_readEEPROM8(EEPROM_VERSION_ADDR) != EEPROM_VERSION_ID)
+    {
+        return false;
+    }
+    
+    //Verify Checksum
+    if (Memory_calculateChecksum() != EEPROM_CHECKSUM_GOOD)
+    {
+        return false;
+    }
+    
+    return true;
 }
 
 //Gets the 32-bit CRC from memory
@@ -282,7 +312,7 @@ void Fusa_runPeriodicSelfCheck(void)
             {
                 printf("\r\nWarmup complete.\r\n");
                 
-                if (GasSensor_isEEPROMValid())
+                if (false)
                 {
                     //Ready to begin active monitoring
                     sysState = SYS_MONITOR;

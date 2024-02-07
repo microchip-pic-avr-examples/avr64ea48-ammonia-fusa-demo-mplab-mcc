@@ -30,9 +30,9 @@ extern "C" {
 #define GAS_SENSOR_LOGIC_NOT_TRIPPED true
     
     //Initialize the constants and parameters for the sensor
-    bool GasSensor_init(void);
+    void GasSensor_initFromEEPROM(void);
     
-    //Is the calibration EEPROM valid?
+    //Returns true if the EEPROM is valid
     bool GasSensor_isEEPROMValid(void);
     
     //Write the reference value to EEPROM
@@ -43,11 +43,11 @@ extern "C" {
     
     //This function uses the current sensor output as a reference zero, write it to memory, and sets the AC
     bool GasSensor_calibrate(void);
-    
+        
     //Starts and returns the analog value of the gas sensor
     uint16_t GasSensor_getCurrentValue(void);
     
-    //Returns the current reference value
+    //Returns the stored reference value
     uint16_t GasSensor_getReferenceValue(void);
     
     //Converts a measurement value into PPM

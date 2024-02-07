@@ -10,93 +10,55 @@
 #include "Application.h"
 
 static float R_L = 0.0;
+static bool memValid = false;
 
-bool _writeEEPROM8(uint16_t addr, uint8_t val)
+void _initRL(uint16_t ref)
 {
-    //Write the byte
-    nvm_status_t status = EEPROM_Write(addr, val);
+    //Pre-calculate ADC constant for R_L
+    //V_S / V_REF * 2^n (n = ADC Resolution)
+    const float K = (SENSOR_BIAS_VOLTAGE / ADC_VREF) * ADC_BITS;
     
-    //Did an error occur?
-    if (status == NVM_ERROR)
-    {
-        return false;
-    }
+    //Sensor resistance at 0 ppm (computed from DS)
+    const float R0 = SENSOR_R0;
     
-    //Wait for write
-    while (EEPROM_IsBusy());
-    
-    //Verify write
-    if (EEPROM_Read(addr) != val)
-    {
-        return false;
-    }
-    
-    return true;
-}
-
-bool _writeEEPROM16(uint16_t addr, uint16_t val)
-{
-    //High Byte
-    if (!_writeEEPROM8(addr, ((val & 0xFF00) >> 8)))
-        return false;
-    
-    //Low Byte
-    if (!_writeEEPROM8((addr + 1), (val & 0xFF)))
-        return false;
-    
-    return true;
-}
-
-uint8_t _readEEPROM8(uint16_t addr)
-{
-    return EEPROM_Read(addr);
-}
-
-uint16_t _readEEPROM16(uint16_t addr)
-{
-    uint16_t val;
-    
-    //Load the high byte
-    val = _readEEPROM8(addr);
-    
-    //Shift Data
-    val <<= 8;
-    
-    //Load the low byte
-    val |= _readEEPROM8(addr + 1);
-    
-    return val;
+    //Load Resistance
+    R_L = R0 / ((K / ref) - 1);
 }
 
 //Initialize the constants and parameters for the sensor
-bool GasSensor_init(void)
+void GasSensor_initFromEEPROM(void)
 {
-    return false;
+    _initRL(GasSensor_getReferenceValue());
+    memValid = true;
 }
 
-//Is the calibration EEPROM valid?
+//Returns true if the EEPROM is valid
 bool GasSensor_isEEPROMValid(void)
 {
-    
-    return false;
+    return memValid;
 }
 
 //Write the reference value to EEPROM
 bool GasSensor_writeEEPROM(uint16_t refValue)
 {
+    //Write 0x0000 as a placeholder for the Checksum
+    if (!Memory_writeEEPROM16(EEPROM_CKSM_H_ADDR, 0x0000))
+        return false;
+    
     //Write the EEPROM VERSION ID
-    if (!_writeEEPROM8(EEPROM_VERSION_ADDR, EEPROM_VERSION))
+    if (!Memory_writeEEPROM8(EEPROM_VERSION_ADDR, EEPROM_VERSION_ID))
         return false;
 
     //Write the Reference Value
-    if (!_writeEEPROM16(EEPROM_REF_VALUE_H_ADDR, refValue))
+    if (!Memory_writeEEPROM16(EEPROM_REF_VALUE_H_ADDR, refValue))
         return false;
     
-    //Write 0x0000 as a placeholder for the CRC Value
-    if (!_writeEEPROM16(EEPROM_CRC16_H_ADDR, 0x0000))
+    //Write real checksum
+    if (!Memory_writeEEPROM16(EEPROM_CKSM_H_ADDR, Memory_calculateChecksum()))
         return false;
-        
-    //TODO: CRC Calculation + Write!
+    
+    //Set the memory valid flag
+    memValid = true;
     
     return true;
 }
@@ -123,19 +85,11 @@ bool GasSensor_calibrate(void)
     uint16_t result = GasSensor_getCurrentValue();
 
     //Write data to EEPROM
-//    if (!GasSensor_writeEEPROM(result))
-//        return false;
+    if (!GasSensor_writeEEPROM(result))
+        return false;
         
-    //Pre-calculate ADC constant for R_L
-    //V_S / V_REF * 2^n (n = ADC Resolution)
-    const float K = (SENSOR_BIAS_VOLTAGE / ADC_VREF) * ADC_BITS;
-    
-    //Sensor resistance at 0 ppm (computed from DS)
-    const float R0 = SENSOR_R0;
-    
-    //Load Resistance
-    R_L = R0 / ((K / result) - 1);
-    printf("Load Resistance = %f\r\n", R_L);
+    //Compute R_L
+    _initRL(result);
     
     //Find the threshold
     float fraction = R_L / (R_L + SENSOR_ALARM_R0);
@@ -161,10 +115,10 @@ uint16_t GasSensor_getCurrentValue(void)
     return ADC0_GetConversion(ADC_MUXPOS_AIN4_gc);
 }
 
-//Returns the current reference value
+//Returns the stored reference value
 uint16_t GasSensor_getReferenceValue(void)
 {
-    return _readEEPROM16(EEPROM_REF_VALUE_H_ADDR);
+    return Memory_readEEPROM16(EEPROM_REF_VALUE_H_ADDR);
 }
 
 //Converts a measurement value into PPM

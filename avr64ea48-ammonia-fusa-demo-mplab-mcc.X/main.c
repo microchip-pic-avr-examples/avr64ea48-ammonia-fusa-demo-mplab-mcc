@@ -43,6 +43,7 @@ int main(void)
     HEATER_SetHigh();
     
     printf("AVR64EA48 Ammonia Gas Functional Safety Demo\r\n");
+    printf("Built %s at %s\r\n\r\n", __DATE__, __TIME__);
     
 #ifdef DEVELOP_MODE
     printf("WARNING: Device is in develop mode. System will power-up if errors occur and skip sensor warm-up period.\r\nDO NOT USE FOR PRODUCTION\r\n");
