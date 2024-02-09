@@ -14,7 +14,6 @@
 
 #define PASS_STRING "OK\r\n"
 #define FAIL_STRING "FAIL\r\n"
-#define NOT_FOUND_STRING "NOT FOUND\r\n"
 
 #ifndef TEST_CHECKSUM
 /* This is the checksum used for the system memory
@@ -37,11 +36,6 @@ static volatile SystemState sysState = SYS_ERROR;
 bool Fusa_runStartupSelfTest(void)
 {
     printf("\r\nFlash Memory Checksum = 0x%lx\r\n", Fusa_getChecksumFromPFM());
-#ifdef TEST_CHECKSUM
-    //This line is required due to an issue with volatile being optimized out
-    printf("Test Checksum = 0x%lx\r\n", flashChecksum);
-#endif
-
     printf("\r\nRunning Self Test\r\n");
     
     //Run the buzzer during self-test
@@ -84,18 +78,25 @@ bool Fusa_runStartupSelfTest(void)
         
     //Check EEPROM for valid constants
     printf("Calibration data...");
-    if (Fusa_testEEPROM())
+    if (SW0_GetValue())
     {
-        //EEPROM OK
-        printf(PASS_STRING);
+        //Erase requested by user
+        GasSensor_eraseEEPROM();
         
+        printf("ERASED\r\n");
+    }
+    else if (Fusa_testEEPROM())
+    {        
         //Init R_L constant from EEPROM
         GasSensor_initFromEEPROM();
+        
+        //EEPROM OK
+        printf(PASS_STRING);
     }
     else
     {
-        printf(NOT_FOUND_STRING);
-        //This can fail - user will have to calibrate
+        //No valid calibration found in EEPROM
+        printf("INVALID\r\n");
     }
     
     //In develop mode, ignore startup errors and accelerate warm-up
@@ -166,12 +167,6 @@ bool Fusa_testAC(void)
      * 12. Return to previous state
      */
     
-    if (Application_getDACREF() < DACREF_MIN_ALLOWED)
-    {
-        sysState = SYS_ERROR;
-        return false;
-    }
-    
     //Save current state
     SystemState prevState = sysState;
     
@@ -192,6 +187,7 @@ bool Fusa_testAC(void)
         testVal = 0x3FF;
     }
     
+    //Set to Alarm state
     DAC0_SetOutput(testVal);
     
     //Wait 7us (DAC0 Settling) + 0.15us (AC Response)
@@ -214,6 +210,7 @@ bool Fusa_testAC(void)
         testVal = 0;
     }
     
+    //Set to low value
     DAC0_SetOutput(testVal);
     
     //Wait 7us (DAC0 Settling) + 0.15us (AC Response)
@@ -259,7 +256,7 @@ bool Fusa_testEEPROM(void)
     {
         return false;
     }
-    
+        
     //Verify Checksum
     if (Memory_calculateChecksum() != EEPROM_CHECKSUM_GOOD)
     {
@@ -300,6 +297,13 @@ void Fusa_runPeriodicSelfCheck(void)
     //Clear WDT
     asm("WDR");
     
+    //Get a new ADC reading from the sensor (blocking!)
+    uint16_t meas = GasSensor_getCurrentValue();
+            
+#ifdef VIEW_RAW_ADC
+    printf("ADC Result: 0x%x\r\n", meas);
+#endif
+    
     //Run state machine
     switch (sysState)
     {
@@ -312,7 +316,7 @@ void Fusa_runPeriodicSelfCheck(void)
             {
                 printf("\r\nWarmup complete.\r\n");
                 
-                if (false)
+                if (GasSensor_isEEPROMValid())
                 {
                     //Ready to begin active monitoring
                     sysState = SYS_MONITOR;
@@ -343,7 +347,16 @@ void Fusa_runPeriodicSelfCheck(void)
                     //No errors
                     
                     printf("Calibration complete. System is now ready.\r\n");
-                    sysState = SYS_MONITOR;
+                    
+                    //If the alarm is active, jump to alarm
+                    if (GasSensor_isTripped())
+                    {
+                        sysState = SYS_ALARM;
+                    }
+                    else
+                    {
+                        sysState = SYS_MONITOR;
+                    }
                 }
                 else
                 {
@@ -359,14 +372,11 @@ void Fusa_runPeriodicSelfCheck(void)
         }
         case SYS_MONITOR:
         {
+            //Blink the LED
             LED0_Toggle();
             
-            uint16_t meas = GasSensor_getCurrentValue();
-            
             //System is running
-            printf("[MONITOR] ADC Result: 0x%x\r\n", meas);
-            printf("Estimated Ammonia: %d ppm\r\n", GasSensor_convertToPPM(meas));
-            printf("DACREF: 0x%x\r\n", Application_getDACREF());
+            printf("[MONITOR] Estimated Ammonia: %d ppm\r\n", GasSensor_convertToPPM(meas));
             
             //Did the alarm activate?
             if (GasSensor_isTripped())
@@ -390,11 +400,7 @@ void Fusa_runPeriodicSelfCheck(void)
         {
             //System alarm is tripped
             
-            uint16_t meas = GasSensor_getCurrentValue();
-            
-            printf("[ALARM] ADC Result: 0x%x\r\n", meas);
-            printf("Estimated Ammonia: %d ppm\r\n", GasSensor_convertToPPM(meas));
-            printf("DACREF: 0x%x\r\n", Application_getDACREF());
+            printf("[ALARM] Estimated Ammonia: %d ppm\r\n", GasSensor_convertToPPM(meas));
             
             //Did the alarm go off?
             if (!GasSensor_isTripped())

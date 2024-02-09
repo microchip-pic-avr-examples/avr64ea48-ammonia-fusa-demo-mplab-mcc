@@ -8,15 +8,22 @@ extern "C" {
 #include <stdint.h>
 #include <stdbool.h>
     
+//Prints the measured sensor parameters
+#define PRINT_SENSOR_PARAMETERS
+    
 //This is the alarm threshold
 //Set to the 50 ppm point on the MQ-137 response curve
 #define ALARM_THRESHOLD 0.205
     
-//This is the sensor resistance at 0ppm, calculated from the provided datasheet
-#define SENSOR_R0 28871.42857
+//This is the load resistance
+#define LOAD_RESISTANCE 100.0
     
 //Bias voltage on the sensor
 #define SENSOR_BIAS_VOLTAGE 5.0
+    
+//DACREF Parameters
+#define DACREF_VREF 2.048
+#define DACREF_BITS 256
     
 //ADC Parameters
 #define ADC_VREF 2.048    
@@ -31,6 +38,9 @@ extern "C" {
     
     //Initialize the constants and parameters for the sensor
     void GasSensor_initFromEEPROM(void);
+    
+    //Erases the EEPROM
+    void GasSensor_eraseEEPROM(void);
     
     //Returns true if the EEPROM is valid
     bool GasSensor_isEEPROMValid(void);

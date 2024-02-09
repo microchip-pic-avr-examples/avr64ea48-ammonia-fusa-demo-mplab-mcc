@@ -9,11 +9,12 @@ extern "C" {
 #include <stdbool.h>
     
 //How many bits above/below the DACREF should we test at 
-#define TEST_MARGIN 16
+//Note - DAC0 is 10-bit, DACREF is 8-bit, so 4 bits at DAC0 = 1 bit at DACREF
+#define TEST_MARGIN 4
+            
+//If set, raw ADC values are printed
+//#define VIEW_RAW_ADC
     
-//Minimum DACREF Value in bits. Should be bigger than or equal to TEST_MARGIN
-#define DACREF_MIN_ALLOWED 16
-        
     typedef enum {
         SYS_ERROR = -1, SYS_INIT = 0, SYS_WARMUP, 
         SYS_CALIBRATE, SYS_MONITOR, SYS_TEST, SYS_ALARM

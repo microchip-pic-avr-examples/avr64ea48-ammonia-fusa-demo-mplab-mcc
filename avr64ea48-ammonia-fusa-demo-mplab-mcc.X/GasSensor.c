@@ -9,27 +9,60 @@
 #include "EEPROM.h"
 #include "Application.h"
 
-static float R_L = 0.0;
+static float R_S0 = 0.0;
 static bool memValid = false;
 
-void _initRL(uint16_t ref)
+void _initParameters(uint16_t ref)
 {
     //Pre-calculate ADC constant for R_L
     //V_S / V_REF * 2^n (n = ADC Resolution)
     const float K = (SENSOR_BIAS_VOLTAGE / ADC_VREF) * ADC_BITS;
     
     //Sensor resistance at 0 ppm (computed from DS)
-    const float R0 = SENSOR_R0;
+    const float R_L = LOAD_RESISTANCE;
     
-    //Load Resistance
-    R_L = R0 / ((K / ref) - 1);
+    //Sensor Resistance
+    R_S0 = R_L * ((K / ref) - 1);
+        
+    //Alarm trigger voltage (DACREF)
+    float alarmValue = (R_L / (R_L + (R_S0 * ALARM_THRESHOLD))) * SENSOR_BIAS_VOLTAGE;
+    
+    //Volts per bit resolution of DACREF
+    const float DACREF_SENSITIVITY = DACREF_VREF / DACREF_BITS;
+    
+    //DACREF setpoint
+    uint16_t setPt = round(alarmValue / DACREF_SENSITIVITY);
+    
+    //If bigger than the max allowed
+    if (setPt > UINT8_MAX)
+    {
+        printf("WARNING: Clipping DACREF at maximum.\r\n");
+        setPt = 0xFF;
+    }
+    
+#ifdef PRINT_SENSOR_PARAMETERS
+    printf("R_S0 = %f\r\n", R_S0);
+    printf("Alarm Point = %f V (DACREF = 0x%x)\r\n", alarmValue, setPt);
+#endif
+
+    
+    //Set the new DACREF
+    Application_setDACREF(setPt);
 }
 
 //Initialize the constants and parameters for the sensor
 void GasSensor_initFromEEPROM(void)
 {
-    _initRL(GasSensor_getReferenceValue());
+    _initParameters(GasSensor_getReferenceValue());
     memValid = true;
+}
+
+//Erases the EEPROM
+void GasSensor_eraseEEPROM(void)
+{
+    Memory_writeEEPROM16(EEPROM_CKSM_H_ADDR, 0xFFFF);
+    Memory_writeEEPROM8(EEPROM_VERSION_ADDR, 0xFF);
+    Memory_writeEEPROM16(EEPROM_REF_VALUE_H_ADDR, 0xFFFF);
 }
 
 //Returns true if the EEPROM is valid
@@ -88,22 +121,9 @@ bool GasSensor_calibrate(void)
     if (!GasSensor_writeEEPROM(result))
         return false;
         
-    //Compute R_L
-    _initRL(result);
-    
-    //Find the threshold
-    float fraction = R_L / (R_L + SENSOR_ALARM_R0);
-    uint16_t setPt = round(fraction * UINT8_MAX);
-    
-    //If bigger than the max allowed
-    if (setPt > UINT8_MAX)
-    {
-        setPt = 0xFF;
-    }
-    
-    //Set the new DACREF
-    Application_setDACREF(setPt);
-    
+    //Compute R_L and DACREF
+    _initParameters(result);
+        
     //Success!    
     return true;
 }
@@ -130,7 +150,7 @@ uint16_t GasSensor_convertToPPM(uint16_t measurement)
         //If the measurement is 0, return max PPM
         return UINT16_MAX;
     }
-    else if (R_L <= 0)
+    else if (R_S0 <= 0)
     {
         //If the load resistance is not set (error state), return max PPM
         return UINT16_MAX;
@@ -139,15 +159,19 @@ uint16_t GasSensor_convertToPPM(uint16_t measurement)
     const float precalc = (ADC_BITS * SENSOR_BIAS_VOLTAGE) / ADC_VREF;
     
     //Sensor Resistance
-    float R_S = ((precalc / measurement) - 1) * R_L;
+    float R_S = ((precalc / measurement) - 1) * LOAD_RESISTANCE;
 //    float R_S = (precalc / (float) (measurement));
 //    R_S -= 1.0;
 //    R_S *= R_L;
+#ifdef PRINT_SENSOR_PARAMETERS
     printf("Sensor Resistance = %f\r\n", R_S);
+#endif
 
     //Compute ratio against R0
-    float ratio = R_S / SENSOR_R0;
+    float ratio = R_S / R_S0;
+#ifdef PRINT_SENSOR_PARAMETERS
     printf("Sensor Ratio (R_S / R_0) = %f\r\n", ratio);
+#endif
     
     //Constants are from a best-fit plot of the provided sensor data
     //PPM = 0.1282 * result^(-3.833)
