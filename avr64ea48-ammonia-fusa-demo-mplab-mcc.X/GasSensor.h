@@ -55,7 +55,7 @@ extern "C" {
     bool GasSensor_calibrate(void);
         
     //Starts and returns the analog value of the gas sensor
-    uint16_t GasSensor_getCurrentValue(void);
+    uint16_t GasSensor_sampleSensor(void);
     
     //Returns the stored reference value
     uint16_t GasSensor_getReferenceValue(void);

@@ -44,7 +44,6 @@ void _initParameters(uint16_t ref)
     printf("R_S0 = %f\r\n", R_S0);
     printf("Alarm Point = %f V (DACREF = 0x%x)\r\n", alarmValue, setPt);
 #endif
-
     
     //Set the new DACREF
     Application_setDACREF(setPt);
@@ -74,6 +73,9 @@ bool GasSensor_isEEPROMValid(void)
 //Write the reference value to EEPROM
 bool GasSensor_writeEEPROM(uint16_t refValue)
 {
+    //Invalidate memory valid flag
+    memValid = false;
+    
     //Write 0x0000 as a placeholder for the Checksum
     if (!Memory_writeEEPROM16(EEPROM_CKSM_H_ADDR, 0x0000))
         return false;
@@ -105,9 +107,6 @@ bool GasSensor_isTripped(void)
         return true;
     }
     
-    //Long-term duration
-    //TODO: Long-term value 
-    
     return false;
 }
 
@@ -115,7 +114,7 @@ bool GasSensor_isTripped(void)
 bool GasSensor_calibrate(void)
 {
     //Get the current value
-    uint16_t result = GasSensor_getCurrentValue();
+    uint16_t result = GasSensor_sampleSensor();
 
     //Write data to EEPROM
     if (!GasSensor_writeEEPROM(result))
@@ -129,7 +128,7 @@ bool GasSensor_calibrate(void)
 }
 
 //Starts and returns the analog value of the gas sensor
-uint16_t GasSensor_getCurrentValue(void)
+uint16_t GasSensor_sampleSensor(void)
 {
     //PD4, AIN4
     return ADC0_GetConversion(ADC_MUXPOS_AIN4_gc);
@@ -155,14 +154,16 @@ uint16_t GasSensor_convertToPPM(uint16_t measurement)
         //If the load resistance is not set (error state), return max PPM
         return UINT16_MAX;
     }
+    else if (!memValid)
+    {
+        //EEPROM memory is currently invalid
+        return UINT16_MAX;
+    }
     
     const float precalc = (ADC_BITS * SENSOR_BIAS_VOLTAGE) / ADC_VREF;
     
     //Sensor Resistance
     float R_S = ((precalc / measurement) - 1) * LOAD_RESISTANCE;
-//    float R_S = (precalc / (float) (measurement));
-//    R_S -= 1.0;
-//    R_S *= R_L;
 #ifdef PRINT_SENSOR_PARAMETERS
     printf("Sensor Resistance = %f\r\n", R_S);
 #endif

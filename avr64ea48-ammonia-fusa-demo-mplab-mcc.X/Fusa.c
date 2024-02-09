@@ -298,7 +298,7 @@ void Fusa_runPeriodicSelfCheck(void)
     asm("WDR");
     
     //Get a new ADC reading from the sensor (blocking!)
-    uint16_t meas = GasSensor_getCurrentValue();
+    uint16_t meas = GasSensor_sampleSensor();
             
 #ifdef VIEW_RAW_ADC
     printf("ADC Result: 0x%x\r\n", meas);

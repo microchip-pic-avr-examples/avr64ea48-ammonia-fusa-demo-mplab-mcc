@@ -137,6 +137,10 @@ flash_address_t FLASH_PageAddressGet(flash_address_t address);
  */
 flash_address_t FLASH_PageOffsetGet(flash_address_t address);
 
+//Below macros are added to provide backward compatibility. These will be deprecated in the future versions.
+#define FLASH_ErasePageAddressGet FLASH_PageAddressGet
+#define FLASH_ErasePageOffsetGet FLASH_PageOffsetGet
+
 
 
 /**
