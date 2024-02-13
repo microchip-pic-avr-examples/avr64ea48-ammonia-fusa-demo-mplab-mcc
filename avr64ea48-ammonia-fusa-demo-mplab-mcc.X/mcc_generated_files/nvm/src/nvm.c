@@ -56,8 +56,8 @@ static inline void FLASH_SpmWriteWord(flash_address_t address, uint16_t data)
 
 void NVM_Initialize(void)
 {    
-    //APPCODEWP disabled; APPDATAWP disabled; BOOTRP disabled; EEWP disabled; FLMAP SECTION0; FLMAPLOCK disabled; 
-    ccp_write_io((void*)&NVMCTRL.CTRLB, 0x0);
+    //APPCODEWP enabled; APPDATAWP disabled; BOOTRP disabled; EEWP disabled; FLMAP SECTION0; FLMAPLOCK disabled; 
+    ccp_write_io((void*)&NVMCTRL.CTRLB, 0x1);
 }
 nvm_status_t NVM_StatusGet(void)
 {

@@ -25,6 +25,15 @@ extern "C" {
     //Interrupt from the PIT (used for periodic self-test)
     void Application_onPITTick(void);
     
+    //Returns true if an hour has ticked
+    bool Application_hasHourTicked(void);
+    
+    //Clear the hour tick flag
+    void Application_clearHourTick(void);
+    
+    //Prints hours remaining in warmup
+    void Application_printHoursRemaining(void);
+    
     //Returns true if sensor is ready
     bool Application_isSensorReady(void);
 

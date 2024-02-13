@@ -43,8 +43,8 @@ int8_t AC1_Initialize(void)
     //DACREF 31; 
     AC1.DACREF = 0x1F;
     
-    //CMP enabled; INTMODE Positive input goes above negative input; 
-    AC1.INTCTRL = 0x31;
+    //CMP disabled; INTMODE Positive input goes above negative input; 
+    AC1.INTCTRL = 0x30;
     
     //INITVAL LOW; INVERT enabled; MUXNEG DAC Reference; MUXPOS Positive Pin 2;   
     AC1.MUXCTRL = 0x94;

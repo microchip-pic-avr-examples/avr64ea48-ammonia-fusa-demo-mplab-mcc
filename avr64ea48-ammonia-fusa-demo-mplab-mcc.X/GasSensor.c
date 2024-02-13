@@ -60,7 +60,6 @@ void GasSensor_initFromEEPROM(void)
 void GasSensor_eraseEEPROM(void)
 {
     Memory_writeEEPROM16(EEPROM_CKSM_H_ADDR, 0xFFFF);
-    Memory_writeEEPROM8(EEPROM_VERSION_ADDR, 0xFF);
     Memory_writeEEPROM16(EEPROM_REF_VALUE_H_ADDR, 0xFFFF);
 }
 
@@ -80,10 +79,6 @@ bool GasSensor_writeEEPROM(uint16_t refValue)
     if (!Memory_writeEEPROM16(EEPROM_CKSM_H_ADDR, 0x0000))
         return false;
     
-    //Write the EEPROM VERSION ID
-    if (!Memory_writeEEPROM8(EEPROM_VERSION_ADDR, EEPROM_VERSION_ID))
-        return false;
-
     //Write the Reference Value
     if (!Memory_writeEEPROM16(EEPROM_REF_VALUE_H_ADDR, refValue))
         return false;

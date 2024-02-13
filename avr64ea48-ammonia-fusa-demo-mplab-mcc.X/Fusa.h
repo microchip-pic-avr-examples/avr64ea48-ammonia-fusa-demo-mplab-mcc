@@ -23,6 +23,10 @@ extern "C" {
     //Runs a self-test of the system on startup
     bool Fusa_runStartupSelfTest(void);
     
+    //Verifies the checksum has been XORed
+    //Required for CRC-32
+    bool Fusa_prepareChecksum(void);
+    
     //Run a CPU test
     bool Fusa_testCPU(void);
     
@@ -40,6 +44,9 @@ extern "C" {
     
     //Gets the 32-bit CRC from memory
     uint32_t Fusa_getChecksumFromPFM(void);
+    
+    //Invalidates the EEPROM
+    void Fusa_invalidateEEPROM(void);
     
     //Runs the periodic self-test of the system
     void Fusa_runPeriodicSelfCheck(void);

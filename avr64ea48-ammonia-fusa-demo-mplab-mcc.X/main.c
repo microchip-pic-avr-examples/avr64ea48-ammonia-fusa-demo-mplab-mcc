@@ -42,6 +42,12 @@ int main(void)
     //Start the sensor heater
     HEATER_SetHigh();
     
+    //Interrupt callback for an hour passing
+    RTC_SetOVFIsrCallback(Application_onHourTick);
+    
+    //Interrupt callback for the PIT
+    RTC_SetPITIsrCallback(Application_onPITTick);
+    
     printf("AVR64EA48 Ammonia Gas Functional Safety Demo\r\n");
     printf("Built %s at %s\r\n\r\n", __DATE__, __TIME__);
     
@@ -51,13 +57,7 @@ int main(void)
     
     //Run system self-test
     Fusa_runStartupSelfTest();
-    
-    //Interrupt callback for an hour passing
-    RTC_SetOVFIsrCallback(Application_onHourTick);
-    
-    //Interrupt callback for the PIT
-    RTC_SetPITIsrCallback(Application_onPITTick);
-    
+        
     //Enable interrupts
     sei();
     
@@ -65,7 +65,7 @@ int main(void)
     Application_clearSelfTestFlag();
     
     while(1)
-    {
+    {        
         //Do we need to self test and clear WDT?
         if (Application_shouldSelfTest())
         {
@@ -74,6 +74,10 @@ int main(void)
             
             //Run periodic self-check
             Fusa_runPeriodicSelfCheck();
+        }
+        else
+        {
+            
         }
     }    
 }

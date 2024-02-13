@@ -8,6 +8,8 @@
 
 static volatile uint8_t warmupHours = 0;
 static volatile bool WDT_ready = false;
+static volatile bool hasHourTicked = false;
+
 
 //Interrupt for an elapsed hour
 void Application_onHourTick(void)
@@ -15,21 +17,38 @@ void Application_onHourTick(void)
     //Increment hours count
     warmupHours++;
     
-    //Print status
-    printf("Warmup time remaining: %d / %d hrs\r\n", warmupHours, WARM_UP_HOURS);
+    hasHourTicked = true;
     
-    //Check to see if sensor is ready
-    if (Application_isSensorReady())
-    {
-        //Disable 1 hour interrupts
-        RTC_DisableOVFInterrupt();
-    }
+//    //Check to see if sensor is ready
+//    if (Application_isSensorReady())
+//    {
+//        //Disable 1 hour interrupts
+//        RTC_DisableOVFInterrupt();
+//    }
 }
 
 //Interrupt from the PIT (used for periodic self-test)
 void Application_onPITTick(void)
 {
     WDT_ready = true;
+}
+
+//Returns true if an hour has ticked
+bool Application_hasHourTicked(void)
+{
+    return hasHourTicked;
+}
+
+//Clear the hour tick flag
+void Application_clearHourTick(void)
+{
+    hasHourTicked = false;
+}
+
+//Prints hours remaining in warmup
+void Application_printHoursRemaining(void)
+{
+    printf("Warmup time remaining: %d / %d hrs\r\n", warmupHours, WARM_UP_HOURS);
 }
 
 //Returns true if sensor is ready

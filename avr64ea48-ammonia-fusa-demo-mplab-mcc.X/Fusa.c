@@ -36,11 +36,11 @@ static volatile const uint32_t flashChecksum __at((CRC_ADDRESS_START)) = 0x87654
 
 static volatile SystemState sysState = SYS_ERROR;
 
-void FLASH_WriteFlashBlock(flash_address_t flash_address, uint8_t *data, size_t size)
+bool _WriteFlashBlock(flash_address_t flash_address, uint8_t *data, size_t size)
 {
-    volatile flash_address_t flashStartPageAddress;
-    volatile uint16_t flashAddressOffset;
-    volatile flash_data_t flashWriteData[PROGMEM_PAGE_SIZE];
+    flash_address_t flashStartPageAddress;
+    uint16_t flashAddressOffset;
+    flash_data_t flashWriteData[PROGMEM_PAGE_SIZE];
 
     //Get the starting address of the page containing the given address
     flashStartPageAddress = FLASH_PageAddressGet(flash_address);
@@ -66,7 +66,7 @@ void FLASH_WriteFlashBlock(flash_address_t flash_address, uint8_t *data, size_t 
     //Erase the entire Flash page
     if (FLASH_PageErase(flashStartPageAddress) == NVM_ERROR)
     {
-        printf("NVM Erase Failure\r\n");
+        return false;
     }
     
     //Wait for Flash Erase to Complete
@@ -77,19 +77,20 @@ void FLASH_WriteFlashBlock(flash_address_t flash_address, uint8_t *data, size_t 
     //Write data to the Flash row
     if (FLASH_RowWrite(flashStartPageAddress, flashWriteData))
     {
-        printf("NVM Write Failure\r\n");
+        return false;
     }
     
     NVM_StatusClear();
     
     //Wait for Flash Write to Complete
     while (FLASH_IsBusy());
+    
+    return true;
 }
 
 //Runs a self-test of the system
 bool Fusa_runStartupSelfTest(void)
 {
-    printf("\r\nFlash Memory Checksum = 0x%lx\r\n", Fusa_getChecksumFromPFM());
     printf("\r\nRunning Self Test\r\n");
     
     //Run the buzzer during self-test
@@ -99,6 +100,27 @@ bool Fusa_runStartupSelfTest(void)
     //If an error occurs, then it will be moved to ERROR
     //If in INIT at the end of this function, then it will be moved to warm-up
     sysState = SYS_INIT;
+    
+    if (SW0_GetValue())
+    {
+        //Erase requested by user
+        GasSensor_eraseEEPROM();
+        Fusa_invalidateEEPROM();
+                
+        printf("ERASED\r\n");
+    }
+
+    
+    printf("Checksum...");
+    if (Fusa_prepareChecksum())
+        printf(PASS_STRING);
+    else
+    {
+        printf(FAIL_STRING);
+        sysState = SYS_ERROR;
+    }
+    
+    printf("Flash Memory Checksum = 0x%lx\r\n\r\n", Fusa_getChecksumFromPFM());
     
     //Check CPU
     printf("Testing CPU...");
@@ -132,14 +154,7 @@ bool Fusa_runStartupSelfTest(void)
         
     //Check EEPROM for valid constants
     printf("Calibration data...");
-    if (SW0_GetValue())
-    {
-        //Erase requested by user
-        GasSensor_eraseEEPROM();
-        
-        printf("ERASED\r\n");
-    }
-    else if (Fusa_testEEPROM())
+    if (Fusa_testEEPROM())
     {        
         //Init R_L constant from EEPROM
         GasSensor_initFromEEPROM();
@@ -193,6 +208,30 @@ bool Fusa_runStartupSelfTest(void)
     }
     
     return false;
+}
+
+//Verifies the checksum has been XORed
+//Required for CRC-32
+bool Fusa_prepareChecksum(void)
+{
+    if (Memory_readEEPROM8(EEPROM_VERSION_ADDR) != EEPROM_VERSION_ID)
+    {
+        //Write the EEPROM Version ID
+        if (!Memory_writeEEPROM8(EEPROM_VERSION_ADDR, EEPROM_VERSION_ID))
+            return false;
+        
+        uint32_t sum = Fusa_getChecksumFromPFM() ^ 0xFFFFFFFF;
+    
+        uint8_t b[4];
+        b[3] = (uint8_t) ((sum & 0xFF000000) >> 24);
+        b[2] = (uint8_t) ((sum & 0x00FF0000) >> 16);
+        b[1] = (uint8_t) ((sum & 0x0000FF00) >> 8);
+        b[0] = (uint8_t) ((sum & 0x000000FF));
+
+        return _WriteFlashBlock(CRC_ADDRESS_START, b, 4);
+    }
+    
+    return true;
 }
 
 //Run a CPU test
@@ -290,17 +329,6 @@ bool Fusa_testAC(void)
 //Run a memory self-check
 bool Fusa_testMemory(void)
 {    
-    uint32_t sum = Fusa_getChecksumFromPFM() ^ 0xFFFFFFFF;
-    
-    uint8_t b[4];
-    b[3] = (uint8_t) ((sum & 0xFF000000) >> 24);
-    b[2] = (uint8_t) ((sum & 0x00FF0000) >> 16);
-    b[1] = (uint8_t) ((sum & 0x0000FF00) >> 8);
-    b[0] = (uint8_t) ((sum & 0x000000FF));
-    
-    FLASH_WriteFlashBlock(CRC_ADDRESS_START, b, 4);
-    
-    printf("New Checksum from PFM: 0x%lx\r\n", Fusa_getChecksumFromPFM());
     
     return Application_runCRC();
 }
@@ -351,6 +379,13 @@ uint32_t Fusa_getChecksumFromPFM(void)
     return sum;
 }
     
+//Invalidates the EEPROM
+void Fusa_invalidateEEPROM(void)
+{
+    Memory_writeEEPROM8(EEPROM_VERSION_ADDR, 0xFF);
+    Memory_writeEEPROM8(EEPROM_CKSM_H_ADDR, 0xFFFF);
+}
+
 //Runs the periodic self-test of the system
 void Fusa_runPeriodicSelfCheck(void)
 {
@@ -386,6 +421,18 @@ void Fusa_runPeriodicSelfCheck(void)
                     //Calibration Required
                     printf("Calibration data not found. Press SW0 to set new zero-point.\r\n");
                     sysState = SYS_CALIBRATE;
+                }
+            }
+            else
+            {
+                //Has an hour elapsed?
+                if (Application_hasHourTicked())
+                {
+                    //Clear flag
+                    Application_clearHourTick();
+                    
+                    //Print message
+                    Application_printHoursRemaining();
                 }
             }
             
