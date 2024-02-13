@@ -98,3 +98,27 @@ void Application_setDACREF(uint8_t val)
     //Re-enable Interrupts
     AC1.INTCTRL |= AC_CMP_bm;
 }
+
+//Runs a CRC Scan (Blocking)
+//Returns true if successful 
+bool Application_runCRC(void)
+{
+    //Reset the CRC
+    CRCSCAN.CTRLA |= CRCSCAN_RESET_bm;
+    NOP();
+    
+    //Enable the CRC
+    CRCSCAN.CTRLA |= CRCSCAN_ENABLE_bm;
+    
+    //Wait for busy to clear
+    while (CRCSCAN.STATUS & CRCSCAN_BUSY_bm);
+    
+    //Get OK bit
+    return (bool) ((CRCSCAN.STATUS & CRCSCAN_OK_bm) >> CRCSCAN_OK_bp);
+}
+
+//Returns the VLM Status
+bool Application_getVLMStatus(void)
+{
+    return (BOD.STATUS & BOD_VLMS_bm);
+}

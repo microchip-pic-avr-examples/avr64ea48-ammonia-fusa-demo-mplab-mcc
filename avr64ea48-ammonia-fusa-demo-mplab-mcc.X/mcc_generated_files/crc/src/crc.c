@@ -45,8 +45,8 @@ int8_t CRC_Initialize(void)
     //SRC CRC on entire flash; 
     CRCSCAN.CTRLB = 0x0;
 
-    //ENABLE enabled; NMIEN disabled; RESET disabled; 
-    CRCSCAN.CTRLA = 0x1;
+    //ENABLE disabled; NMIEN disabled; RESET disabled; 
+    CRCSCAN.CTRLA = 0x0;
 
     return 0;
 }

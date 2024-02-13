@@ -15,22 +15,76 @@
 #define PASS_STRING "OK\r\n"
 #define FAIL_STRING "FAIL\r\n"
 
+#define CRC_ADDRESS_START 0xFFFC
+
 #ifndef TEST_CHECKSUM
 /* This is the checksum used for the system memory
  * CRC-32 at end of Application Memory
  * Inserted by the compiler at runtime
  * Note: __at is in bytes, not words */
-extern const uint32_t flashChecksum __at((0xFFFC));
+extern const uint32_t flashChecksum __at((CRC_ADDRESS_START));
 
 #else
 /*
  * This is a checksum used for testing ONLY
+ * Little Endian Order - Highest byte is the last byte
  */
-static volatile const uint32_t flashChecksum __at((0xFFFC)) = 0x12345678;
+static volatile const uint32_t flashChecksum __at((CRC_ADDRESS_START)) = 0x87654321;
+
 
 #endif
 
 static volatile SystemState sysState = SYS_ERROR;
+
+void FLASH_WriteFlashBlock(flash_address_t flash_address, uint8_t *data, size_t size)
+{
+    volatile flash_address_t flashStartPageAddress;
+    volatile uint16_t flashAddressOffset;
+    volatile flash_data_t flashWriteData[PROGMEM_PAGE_SIZE];
+
+    //Get the starting address of the page containing the given address
+    flashStartPageAddress = FLASH_PageAddressGet(flash_address);
+
+    //Read entire row
+    for (flashAddressOffset = 0; flashAddressOffset < PROGMEM_PAGE_SIZE; flashAddressOffset++)
+    {
+        flashWriteData[flashAddressOffset] = FLASH_Read(flashStartPageAddress + flashAddressOffset);
+    }
+
+    //Get offset from the starting address of the page
+    flashAddressOffset = FLASH_PageOffsetGet(flash_address);
+
+    //Update data of required size
+    for (uint8_t i=0; i<size; i++)
+    {
+        flashWriteData[flashAddressOffset + i] = *(data+ i);
+    }
+
+    //Wait for any pending operations
+    while (FLASH_IsBusy());
+    
+    //Erase the entire Flash page
+    if (FLASH_PageErase(flashStartPageAddress) == NVM_ERROR)
+    {
+        printf("NVM Erase Failure\r\n");
+    }
+    
+    //Wait for Flash Erase to Complete
+    while (FLASH_IsBusy());
+    
+    NVM_StatusClear();
+
+    //Write data to the Flash row
+    if (FLASH_RowWrite(flashStartPageAddress, flashWriteData))
+    {
+        printf("NVM Write Failure\r\n");
+    }
+    
+    NVM_StatusClear();
+    
+    //Wait for Flash Write to Complete
+    while (FLASH_IsBusy());
+}
 
 //Runs a self-test of the system
 bool Fusa_runStartupSelfTest(void)
@@ -236,11 +290,19 @@ bool Fusa_testAC(void)
 //Run a memory self-check
 bool Fusa_testMemory(void)
 {    
-    //TODO - Run CRC Scan
-    //Returned value should be 0 if CRC is valid, so no need to compare
+    uint32_t sum = Fusa_getChecksumFromPFM() ^ 0xFFFFFFFF;
     
-    asm("NOP");
-    return false;
+    uint8_t b[4];
+    b[3] = (uint8_t) ((sum & 0xFF000000) >> 24);
+    b[2] = (uint8_t) ((sum & 0x00FF0000) >> 16);
+    b[1] = (uint8_t) ((sum & 0x0000FF00) >> 8);
+    b[0] = (uint8_t) ((sum & 0x000000FF));
+    
+    FLASH_WriteFlashBlock(CRC_ADDRESS_START, b, 4);
+    
+    printf("New Checksum from PFM: 0x%lx\r\n", Fusa_getChecksumFromPFM());
+    
+    return Application_runCRC();
 }
 
 //Run a checksum of the EEPROM
@@ -269,24 +331,22 @@ bool Fusa_testEEPROM(void)
 //Gets the 32-bit CRC from memory
 uint32_t Fusa_getChecksumFromPFM(void)
 {
-    uint32_t sum;
-    
-    uint32_t addr = 0xFFFC;
-    
-    //Top Byte
-    sum = FLASH_Read(addr + 3);
-    sum <<= 8;
-    
-    //Upper Byte
-    sum |= FLASH_Read(addr + 2);
-    sum <<= 8;
-    
-    //High Byte
-    sum |= FLASH_Read(addr + 1);
-    sum <<= 8;
+    uint32_t addr = CRC_ADDRESS_START;
     
     //Low Byte
-    sum |= FLASH_Read(addr);
+    uint32_t sum = (uint32_t) FLASH_Read(addr);
+    addr++;
+    
+    //High Byte
+    sum |= ((uint32_t) FLASH_Read(addr)) << 8;
+    addr++;
+    
+    //Upper Byte
+    sum |= ((uint32_t) FLASH_Read(addr)) << 16;
+    addr++;
+    
+    //Top Byte
+    sum |= ((uint32_t) FLASH_Read(addr)) << 24;
     
     return sum;
 }

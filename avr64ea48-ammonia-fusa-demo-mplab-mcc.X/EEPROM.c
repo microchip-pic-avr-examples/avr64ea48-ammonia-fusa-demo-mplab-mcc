@@ -5,23 +5,39 @@
 
 #include <avr/io.h>
 
-#include "mcc_generated_files/nvm/nvm.h"
+#include "mcc_generated_files/system/system.h"
 
 //Writes and verifies a byte to the EEPROM. Returns true if successful
 bool Memory_writeEEPROM8(uint16_t addr, uint8_t data)
 {
+    //Check to see if VDD is OK
+    //If VLM is 1, then we are below threshold
+//    if (Application_getVLMStatus())
+//    {
+//        printf("BOD = 0x%x\r\n", BOD.STATUS);
+//        return false;
+//    }
+    
     //Address is out of bounds
     if (addr >= EEPROM_SIZE)
     {
+        printf("ADDR\r\n");
         return false;
     }
+   
+    //Check for a pending operation
+    while (EEPROM_IsBusy());
     
-        //Write the byte
+    //Clear any prev. errors
+    NVM_StatusClear();
+    
+    //Write the byte
     nvm_status_t status = EEPROM_Write(addr, data);
     
     //Did an error occur?
     if (status == NVM_ERROR)
     {
+        printf("NVM_ERROR\r\n");
         return false;
     }
     
@@ -31,6 +47,7 @@ bool Memory_writeEEPROM8(uint16_t addr, uint8_t data)
     //Verify write
     if (EEPROM_Read(addr) != data)
     {
+        printf("VERIFY\r\n");
         return false;
     }
     

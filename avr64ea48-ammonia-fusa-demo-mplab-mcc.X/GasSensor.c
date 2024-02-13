@@ -118,7 +118,10 @@ bool GasSensor_calibrate(void)
 
     //Write data to EEPROM
     if (!GasSensor_writeEEPROM(result))
+    {
+        printf("An error occurred when writing EEPROM.\r\n");
         return false;
+    }
         
     //Compute R_L and DACREF
     _initParameters(result);

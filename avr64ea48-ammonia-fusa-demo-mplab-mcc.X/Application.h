@@ -47,6 +47,13 @@ extern "C" {
     //Disables AC1 interrupt, updates value, waits, then re-enables
     void Application_setDACREF(uint8_t val);
     
+    //Runs a CRC Scan (Blocking)
+    //Returns true if successful 
+    bool Application_runCRC(void);
+    
+    //Returns the VLM Status
+    bool Application_getVLMStatus(void);
+    
 #ifdef	__cplusplus
 }
 #endif

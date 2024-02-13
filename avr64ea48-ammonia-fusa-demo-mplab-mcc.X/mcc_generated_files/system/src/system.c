@@ -36,8 +36,6 @@
 
 int8_t BOD_Initialize();
 
-int8_t WDT_Initialize();
-
 void SYSTEM_Initialize(void)
 {
     CLOCK_Initialize();
@@ -53,24 +51,23 @@ void SYSTEM_Initialize(void)
     TCB0_Initialize();
     USART1_Initialize();
     VREF_Initialize();
-    WDT_Initialize();
     CPUINT_Initialize();
 }
 
 int8_t BOD_Initialize()
 {
     //SLEEP Enabled in continuous mode; 
-    ccp_write_io((void*)&(BOD.CTRLA),0x1);
+    ccp_write_io((void*)&(BOD.CTRLA),0x5);
     //
-    BOD.CTRLB = 0x0;
+    BOD.CTRLB = 0x1;
     //VLMCFG VDD falls below VLM threshold; VLMIE disabled; 
     BOD.INTCTRL = 0x0;
     //VLMIF disabled; 
     BOD.INTFLAGS = 0x0;
     //
     BOD.STATUS = 0x0;
-    //VLMLVL VLM Disabled; 
-    BOD.VLMCTRLA = 0x0;
+    //VLMLVL VLM threshold 15% above BOD level; 
+    BOD.VLMCTRLA = 0x2;
 
     return 0;
 }
@@ -82,17 +79,4 @@ ISR(BOD_VLM_vect)
 	/* The interrupt flag has to be cleared manually */
 	BOD.INTFLAGS = BOD_VLMIE_bm;
 }
-
-int8_t WDT_Initialize()
-{
-    //PERIOD 1K cycles (1.0s); WINDOW 256 cycles (0.256s); 
-    ccp_write_io((void*)&(WDT.CTRLA),0x68);
-    
-    //LOCK enabled; 
-    ccp_write_io((void*)&(WDT.STATUS),0x80);
-    
-
-    return 0;
-}
-
 

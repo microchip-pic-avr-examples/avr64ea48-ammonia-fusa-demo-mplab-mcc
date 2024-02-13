@@ -42,6 +42,37 @@ typedef uint8_t eeprom_data_t;
  */
 typedef uint16_t eeprom_address_t;
 
+/**
+ * @ingroup nvm_driver
+ * @def NRWW_SECTION
+ * This is the macro used to define nrww flash segment.
+ * In order to keep all Flash function in a nrww segment, \n
+ * User must use NRWW_SECTION attribute in its declaration.
+ * e.g. If user wants to keep Flash_Read api in rww segment,
+ *  - NRWW_SECTION flash_data_t FLASH_Read(flash_address_t address);
+ * User must allocate desired address to <b>.nrww</b> named section using appropriate linker setting. \n
+ * e.g. If user wants to keep Flash functions at 0x1000, \n
+ * - For XC8: \n
+ *   -# Go to Project Properties -> XC8 Global Options -> XC8 Linker -> Linker Additional Options \n
+ *   -# Add "-Wl,--section-start=.nrww=0x1000" \n
+ */
+#define NRWW_SECTION __attribute__((noinline, used, section(".nrww")))
+
+/**
+ * @ingroup nvm_driver
+ * @def RWW_SECTION
+ * This is the macro used to define rww flash segment.
+ * In order to keep Flash function in a rww segment, \n
+ * User must use RWW_SECTION attribute in its declaration.
+ * e.g. If user wants to keep Flash_Read api in rww segment,
+ *  - RWW_SECTION flash_data_t FLASH_Read(flash_address_t address);
+ * Also User must allocate desired address to <b>.rww</b> named section using appropriate linker setting. \n
+ * e.g. If user wants to keep Flash functions at 0x2000, \n
+ * - For XC8: \n
+ *   -# Go to Project Properties -> XC8 Global Options -> XC8 Linker -> Linker Additional Options \n
+ *   -# Add "-Wl,--section-start=.rww=0x2000" \n
+ */
+#define RWW_SECTION __attribute__((noinline, used, section(".rww")))
 
 
 /**
@@ -61,6 +92,7 @@ typedef enum {
  * @param None.
  * @return None.
  */
+NRWW_SECTION
 void NVM_Initialize(void);
 
 /**
@@ -70,6 +102,7 @@ void NVM_Initialize(void);
  * @retval NVM_OK - The NVM operation succeeded
  * @retval NVM_ERROR - The NVM operation failed
  */
+NRWW_SECTION
 nvm_status_t NVM_StatusGet(void);
 
 /**
@@ -78,6 +111,7 @@ nvm_status_t NVM_StatusGet(void);
  * @param None.
  * @retval None.
  */
+NRWW_SECTION
 void NVM_StatusClear(void);
 
 
@@ -88,6 +122,7 @@ void NVM_StatusClear(void);
  * @param [in] address - Address of the Flash location where data read from.
  * @return Byte read from the given Flash address.
  */
+NRWW_SECTION
 flash_data_t FLASH_Read(flash_address_t address);
 
 /**
@@ -100,6 +135,7 @@ flash_data_t FLASH_Read(flash_address_t address);
  * @param [in] *dataBuffer - Pointer to a buffer which holds the data to be written.
  * @return Status of the Flash row Write operation as described in @ref nvm_status_t.
  */
+NRWW_SECTION
 nvm_status_t FLASH_RowWrite(flash_address_t address, flash_data_t *dataBuffer);
 
 /**
@@ -109,6 +145,7 @@ nvm_status_t FLASH_RowWrite(flash_address_t address, flash_data_t *dataBuffer);
  * @param [in] address - Starting address of the Flash page to be erased.
  * @return Status of the Flash Page Erase operation as described in the @ref nvm_status_t.
  */
+NRWW_SECTION
 nvm_status_t FLASH_PageErase(flash_address_t address);
 
 /**
@@ -119,6 +156,7 @@ nvm_status_t FLASH_PageErase(flash_address_t address);
  * @retval True - The Flash operation is being performed.
  * @retval False - The Flash operation is not being performed.
  */
+NRWW_SECTION
 bool FLASH_IsBusy(void);
 
 /**
@@ -135,6 +173,7 @@ flash_address_t FLASH_PageAddressGet(flash_address_t address);
  * @param [in] address - Flash address for which the offset from the starting address of the page will be obtained.
  * @return Offset of the given address from the starting address of the page.
  */
+NRWW_SECTION
 flash_address_t FLASH_PageOffsetGet(flash_address_t address);
 
 //Below macros are added to provide backward compatibility. These will be deprecated in the future versions.
