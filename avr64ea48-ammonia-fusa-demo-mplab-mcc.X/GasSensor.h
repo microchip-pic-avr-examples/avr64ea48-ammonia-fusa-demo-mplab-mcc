@@ -11,9 +11,13 @@ extern "C" {
 //Prints the measured sensor parameters
 #define PRINT_SENSOR_PARAMETERS
     
-//This is the alarm threshold
+//This is the alarm HIGH threshold
 //Set to the 50 ppm point on the MQ-137 response curve
-#define ALARM_THRESHOLD 0.205
+#define ALARM_THRESHOLD_HIGH 0.205
+    
+//This is the alarm LOW threshold
+//Set to the 30 ppm point on the MQ-137 response curve
+#define ALARM_THRESHOLD_LOW 0.240
     
 //This is the load resistance
 #define LOAD_RESISTANCE 100.0
@@ -30,7 +34,7 @@ extern "C" {
 #define ADC_BITS 4096
 
 //This is the sensor resistance at the alarm point
-#define SENSOR_ALARM_R0 (SENSOR_R0 * ALARM_THRESHOLD)
+#define SENSOR_ALARM_R0 (SENSOR_R0 * ALARM_THRESHOLD_HIGH)
     
 //Logic for the gas sensor
 #define GAS_SENSOR_LOGIC_TRIPPED false
@@ -41,6 +45,12 @@ extern "C" {
     
     //Erases the EEPROM
     void GasSensor_eraseEEPROM(void);
+    
+    //Sets the sensor to the low range
+    void GasSensor_setThresholdLow(void);
+    
+    //Sets the sensor to the high range
+    void GasSensor_setThresholdHigh(void);
     
     //Returns true if the EEPROM is valid
     bool GasSensor_isEEPROMValid(void);

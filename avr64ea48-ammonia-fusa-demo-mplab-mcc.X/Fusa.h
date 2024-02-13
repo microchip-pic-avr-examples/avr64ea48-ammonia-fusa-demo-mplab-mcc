@@ -17,7 +17,7 @@ extern "C" {
     
     typedef enum {
         SYS_ERROR = -1, SYS_INIT = 0, SYS_WARMUP, 
-        SYS_CALIBRATE, SYS_MONITOR, SYS_TEST, SYS_ALARM
+        SYS_CALIBRATE, SYS_MONITOR, SYS_SELF_TEST, SYS_ALARM_TEST, SYS_ALARM
     } SystemState;
     
     //Runs a self-test of the system on startup

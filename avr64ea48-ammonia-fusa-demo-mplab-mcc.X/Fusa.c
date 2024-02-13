@@ -264,7 +264,7 @@ bool Fusa_testAC(void)
     SystemState prevState = sysState;
     
     //Switch to test state
-    sysState = SYS_TEST;
+    sysState = SYS_SELF_TEST;
     
     //Switch AC0 Input
     Application_connectToDAC();
@@ -383,7 +383,7 @@ uint32_t Fusa_getChecksumFromPFM(void)
 void Fusa_invalidateEEPROM(void)
 {
     Memory_writeEEPROM8(EEPROM_VERSION_ADDR, 0xFF);
-    Memory_writeEEPROM8(EEPROM_CKSM_H_ADDR, 0xFFFF);
+    Memory_writeEEPROM16(EEPROM_CKSM_H_ADDR, 0xFFFF);
 }
 
 //Runs the periodic self-test of the system
@@ -414,7 +414,17 @@ void Fusa_runPeriodicSelfCheck(void)
                 if (GasSensor_isEEPROMValid())
                 {
                     //Ready to begin active monitoring
-                    sysState = SYS_MONITOR;
+                    
+                    //If the alarm is active, jump to alarm
+                    if (GasSensor_isTripped())
+                    {
+                        GasSensor_setThresholdLow();
+                        sysState = SYS_ALARM;
+                    }
+                    else
+                    {
+                        sysState = SYS_MONITOR;
+                    }
                 }
                 else
                 {
@@ -458,6 +468,7 @@ void Fusa_runPeriodicSelfCheck(void)
                     //If the alarm is active, jump to alarm
                     if (GasSensor_isTripped())
                     {
+                        GasSensor_setThresholdLow();
                         sysState = SYS_ALARM;
                     }
                     else
@@ -488,6 +499,9 @@ void Fusa_runPeriodicSelfCheck(void)
             //Did the alarm activate?
             if (GasSensor_isTripped())
             {
+                //Switch to low threshold
+                GasSensor_setThresholdLow();
+                
                 printf("Alarm is tripped!\r\n");
                 sysState = SYS_ALARM;
             }
@@ -512,6 +526,9 @@ void Fusa_runPeriodicSelfCheck(void)
             //Did the alarm go off?
             if (!GasSensor_isTripped())
             {
+                //Move to higher threshold to re-arm
+                GasSensor_setThresholdHigh();
+                
                 printf("Alarm has cleared!\r\n");
                 sysState = SYS_MONITOR;
             }
@@ -520,7 +537,7 @@ void Fusa_runPeriodicSelfCheck(void)
         }
         case SYS_ERROR:
         case SYS_INIT:
-        case SYS_TEST:
+        case SYS_SELF_TEST:
         default:
         {
             //Bad States

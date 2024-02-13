@@ -12,6 +12,8 @@
 static float R_S0 = 0.0;
 static bool memValid = false;
 
+static uint8_t alarmHighVal, alarmLowVal;
+
 void _initParameters(uint16_t ref)
 {
     //Pre-calculate ADC constant for R_L
@@ -25,28 +27,42 @@ void _initParameters(uint16_t ref)
     R_S0 = R_L * ((K / ref) - 1);
         
     //Alarm trigger voltage (DACREF)
-    float alarmValue = (R_L / (R_L + (R_S0 * ALARM_THRESHOLD))) * SENSOR_BIAS_VOLTAGE;
+    float alarmValueHigh = (R_L / (R_L + (R_S0 * ALARM_THRESHOLD_HIGH))) * SENSOR_BIAS_VOLTAGE;
+    float alarmValueLow = (R_L / (R_L + (R_S0 * ALARM_THRESHOLD_LOW))) * SENSOR_BIAS_VOLTAGE;
     
     //Volts per bit resolution of DACREF
     const float DACREF_SENSITIVITY = DACREF_VREF / DACREF_BITS;
     
     //DACREF setpoint
-    uint16_t setPt = round(alarmValue / DACREF_SENSITIVITY);
+    uint16_t setPtHigh = round(alarmValueHigh / DACREF_SENSITIVITY);
+    uint16_t setPtLow = round(alarmValueLow / DACREF_SENSITIVITY);
     
     //If bigger than the max allowed
-    if (setPt > UINT8_MAX)
+    if (setPtHigh > UINT8_MAX)
     {
-        printf("WARNING: Clipping DACREF at maximum.\r\n");
-        setPt = 0xFF;
+        printf("WARNING: setPtHigh, DACREF at maximum.\r\n");
+        setPtHigh = 0xFF;
+    }
+    
+    //If bigger than the max allowed
+    if (setPtLow > UINT8_MAX)
+    {
+        printf("WARNING: setPtLow, DACREF at maximum.\r\n");
+        setPtLow = 0xFF;
     }
     
 #ifdef PRINT_SENSOR_PARAMETERS
     printf("R_S0 = %f\r\n", R_S0);
-    printf("Alarm Point = %f V (DACREF = 0x%x)\r\n", alarmValue, setPt);
+    printf("Alarm Point High = %f V (DACREF = 0x%x)\r\n", alarmValueHigh, setPtHigh);
+    printf("Alarm Point Low = %f V (DACREF = 0x%x)\r\n", alarmValueLow, setPtLow);
 #endif
     
-    //Set the new DACREF
-    Application_setDACREF(setPt);
+    //Store the DAC values
+    alarmHighVal = (uint8_t) setPtHigh;
+    alarmLowVal = (uint8_t) setPtLow;
+    
+    //Default to the high threshold
+    GasSensor_setThresholdHigh();
 }
 
 //Initialize the constants and parameters for the sensor
@@ -61,6 +77,20 @@ void GasSensor_eraseEEPROM(void)
 {
     Memory_writeEEPROM16(EEPROM_CKSM_H_ADDR, 0xFFFF);
     Memory_writeEEPROM16(EEPROM_REF_VALUE_H_ADDR, 0xFFFF);
+}
+
+//Sets the sensor to the low range
+void GasSensor_setThresholdLow(void)
+{
+    //Set the new DACREF
+    Application_setDACREF(alarmLowVal);
+}
+    
+//Sets the sensor to the high range
+void GasSensor_setThresholdHigh(void)
+{
+    //Set the new DACREF
+    Application_setDACREF(alarmHighVal);
 }
 
 //Returns true if the EEPROM is valid
