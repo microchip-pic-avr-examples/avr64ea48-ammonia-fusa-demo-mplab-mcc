@@ -40,6 +40,11 @@ static void (*UART_TX_InterruptHandler)(void);
 static void (*AMMONIA_OUT_InterruptHandler)(void);
 static void (*IO_DAC_TEST_InterruptHandler)(void);
 static void (*SW0_InterruptHandler)(void);
+static void (*T4OUT_InterruptHandler)(void);
+static void (*T1OUT_InterruptHandler)(void);
+static void (*TINT_InterruptHandler)(void);
+static void (*T2OUT_InterruptHandler)(void);
+static void (*T3OUT_InterruptHandler)(void);
 static void (*LED0_InterruptHandler)(void);
 static void (*HEATER_InterruptHandler)(void);
 
@@ -95,7 +100,7 @@ void PIN_MANAGER_Initialize()
     PORTD.PIN6CTRL = 0x4;
     PORTD.PIN7CTRL = 0x0;
     PORTE.PIN0CTRL = 0x0;
-    PORTE.PIN1CTRL = 0x0;
+    PORTE.PIN1CTRL = 0x2;
     PORTE.PIN2CTRL = 0x0;
     PORTE.PIN3CTRL = 0x0;
     PORTE.PIN4CTRL = 0x0;
@@ -137,6 +142,11 @@ void PIN_MANAGER_Initialize()
     AMMONIA_OUT_SetInterruptHandler(AMMONIA_OUT_DefaultInterruptHandler);
     IO_DAC_TEST_SetInterruptHandler(IO_DAC_TEST_DefaultInterruptHandler);
     SW0_SetInterruptHandler(SW0_DefaultInterruptHandler);
+    T4OUT_SetInterruptHandler(T4OUT_DefaultInterruptHandler);
+    T1OUT_SetInterruptHandler(T1OUT_DefaultInterruptHandler);
+    TINT_SetInterruptHandler(TINT_DefaultInterruptHandler);
+    T2OUT_SetInterruptHandler(T2OUT_DefaultInterruptHandler);
+    T3OUT_SetInterruptHandler(T3OUT_DefaultInterruptHandler);
     LED0_SetInterruptHandler(LED0_DefaultInterruptHandler);
     HEATER_SetInterruptHandler(HEATER_DefaultInterruptHandler);
 }
@@ -220,6 +230,71 @@ void SW0_DefaultInterruptHandler(void)
     // or set custom function using SW0_SetInterruptHandler()
 }
 /**
+  Allows selecting an interrupt handler for T4OUT at application runtime
+*/
+void T4OUT_SetInterruptHandler(void (* interruptHandler)(void)) 
+{
+    T4OUT_InterruptHandler = interruptHandler;
+}
+
+void T4OUT_DefaultInterruptHandler(void)
+{
+    // add your T4OUT interrupt custom code
+    // or set custom function using T4OUT_SetInterruptHandler()
+}
+/**
+  Allows selecting an interrupt handler for T1OUT at application runtime
+*/
+void T1OUT_SetInterruptHandler(void (* interruptHandler)(void)) 
+{
+    T1OUT_InterruptHandler = interruptHandler;
+}
+
+void T1OUT_DefaultInterruptHandler(void)
+{
+    // add your T1OUT interrupt custom code
+    // or set custom function using T1OUT_SetInterruptHandler()
+}
+/**
+  Allows selecting an interrupt handler for TINT at application runtime
+*/
+void TINT_SetInterruptHandler(void (* interruptHandler)(void)) 
+{
+    TINT_InterruptHandler = interruptHandler;
+}
+
+void TINT_DefaultInterruptHandler(void)
+{
+    // add your TINT interrupt custom code
+    // or set custom function using TINT_SetInterruptHandler()
+}
+/**
+  Allows selecting an interrupt handler for T2OUT at application runtime
+*/
+void T2OUT_SetInterruptHandler(void (* interruptHandler)(void)) 
+{
+    T2OUT_InterruptHandler = interruptHandler;
+}
+
+void T2OUT_DefaultInterruptHandler(void)
+{
+    // add your T2OUT interrupt custom code
+    // or set custom function using T2OUT_SetInterruptHandler()
+}
+/**
+  Allows selecting an interrupt handler for T3OUT at application runtime
+*/
+void T3OUT_SetInterruptHandler(void (* interruptHandler)(void)) 
+{
+    T3OUT_InterruptHandler = interruptHandler;
+}
+
+void T3OUT_DefaultInterruptHandler(void)
+{
+    // add your T3OUT interrupt custom code
+    // or set custom function using T3OUT_SetInterruptHandler()
+}
+/**
   Allows selecting an interrupt handler for LED0 at application runtime
 */
 void LED0_SetInterruptHandler(void (* interruptHandler)(void)) 
@@ -296,6 +371,14 @@ ISR(PORTD_PORT_vect)
     {
        IO_DAC_TEST_InterruptHandler(); 
     }
+    if(VPORTD.INTFLAGS & PORT_INT2_bm)
+    {
+       T4OUT_InterruptHandler(); 
+    }
+    if(VPORTD.INTFLAGS & PORT_INT7_bm)
+    {
+       T1OUT_InterruptHandler(); 
+    }
     if(VPORTD.INTFLAGS & PORT_INT0_bm)
     {
        HEATER_InterruptHandler(); 
@@ -306,6 +389,19 @@ ISR(PORTD_PORT_vect)
 
 ISR(PORTE_PORT_vect)
 { 
+    // Call the interrupt handler for the callback registered at runtime
+    if(VPORTE.INTFLAGS & PORT_INT0_bm)
+    {
+       TINT_InterruptHandler(); 
+    }
+    if(VPORTE.INTFLAGS & PORT_INT1_bm)
+    {
+       T2OUT_InterruptHandler(); 
+    }
+    if(VPORTE.INTFLAGS & PORT_INT3_bm)
+    {
+       T3OUT_InterruptHandler(); 
+    }
     /* Clear interrupt flags */
     VPORTE.INTFLAGS = 0xff;
 }

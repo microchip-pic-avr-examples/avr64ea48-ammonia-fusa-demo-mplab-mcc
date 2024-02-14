@@ -25,6 +25,9 @@ extern "C" {
     //Interrupt from the PIT (used for periodic self-test)
     void Application_onPITTick(void);
     
+    //Reset the device
+    void Application_reset(void);
+    
     //Returns true if an hour has ticked
     bool Application_hasHourTicked(void);
     

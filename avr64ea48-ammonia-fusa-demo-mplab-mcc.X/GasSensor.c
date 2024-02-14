@@ -51,7 +51,7 @@ void _initParameters(uint16_t ref)
         setPtLow = 0xFF;
     }
     
-#ifdef PRINT_SENSOR_PARAMETERS
+#ifdef PRINT_SENSOR_INIT_DATA
     printf("R_S0 = %f\r\n", R_S0);
     printf("Alarm Point High = %f V (DACREF = 0x%x)\r\n", alarmValueHigh, setPtHigh);
     printf("Alarm Point Low = %f V (DACREF = 0x%x)\r\n", alarmValueLow, setPtLow);
@@ -199,7 +199,7 @@ uint16_t GasSensor_convertToPPM(uint16_t measurement)
     //Compute ratio against R0
     float ratio = R_S / R_S0;
 #ifdef PRINT_SENSOR_PARAMETERS
-    printf("Sensor Ratio (R_S / R_0) = %f\r\n", ratio);
+    printf("Sensor Ratio (R_S / R_0) = %f\r\n\r\n", ratio);
 #endif
     
     //Constants are from a best-fit plot of the provided sensor data

@@ -11,6 +11,9 @@ extern "C" {
 //Prints the measured sensor parameters
 #define PRINT_SENSOR_PARAMETERS
     
+//Prints the sensor constants
+//#define PRINT_SENSOR_INIT_DATA
+    
 //This is the alarm HIGH threshold
 //Set to the 50 ppm point on the MQ-137 response curve
 #define ALARM_THRESHOLD_HIGH 0.205

@@ -7,6 +7,8 @@ extern "C" {
     
 #include <stdint.h>
 #include <stdbool.h>
+
+#include "mcc_generated_files/system/pins.h"
     
 //How many bits above/below the DACREF should we test at 
 //Note - DAC0 is 10-bit, DACREF is 8-bit, so 4 bits at DAC0 = 1 bit at DACREF
@@ -15,9 +17,11 @@ extern "C" {
 //If set, raw ADC values are printed
 //#define VIEW_RAW_ADC
     
+#define TEST_BUTTON_GetValue T1OUT_GetValue
+    
     typedef enum {
         SYS_ERROR = -1, SYS_INIT = 0, SYS_WARMUP, 
-        SYS_CALIBRATE, SYS_MONITOR, SYS_SELF_TEST, SYS_ALARM_TEST, SYS_ALARM
+        SYS_CALIBRATE, SYS_MONITOR, SYS_SELF_TEST, SYS_ALARM
     } SystemState;
     
     //Runs a self-test of the system on startup
@@ -39,9 +43,6 @@ extern "C" {
     //Run a checksum of the EEPROM
     bool Fusa_testEEPROM(void);
     
-    //Writes a reference value to memory
-    bool Fusa_storeConstants(uint16_t refValue);
-    
     //Gets the 32-bit CRC from memory
     uint32_t Fusa_getChecksumFromPFM(void);
     
@@ -54,8 +55,11 @@ extern "C" {
     //Infinite loop for a system failure
     void Fusa_onSystemFailure(void);
     
-    //Returns true if the system is ready, false if alarms should be ignored
-    bool Fusa_isSystemArmed(void);
+    //Activate the alarm
+    void Fusa_activateAlarm(void);
+    
+    //Deactivate the alarm
+    void Fusa_deactivateAlarm(void);
 
 #ifdef	__cplusplus
 }

@@ -105,9 +105,14 @@ bool Fusa_runStartupSelfTest(void)
     {
         //Erase requested by user
         GasSensor_eraseEEPROM();
+        
+#ifdef DEVELOP_MODE
+        //Only invalidate CRC in Develop Modes
+        //In "production modes" this could brick the firmware by causing CRC to fail
         Fusa_invalidateEEPROM();
+#endif
                 
-        printf("ERASED\r\n");
+        printf("Configuration ERASED\r\n");
     }
 
     
@@ -418,8 +423,8 @@ void Fusa_runPeriodicSelfCheck(void)
                     //If the alarm is active, jump to alarm
                     if (GasSensor_isTripped())
                     {
-                        GasSensor_setThresholdLow();
-                        sysState = SYS_ALARM;
+                        //Activate the alarm, and transition to a new state
+                        Fusa_activateAlarm();
                     }
                     else
                     {
@@ -465,16 +470,10 @@ void Fusa_runPeriodicSelfCheck(void)
                     
                     printf("Calibration complete. System is now ready.\r\n");
                     
-                    //If the alarm is active, jump to alarm
-                    if (GasSensor_isTripped())
-                    {
-                        GasSensor_setThresholdLow();
-                        sysState = SYS_ALARM;
-                    }
-                    else
-                    {
-                        sysState = SYS_MONITOR;
-                    }
+                    
+                    //Since calibration just completed, it would be odd to immediately switch to SYS_ALARM
+                    //So, it's probably safe to go to SYS_MONITOR
+                    sysState = SYS_MONITOR;
                 }
                 else
                 {
@@ -490,8 +489,10 @@ void Fusa_runPeriodicSelfCheck(void)
         }
         case SYS_MONITOR:
         {
-            //Blink the LED
-            LED0_Toggle();
+            //Flash the LED
+            LED0_SetHigh();
+            DELAY_milliseconds(1);
+            LED0_SetLow();
             
             //System is running
             printf("[MONITOR] Estimated Ammonia: %d ppm\r\n", GasSensor_convertToPPM(meas));
@@ -499,11 +500,10 @@ void Fusa_runPeriodicSelfCheck(void)
             //Did the alarm activate?
             if (GasSensor_isTripped())
             {
-                //Switch to low threshold
-                GasSensor_setThresholdLow();
+                //Activate the alarm and transition to a new state
+                Fusa_activateAlarm();
                 
                 printf("Alarm is tripped!\r\n");
-                sysState = SYS_ALARM;
             }
             else
             {
@@ -513,24 +513,31 @@ void Fusa_runPeriodicSelfCheck(void)
                     printf("AC failed self-check.\r\n");
                     sysState = SYS_ERROR;
                 }
+                else if (TEST_BUTTON_GetValue())
+                {
+                    //No errors, and request
+                    Fusa_activateAlarm();
+                }
             }
+            
+            
                 
             break;
         }
         case SYS_ALARM:
         {
             //System alarm is tripped
+            LED0_Toggle();
             
             printf("[ALARM] Estimated Ammonia: %d ppm\r\n", GasSensor_convertToPPM(meas));
             
             //Did the alarm go off?
             if (!GasSensor_isTripped())
             {
-                //Move to higher threshold to re-arm
-                GasSensor_setThresholdHigh();
+                //Deactivate the alarm and transition to SYS_MONITOR
+                Fusa_deactivateAlarm();
                 
                 printf("Alarm has cleared!\r\n");
-                sysState = SYS_MONITOR;
             }
             
             break;
@@ -588,10 +595,28 @@ void Fusa_onSystemFailure(void)
     }
 }
 
-//Returns true if the system is ready, false if alarms should be ignored
-bool Fusa_isSystemArmed(void)
-{ 
-    if ((sysState == SYS_MONITOR) || (sysState == SYS_ALARM))
-        return true;   
-    return false;
+//Activate the alarm
+void Fusa_activateAlarm(void)
+{
+    //Enable the Buzzer
+    BUZZER_ENABLE();
+    
+    //Switch to low threshold - concentration must fall to here to clear
+    GasSensor_setThresholdLow();
+    
+    //Switch to alarm state
+    sysState = SYS_ALARM;
+}
+
+//Deactivate the alarm
+void Fusa_deactivateAlarm(void)
+{
+    //Disable the buzzer
+    BUZZER_DISABLE();
+    
+    //Switch to high threshold - concentration must rise to here to activate
+    GasSensor_setThresholdHigh();
+    
+    //Switch to monitor state
+    sysState = SYS_MONITOR;
 }

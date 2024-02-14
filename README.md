@@ -94,31 +94,27 @@ This state is used for initializing the system on Power-on-Reset (POR). The `SYS
 
 This state is active during the sensor warmup. Once an hour, a tick from the Real Timer Clock  (RTC) sets a flag and updates the remaining time. The polled function checks the flag status, clears it, and prints a message for the remaining time.
 
-After 24 hours, the function `Application_isSensorReady` returns `true`, indicating the sensor is ready for use. If the internal EEPROM is valid, then the system switches to the `SYS_MONITOR` state. Otherwise, the system switches to the `SYS_CALIBRATE` state. 
+After 24 hours, the function `Application_isSensorReady` returns `true`, indicating the sensor is ready for use. If the internal EEPROM is valid, then the system switches to the `SYS_MONITOR` state or the `SYS_ALARM` state, depending on the status of the alarm. Otherwise, the system switches to the `SYS_CALIBRATE` state. 
 
 ### SYS_CALIBRATE
 
-This state is used to handle the sensor calibration. To properly use the sensor, it is necessary to calibrate the sensor against a known zero point at specified environmental conditions. The user must press and hold SW0 until the calibration completes. If no errors occurred during calibration, the system switches to the `SYS_MONITOR` state. Otherwise, the system goes to the `SYS_ERROR` state.
+This state is used to handle the sensor calibration. To properly use the sensor, it is necessary to calibrate the sensor against a known zero point at specified environmental conditions. The user must press and hold SW0 until the calibration completes. If no errors occurred during calibration, the system switches to the `SYS_MONITOR` state.
 
 ### SYS_MONITOR
 
-This state is used to monitor the sensor. The analog comparator is pollsed to see if the ammonia value is above the threshold. If it is, the system transitions to `SYS_ALARM`. Otherwise, the analog comparator is checked by the function `Fusa_testAC`. During this function, the system temporarily enters the `SYS_SELF_TEST` state, but returns to `SYS_MONITOR` after executing. An error during self-test function will cause the system to enter the `SYS_ERROR` state. Finally, if no other issues have occurred and the Alarm Test button is pressed, then the system will transition to `SYS_ALARM_TEST`.
+This state is used to monitor the sensor. The analog comparator is pollsed to see if the ammonia value is above the `ALARM_THRESHOLD_HIGH` point. If it is, the system transitions to `SYS_ALARM`. Otherwise, the analog comparator is checked by the function `Fusa_testAC`. During this function, the system temporarily enters the `SYS_SELF_TEST` state, but returns to `SYS_MONITOR` after executing. An error during self-test function will cause the system to enter the `SYS_ERROR` state. Finally, if no other issues have occurred and the Alarm Test button is pressed, then the system will transition to `SYS_ALARM`.
 
 ### SYS_SELF_TEST
 
 This state is active during the self-test of the Analog Comparator. During this operation, the AC is disconnected from the sensor, and connected to the output of DAC0. At the end of this self-test, the sensor is reconnected to the AC and returned to the previous state. If this state is ever encountered outside of the self-test function, the system goes to the `SYS_ERROR` state.
 
-### SYS_ALARM_TEST
-
-This state is active during the alarm self-test. 
-
 ### SYS_ALARM
 
-This state is active when the alarm is triggered. 
+This state is active when the alarm is triggered. In this state, the buzzer sounds and the LED blinks. When the threshold falls below the `ALARM_THRESHOLD_LOW` threshold, the system transitions to `SYS_MONITOR`. AC self-tests, alarm test, and other functions are not available in this mode.
 
 ### SYS_ERROR
 
-On startup, the system enters the `SYS_INIT` state
+This state is active if a self-test fails or the state machine enters an unexpected state. The LED blinks and the buzzer sounds in a pattern while printing `SYSTEM FAULT` to the UART. This state is an infinite loop which cannot be escaped. 
 
 ## Operation
 

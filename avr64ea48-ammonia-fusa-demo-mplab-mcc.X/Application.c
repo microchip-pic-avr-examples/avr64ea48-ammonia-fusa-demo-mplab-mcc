@@ -33,6 +33,12 @@ void Application_onPITTick(void)
     WDT_ready = true;
 }
 
+//Reset the device
+void Application_reset(void)
+{
+    ccp_write_io((void*) &RSTCTRL.SWRR, RSTCTRL_SWRE_bm);
+}
+
 //Returns true if an hour has ticked
 bool Application_hasHourTicked(void)
 {

@@ -152,6 +152,101 @@
 #define SW0_EnableInterruptForLowLevelSensing() do { PORTB.PIN2CTRL = (PORTB.PIN2CTRL & ~PORT_ISC_gm) | 0x5 ; } while(0)
 #define PB2_SetInterruptHandler SW0_SetInterruptHandler
 
+//get/set T4OUT aliases
+#define T4OUT_SetHigh() do { PORTD_OUTSET = 0x4; } while(0)
+#define T4OUT_SetLow() do { PORTD_OUTCLR = 0x4; } while(0)
+#define T4OUT_Toggle() do { PORTD_OUTTGL = 0x4; } while(0)
+#define T4OUT_GetValue() (VPORTD.IN & (0x1 << 2))
+#define T4OUT_SetDigitalInput() do { PORTD_DIRCLR = 0x4; } while(0)
+#define T4OUT_SetDigitalOutput() do { PORTD_DIRSET = 0x4; } while(0)
+#define T4OUT_SetPullUp() do { PORTD_PIN2CTRL  |= PORT_PULLUPEN_bm; } while(0)
+#define T4OUT_ResetPullUp() do { PORTD_PIN2CTRL  &= ~PORT_PULLUPEN_bm; } while(0)
+#define T4OUT_SetInverted() do { PORTD_PIN2CTRL  |= PORT_INVEN_bm; } while(0)
+#define T4OUT_ResetInverted() do { PORTD_PIN2CTRL  &= ~PORT_INVEN_bm; } while(0)
+#define T4OUT_DisableInterruptOnChange() do { PORTD.PIN2CTRL = (PORTD.PIN2CTRL & ~PORT_ISC_gm) | 0x0 ; } while(0)
+#define T4OUT_EnableInterruptForBothEdges() do { PORTD.PIN2CTRL = (PORTD.PIN2CTRL & ~PORT_ISC_gm) | 0x1 ; } while(0)
+#define T4OUT_EnableInterruptForRisingEdge() do { PORTD.PIN2CTRL = (PORTD.PIN2CTRL & ~PORT_ISC_gm) | 0x2 ; } while(0)
+#define T4OUT_EnableInterruptForFallingEdge() do { PORTD.PIN2CTRL = (PORTD.PIN2CTRL & ~PORT_ISC_gm) | 0x3 ; } while(0)
+#define T4OUT_DisableDigitalInputBuffer() do { PORTD.PIN2CTRL = (PORTD.PIN2CTRL & ~PORT_ISC_gm) | 0x4 ; } while(0)
+#define T4OUT_EnableInterruptForLowLevelSensing() do { PORTD.PIN2CTRL = (PORTD.PIN2CTRL & ~PORT_ISC_gm) | 0x5 ; } while(0)
+#define PD2_SetInterruptHandler T4OUT_SetInterruptHandler
+
+//get/set T1OUT aliases
+#define T1OUT_SetHigh() do { PORTD_OUTSET = 0x80; } while(0)
+#define T1OUT_SetLow() do { PORTD_OUTCLR = 0x80; } while(0)
+#define T1OUT_Toggle() do { PORTD_OUTTGL = 0x80; } while(0)
+#define T1OUT_GetValue() (VPORTD.IN & (0x1 << 7))
+#define T1OUT_SetDigitalInput() do { PORTD_DIRCLR = 0x80; } while(0)
+#define T1OUT_SetDigitalOutput() do { PORTD_DIRSET = 0x80; } while(0)
+#define T1OUT_SetPullUp() do { PORTD_PIN7CTRL  |= PORT_PULLUPEN_bm; } while(0)
+#define T1OUT_ResetPullUp() do { PORTD_PIN7CTRL  &= ~PORT_PULLUPEN_bm; } while(0)
+#define T1OUT_SetInverted() do { PORTD_PIN7CTRL  |= PORT_INVEN_bm; } while(0)
+#define T1OUT_ResetInverted() do { PORTD_PIN7CTRL  &= ~PORT_INVEN_bm; } while(0)
+#define T1OUT_DisableInterruptOnChange() do { PORTD.PIN7CTRL = (PORTD.PIN7CTRL & ~PORT_ISC_gm) | 0x0 ; } while(0)
+#define T1OUT_EnableInterruptForBothEdges() do { PORTD.PIN7CTRL = (PORTD.PIN7CTRL & ~PORT_ISC_gm) | 0x1 ; } while(0)
+#define T1OUT_EnableInterruptForRisingEdge() do { PORTD.PIN7CTRL = (PORTD.PIN7CTRL & ~PORT_ISC_gm) | 0x2 ; } while(0)
+#define T1OUT_EnableInterruptForFallingEdge() do { PORTD.PIN7CTRL = (PORTD.PIN7CTRL & ~PORT_ISC_gm) | 0x3 ; } while(0)
+#define T1OUT_DisableDigitalInputBuffer() do { PORTD.PIN7CTRL = (PORTD.PIN7CTRL & ~PORT_ISC_gm) | 0x4 ; } while(0)
+#define T1OUT_EnableInterruptForLowLevelSensing() do { PORTD.PIN7CTRL = (PORTD.PIN7CTRL & ~PORT_ISC_gm) | 0x5 ; } while(0)
+#define PD7_SetInterruptHandler T1OUT_SetInterruptHandler
+
+//get/set TINT aliases
+#define TINT_SetHigh() do { PORTE_OUTSET = 0x1; } while(0)
+#define TINT_SetLow() do { PORTE_OUTCLR = 0x1; } while(0)
+#define TINT_Toggle() do { PORTE_OUTTGL = 0x1; } while(0)
+#define TINT_GetValue() (VPORTE.IN & (0x1 << 0))
+#define TINT_SetDigitalInput() do { PORTE_DIRCLR = 0x1; } while(0)
+#define TINT_SetDigitalOutput() do { PORTE_DIRSET = 0x1; } while(0)
+#define TINT_SetPullUp() do { PORTE_PIN0CTRL  |= PORT_PULLUPEN_bm; } while(0)
+#define TINT_ResetPullUp() do { PORTE_PIN0CTRL  &= ~PORT_PULLUPEN_bm; } while(0)
+#define TINT_SetInverted() do { PORTE_PIN0CTRL  |= PORT_INVEN_bm; } while(0)
+#define TINT_ResetInverted() do { PORTE_PIN0CTRL  &= ~PORT_INVEN_bm; } while(0)
+#define TINT_DisableInterruptOnChange() do { PORTE.PIN0CTRL = (PORTE.PIN0CTRL & ~PORT_ISC_gm) | 0x0 ; } while(0)
+#define TINT_EnableInterruptForBothEdges() do { PORTE.PIN0CTRL = (PORTE.PIN0CTRL & ~PORT_ISC_gm) | 0x1 ; } while(0)
+#define TINT_EnableInterruptForRisingEdge() do { PORTE.PIN0CTRL = (PORTE.PIN0CTRL & ~PORT_ISC_gm) | 0x2 ; } while(0)
+#define TINT_EnableInterruptForFallingEdge() do { PORTE.PIN0CTRL = (PORTE.PIN0CTRL & ~PORT_ISC_gm) | 0x3 ; } while(0)
+#define TINT_DisableDigitalInputBuffer() do { PORTE.PIN0CTRL = (PORTE.PIN0CTRL & ~PORT_ISC_gm) | 0x4 ; } while(0)
+#define TINT_EnableInterruptForLowLevelSensing() do { PORTE.PIN0CTRL = (PORTE.PIN0CTRL & ~PORT_ISC_gm) | 0x5 ; } while(0)
+#define PE0_SetInterruptHandler TINT_SetInterruptHandler
+
+//get/set T2OUT aliases
+#define T2OUT_SetHigh() do { PORTE_OUTSET = 0x2; } while(0)
+#define T2OUT_SetLow() do { PORTE_OUTCLR = 0x2; } while(0)
+#define T2OUT_Toggle() do { PORTE_OUTTGL = 0x2; } while(0)
+#define T2OUT_GetValue() (VPORTE.IN & (0x1 << 1))
+#define T2OUT_SetDigitalInput() do { PORTE_DIRCLR = 0x2; } while(0)
+#define T2OUT_SetDigitalOutput() do { PORTE_DIRSET = 0x2; } while(0)
+#define T2OUT_SetPullUp() do { PORTE_PIN1CTRL  |= PORT_PULLUPEN_bm; } while(0)
+#define T2OUT_ResetPullUp() do { PORTE_PIN1CTRL  &= ~PORT_PULLUPEN_bm; } while(0)
+#define T2OUT_SetInverted() do { PORTE_PIN1CTRL  |= PORT_INVEN_bm; } while(0)
+#define T2OUT_ResetInverted() do { PORTE_PIN1CTRL  &= ~PORT_INVEN_bm; } while(0)
+#define T2OUT_DisableInterruptOnChange() do { PORTE.PIN1CTRL = (PORTE.PIN1CTRL & ~PORT_ISC_gm) | 0x0 ; } while(0)
+#define T2OUT_EnableInterruptForBothEdges() do { PORTE.PIN1CTRL = (PORTE.PIN1CTRL & ~PORT_ISC_gm) | 0x1 ; } while(0)
+#define T2OUT_EnableInterruptForRisingEdge() do { PORTE.PIN1CTRL = (PORTE.PIN1CTRL & ~PORT_ISC_gm) | 0x2 ; } while(0)
+#define T2OUT_EnableInterruptForFallingEdge() do { PORTE.PIN1CTRL = (PORTE.PIN1CTRL & ~PORT_ISC_gm) | 0x3 ; } while(0)
+#define T2OUT_DisableDigitalInputBuffer() do { PORTE.PIN1CTRL = (PORTE.PIN1CTRL & ~PORT_ISC_gm) | 0x4 ; } while(0)
+#define T2OUT_EnableInterruptForLowLevelSensing() do { PORTE.PIN1CTRL = (PORTE.PIN1CTRL & ~PORT_ISC_gm) | 0x5 ; } while(0)
+#define PE1_SetInterruptHandler T2OUT_SetInterruptHandler
+
+//get/set T3OUT aliases
+#define T3OUT_SetHigh() do { PORTE_OUTSET = 0x8; } while(0)
+#define T3OUT_SetLow() do { PORTE_OUTCLR = 0x8; } while(0)
+#define T3OUT_Toggle() do { PORTE_OUTTGL = 0x8; } while(0)
+#define T3OUT_GetValue() (VPORTE.IN & (0x1 << 3))
+#define T3OUT_SetDigitalInput() do { PORTE_DIRCLR = 0x8; } while(0)
+#define T3OUT_SetDigitalOutput() do { PORTE_DIRSET = 0x8; } while(0)
+#define T3OUT_SetPullUp() do { PORTE_PIN3CTRL  |= PORT_PULLUPEN_bm; } while(0)
+#define T3OUT_ResetPullUp() do { PORTE_PIN3CTRL  &= ~PORT_PULLUPEN_bm; } while(0)
+#define T3OUT_SetInverted() do { PORTE_PIN3CTRL  |= PORT_INVEN_bm; } while(0)
+#define T3OUT_ResetInverted() do { PORTE_PIN3CTRL  &= ~PORT_INVEN_bm; } while(0)
+#define T3OUT_DisableInterruptOnChange() do { PORTE.PIN3CTRL = (PORTE.PIN3CTRL & ~PORT_ISC_gm) | 0x0 ; } while(0)
+#define T3OUT_EnableInterruptForBothEdges() do { PORTE.PIN3CTRL = (PORTE.PIN3CTRL & ~PORT_ISC_gm) | 0x1 ; } while(0)
+#define T3OUT_EnableInterruptForRisingEdge() do { PORTE.PIN3CTRL = (PORTE.PIN3CTRL & ~PORT_ISC_gm) | 0x2 ; } while(0)
+#define T3OUT_EnableInterruptForFallingEdge() do { PORTE.PIN3CTRL = (PORTE.PIN3CTRL & ~PORT_ISC_gm) | 0x3 ; } while(0)
+#define T3OUT_DisableDigitalInputBuffer() do { PORTE.PIN3CTRL = (PORTE.PIN3CTRL & ~PORT_ISC_gm) | 0x4 ; } while(0)
+#define T3OUT_EnableInterruptForLowLevelSensing() do { PORTE.PIN3CTRL = (PORTE.PIN3CTRL & ~PORT_ISC_gm) | 0x5 ; } while(0)
+#define PE3_SetInterruptHandler T3OUT_SetInterruptHandler
+
 //get/set LED0 aliases
 #define LED0_SetHigh() do { PORTB_OUTSET = 0x8; } while(0)
 #define LED0_SetLow() do { PORTB_OUTCLR = 0x8; } while(0)
@@ -323,6 +418,111 @@ void SW0_DefaultInterruptHandler(void);
  * @return none
  */
 void SW0_SetInterruptHandler(void (* interruptHandler)(void)) ; 
+
+/**
+ * @ingroup  pinsdriver
+ * @brief Default Interrupt Handler for T4OUT pin. 
+ *        This is a predefined interrupt handler to be used together with the T4OUT_SetInterruptHandler() method.
+ *        This handler is called every time the T4OUT ISR is executed. 
+ * @pre PIN_MANAGER_Initialize() has been called at least once
+ * @param none
+ * @return none
+ */
+void T4OUT_DefaultInterruptHandler(void);
+
+/**
+ * @ingroup  pinsdriver
+ * @brief Interrupt Handler Setter for T4OUT pin input-sense-config functionality.
+ *        Allows selecting an interrupt handler for T4OUT at application runtime
+ * @pre PIN_MANAGER_Initialize() has been called at least once
+ * @param InterruptHandler function pointer.
+ * @return none
+ */
+void T4OUT_SetInterruptHandler(void (* interruptHandler)(void)) ; 
+
+/**
+ * @ingroup  pinsdriver
+ * @brief Default Interrupt Handler for T1OUT pin. 
+ *        This is a predefined interrupt handler to be used together with the T1OUT_SetInterruptHandler() method.
+ *        This handler is called every time the T1OUT ISR is executed. 
+ * @pre PIN_MANAGER_Initialize() has been called at least once
+ * @param none
+ * @return none
+ */
+void T1OUT_DefaultInterruptHandler(void);
+
+/**
+ * @ingroup  pinsdriver
+ * @brief Interrupt Handler Setter for T1OUT pin input-sense-config functionality.
+ *        Allows selecting an interrupt handler for T1OUT at application runtime
+ * @pre PIN_MANAGER_Initialize() has been called at least once
+ * @param InterruptHandler function pointer.
+ * @return none
+ */
+void T1OUT_SetInterruptHandler(void (* interruptHandler)(void)) ; 
+
+/**
+ * @ingroup  pinsdriver
+ * @brief Default Interrupt Handler for TINT pin. 
+ *        This is a predefined interrupt handler to be used together with the TINT_SetInterruptHandler() method.
+ *        This handler is called every time the TINT ISR is executed. 
+ * @pre PIN_MANAGER_Initialize() has been called at least once
+ * @param none
+ * @return none
+ */
+void TINT_DefaultInterruptHandler(void);
+
+/**
+ * @ingroup  pinsdriver
+ * @brief Interrupt Handler Setter for TINT pin input-sense-config functionality.
+ *        Allows selecting an interrupt handler for TINT at application runtime
+ * @pre PIN_MANAGER_Initialize() has been called at least once
+ * @param InterruptHandler function pointer.
+ * @return none
+ */
+void TINT_SetInterruptHandler(void (* interruptHandler)(void)) ; 
+
+/**
+ * @ingroup  pinsdriver
+ * @brief Default Interrupt Handler for T2OUT pin. 
+ *        This is a predefined interrupt handler to be used together with the T2OUT_SetInterruptHandler() method.
+ *        This handler is called every time the T2OUT ISR is executed. 
+ * @pre PIN_MANAGER_Initialize() has been called at least once
+ * @param none
+ * @return none
+ */
+void T2OUT_DefaultInterruptHandler(void);
+
+/**
+ * @ingroup  pinsdriver
+ * @brief Interrupt Handler Setter for T2OUT pin input-sense-config functionality.
+ *        Allows selecting an interrupt handler for T2OUT at application runtime
+ * @pre PIN_MANAGER_Initialize() has been called at least once
+ * @param InterruptHandler function pointer.
+ * @return none
+ */
+void T2OUT_SetInterruptHandler(void (* interruptHandler)(void)) ; 
+
+/**
+ * @ingroup  pinsdriver
+ * @brief Default Interrupt Handler for T3OUT pin. 
+ *        This is a predefined interrupt handler to be used together with the T3OUT_SetInterruptHandler() method.
+ *        This handler is called every time the T3OUT ISR is executed. 
+ * @pre PIN_MANAGER_Initialize() has been called at least once
+ * @param none
+ * @return none
+ */
+void T3OUT_DefaultInterruptHandler(void);
+
+/**
+ * @ingroup  pinsdriver
+ * @brief Interrupt Handler Setter for T3OUT pin input-sense-config functionality.
+ *        Allows selecting an interrupt handler for T3OUT at application runtime
+ * @pre PIN_MANAGER_Initialize() has been called at least once
+ * @param InterruptHandler function pointer.
+ * @return none
+ */
+void T3OUT_SetInterruptHandler(void (* interruptHandler)(void)) ; 
 
 /**
  * @ingroup  pinsdriver

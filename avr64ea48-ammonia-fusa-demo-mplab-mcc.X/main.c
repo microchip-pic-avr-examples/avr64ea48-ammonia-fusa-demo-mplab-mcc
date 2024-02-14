@@ -34,6 +34,53 @@
 #include "mcc_generated_files/timer/delay.h"
 #include "Fusa.h"
 #include "Application.h"
+#include "mcc_generated_files/reset/rstctrl.h"
+
+void printResetReasons(void)
+{
+    //Get the RESET Flags
+    uint8_t flags = RSTCTRL_get_reset_cause();
+    
+    //No flags were set
+    if (flags == 0x00)
+    {
+        return;
+    }
+    
+    printf("Reset flags: ");
+    
+    if (flags & RSTCTRL_UPDIRF_bm)
+    {
+        //UPDI Reset
+        printf("UPDI ");
+    }
+    if (flags & RSTCTRL_SWRF_bm)
+    {
+        //SW Reset
+        printf("SW ");
+    }
+    if (flags & RSTCTRL_WDRF_bm)
+    {
+        //Watchdog Reset
+        printf("WDT ");
+    }
+    if (flags & RSTCTRL_BORF_bm)
+    {
+        //Brownout Reset
+        printf("BOR ");
+    }
+    if (flags & RSTCTRL_PORF_bm)
+    {
+        //POR Reset
+        printf("POR");
+    }
+    
+    //Newline
+    printf("\r\n\r\n");
+    
+    //Clear the Flags
+    RSTCTRL_clear_reset_cause();
+}
 
 int main(void)
 {
@@ -48,8 +95,12 @@ int main(void)
     //Interrupt callback for the PIT
     RTC_SetPITIsrCallback(Application_onPITTick);
     
+    //Interrupt callback for Button 2 - RESET
+    T2OUT_SetInterruptHandler(Application_reset);
+    
     printf("AVR64EA48 Ammonia Gas Functional Safety Demo\r\n");
-    printf("Built %s at %s\r\n\r\n", __DATE__, __TIME__);
+    printf("Built %s at %s\r\n", __DATE__, __TIME__);
+    printResetReasons();
     
 #ifdef DEVELOP_MODE
     printf("WARNING: Device is in develop mode. System will power-up if errors occur and skip sensor warm-up period.\r\nDO NOT USE FOR PRODUCTION\r\n");
@@ -74,10 +125,6 @@ int main(void)
             
             //Run periodic self-check
             Fusa_runPeriodicSelfCheck();
-        }
-        else
-        {
-            
         }
     }    
 }
