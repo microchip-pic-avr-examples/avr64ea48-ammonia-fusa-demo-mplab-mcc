@@ -513,15 +513,18 @@ void Fusa_runPeriodicSelfCheck(void)
                     printf("AC failed self-check.\r\n");
                     sysState = SYS_ERROR;
                 }
+                else if (SW0_GetValue())
+                {
+                    //Re-calibrate
+                    printf("Ready to recalibrate. Press SW0 to set new zero-point.\r\n");
+                    sysState = SYS_CALIBRATE;
+                }
                 else if (TEST_BUTTON_GetValue())
                 {
                     //No errors, and request
                     Fusa_activateAlarm();
                 }
             }
-            
-            
-                
             break;
         }
         case SYS_ALARM:
