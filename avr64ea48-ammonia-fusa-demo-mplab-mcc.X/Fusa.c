@@ -38,6 +38,12 @@ static volatile SystemState sysState = SYS_ERROR;
 
 bool _WriteFlashBlock(flash_address_t flash_address, uint8_t *data, size_t size)
 {
+    //If below voltage threshold, do not start a memory write
+    if (!Application_isVoltageOK())
+    {
+        return false;
+    }
+    
     flash_address_t flashStartPageAddress;
     uint16_t flashAddressOffset;
     flash_data_t flashWriteData[PROGMEM_PAGE_SIZE];
