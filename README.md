@@ -6,15 +6,18 @@
 
 This application is an example ofs how to develop a class B Functional Safety (FuSa) application using the AVR64EA48 family of microcontrollers.
 
-## Warning
+## Warnings
 
 **This example is for demonstration purposes only, and is not qualified, tested or verified to meet Class B safety standards.**
+
+When handling the ammonia containing solution, excerise caution and follow manufacturer's recommendations for ventilation and safety. 
 
 ## Related Documentation
 
 - [Introduction to Functional Safety](https://mu.microchip.com/introduction-to-functional-safety)
 - [Class B Diagnostic Libraries for Functional Safety](https://mu.microchip.com/class-b-diagnostic-libraries-for-functional-safety)
 - [MQ137 Ammonia Sensor Product Page](https://www.winsen-sensor.com/product/mq137.html)
+- [AVR64EA48 Product Page](#)
 
 ## Software Used
 
@@ -113,7 +116,7 @@ Please consult the table below to determine which configuration to use. **For in
 
 **Important: Set the ammonia click to minimum gain before power on!**
 
-On Power-on-Reset (POR), the system boots up and performs a self-check of the hardware. If no issues are encountered, the system will enter a 24 warm-up phase for the sensor. During this period, the sensor will get warm to the touch. Once per hour, the microcontroller will print a message to the UART indicating the current time remaining.
+On Power-on-Reset (POR), the system boots up and performs a self-check of the hardware. If no issues are encountered, the system will enter a 24 hour warm-up phase for the sensor. During this period, the sensor will get warm to the touch. Once per hour, the microcontroller will print a message to the UART indicating the current time remaining.
 
 After warm-up, the system will check to see if a calibration is stored in internal EEPROM. If the calibration data is not present, it will print a message to the UART. The user must press and hold SW0 to begin the zero-point calibration of the sensor. 
 
@@ -129,7 +132,9 @@ Button 2 will reset the microcontroller.
 
 ### Errors
 
-If at any point during the above an error occurs, the system will enter a fault state, where it will blink the LED and sound the buzzer in a pattern. The message `SYSTEM FAULT` is printed to the UART once every 10 seconds.
+If at any point during the above an error occurs, the system will enter a fault state, where it will blink the LED and sound the buzzer in a pattern. The message `SYSTEM FAULT` is printed to the UART once every 10 seconds. This is an infinite loop, and can only be exited by power-cycling the microcontroller or by pulling the hardware reset on PF6 to ground.
+
+*Note:* Button 2 will not reset the microcontroller when in this state.
 
 ## System States
 
