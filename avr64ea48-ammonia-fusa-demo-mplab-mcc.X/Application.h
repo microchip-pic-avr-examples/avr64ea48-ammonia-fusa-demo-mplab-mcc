@@ -64,7 +64,7 @@ extern "C" {
     bool Application_runCRC(void);
     
     //Returns the VLM Status
-    bool Application_getVLMStatus(void);
+    bool Application_isVoltageOK(void);
     
 #ifdef	__cplusplus
 }

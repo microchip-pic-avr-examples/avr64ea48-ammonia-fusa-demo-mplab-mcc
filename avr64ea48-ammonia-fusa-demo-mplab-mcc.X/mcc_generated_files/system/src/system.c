@@ -57,7 +57,7 @@ void SYSTEM_Initialize(void)
 int8_t BOD_Initialize()
 {
     //SLEEP Enabled in continuous mode; 
-    ccp_write_io((void*)&(BOD.CTRLA),0x5);
+    ccp_write_io((void*)&(BOD.CTRLA),0xD);
     //
     BOD.CTRLB = 0x1;
     //VLMCFG VDD falls below VLM threshold; VLMIE disabled; 

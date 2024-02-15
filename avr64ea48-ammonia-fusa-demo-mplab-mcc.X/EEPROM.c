@@ -12,11 +12,11 @@ bool Memory_writeEEPROM8(uint16_t addr, uint8_t data)
 {
     //Check to see if VDD is OK
     //If VLM is 1, then we are below threshold
-//    if (Application_getVLMStatus())
-//    {
-//        printf("BOD = 0x%x\r\n", BOD.STATUS);
-//        return false;
-//    }
+    if (!Application_isVoltageOK())
+    {
+        printf("BOD = 0x%x\r\n", BOD.STATUS);
+        return false;
+    }
     
     //Address is out of bounds
     if (addr >= EEPROM_SIZE)
