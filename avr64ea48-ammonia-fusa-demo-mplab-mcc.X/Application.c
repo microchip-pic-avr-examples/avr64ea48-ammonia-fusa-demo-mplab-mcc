@@ -143,7 +143,12 @@ bool Application_runCRC(void)
 }
 
 //Returns the VLM Status
-bool Application_getVLMStatus(void)
+bool Application_isVoltageOK(void)
 {
-    return (BOD.STATUS & BOD_VLMS_bm);
+    //If VLMS is 1, then we're below the threshold
+    if (BOD.STATUS & BOD_VLMS_bm)
+    {
+        return false;
+    }
+    return true;
 }
