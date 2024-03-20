@@ -24,6 +24,9 @@
             <logicalFolder name="config" displayName="config" projectFiles="true">
               <itemPath>mcc_generated_files/diagnostics/diag_common/config/diag_config.h</itemPath>
             </logicalFolder>
+            <logicalFolder name="examples" displayName="examples" projectFiles="true">
+              <itemPath>mcc_generated_files/diagnostics/diag_common/examples/diag_common_example.h</itemPath>
+            </logicalFolder>
             <itemPath>mcc_generated_files/diagnostics/diag_common/diag_result_type.h</itemPath>
             <itemPath>mcc_generated_files/diagnostics/diag_common/diag_device_macros.h</itemPath>
           </logicalFolder>
@@ -39,6 +42,7 @@
                              projectFiles="true">
                 <itemPath>mcc_generated_files/diagnostics/diag_library/memory/non_volatile/diag_eeprom_crc16.h</itemPath>
                 <itemPath>mcc_generated_files/diagnostics/diag_library/memory/non_volatile/diag_flash_crc32.h</itemPath>
+                <itemPath>mcc_generated_files/diagnostics/diag_library/memory/non_volatile/diag_crc16_lookup_table.h</itemPath>
               </logicalFolder>
               <logicalFolder name="volatile" displayName="volatile" projectFiles="true">
                 <itemPath>mcc_generated_files/diagnostics/diag_library/memory/volatile/diag_sram_marchc_minus.h</itemPath>
@@ -141,6 +145,9 @@
                            projectFiles="true">
               <itemPath>mcc_generated_files/diagnostics/diag_common/diag_startup/diag_startup.c</itemPath>
             </logicalFolder>
+            <logicalFolder name="examples" displayName="examples" projectFiles="true">
+              <itemPath>mcc_generated_files/diagnostics/diag_common/examples/diag_common_example.c</itemPath>
+            </logicalFolder>
           </logicalFolder>
           <logicalFolder name="diag_library"
                          displayName="diag_library"
@@ -152,8 +159,9 @@
               <logicalFolder name="non_volatile"
                              displayName="non_volatile"
                              projectFiles="true">
-                <itemPath>mcc_generated_files/diagnostics/diag_library/memory/non_volatile/diag_eeprom_crc16_direct.c</itemPath>
                 <itemPath>mcc_generated_files/diagnostics/diag_library/memory/non_volatile/diag_flash_crc32_direct.c</itemPath>
+                <itemPath>mcc_generated_files/diagnostics/diag_library/memory/non_volatile/diag_eeprom_crc16_lookup.c</itemPath>
+                <itemPath>mcc_generated_files/diagnostics/diag_library/memory/non_volatile/diag_crc16_lookup_table.c</itemPath>
               </logicalFolder>
               <logicalFolder name="volatile" displayName="volatile" projectFiles="true">
                 <itemPath>mcc_generated_files/diagnostics/diag_library/memory/volatile/diag_sram_marchc_minus.c</itemPath>
@@ -502,7 +510,7 @@
         <property key="default-char-type" value="true"/>
         <property key="define-macros" value=""/>
         <property key="disable-optimizations" value="false"/>
-        <property key="extra-include-directories" value=""/>
+        <property key="extra-include-directories" value="mcc_generated_files"/>
         <property key="favor-optimization-for" value="-speed,+space"/>
         <property key="garbage-collect-data" value="false"/>
         <property key="garbage-collect-functions" value="true"/>
@@ -988,13 +996,14 @@
       </makeCustomizationType>
       <HI-TECH-COMP>
         <property key="additional-warnings" value="true"/>
+        <property key="appendMe" value=""/>
         <property key="asmlist" value="true"/>
         <property key="call-prologues" value="false"/>
         <property key="default-bitfield-type" value="true"/>
         <property key="default-char-type" value="true"/>
         <property key="define-macros" value="DEVELOP_MODE;TEST_CHECKSUM"/>
         <property key="disable-optimizations" value="false"/>
-        <property key="extra-include-directories" value=""/>
+        <property key="extra-include-directories" value="mcc_generated_files"/>
         <property key="favor-optimization-for" value="-speed,+space"/>
         <property key="garbage-collect-data" value="false"/>
         <property key="garbage-collect-functions" value="true"/>
@@ -1024,8 +1033,7 @@
         <property key="additional-options-checksum" value=""/>
         <property key="additional-options-checksumAVR" value=""/>
         <property key="additional-options-code-offset" value=""/>
-        <property key="additional-options-command-line"
-                  value="-Wl,--defsym=__TEXT_REGION_LENGTH__=0xF500"/>
+        <property key="additional-options-command-line" value=""/>
         <property key="additional-options-errata" value=""/>
         <property key="additional-options-extend-address" value="false"/>
         <property key="additional-options-trace-type" value=""/>

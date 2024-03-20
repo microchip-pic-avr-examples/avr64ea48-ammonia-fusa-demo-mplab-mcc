@@ -18,7 +18,7 @@ extern "C" {
 //#define VIEW_RAW_ADC
     
 #define TEST_BUTTON_GetValue T1OUT_GetValue
-    
+        
     typedef enum {
         SYS_ERROR = -1, SYS_INIT = 0, SYS_WARMUP, 
         SYS_CALIBRATE, SYS_MONITOR, SYS_SELF_TEST, SYS_ALARM

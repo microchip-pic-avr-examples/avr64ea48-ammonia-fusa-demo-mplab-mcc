@@ -15,6 +15,7 @@
 #include "mcc_generated_files/diagnostics/diag_library/cpu/diag_cpu_registers.h"
 #include "mcc_generated_files/diagnostics/diag_library/memory/volatile/diag_sram_marchc_minus.h"
 #include "mcc_generated_files/diagnostics/diag_library/wdt/diag_wdt_startup.h"
+#include "mcc_generated_files/diagnostics/diag_library/memory/non_volatile/diag_eeprom_crc16.h"
 
 #define PASS_STRING "OK\r\n"
 #define FAIL_STRING "FAIL\r\n"
@@ -318,11 +319,21 @@ bool Fusa_testEEPROM(void)
         return false;
     }
         
-    //Verify Checksum
+#ifndef FUSA_ENABLE_CRC_CHECK
+    //Verify Checksum (Simple)
     if (Memory_calculateChecksum() != EEPROM_CHECKSUM_GOOD)
     {
         return false;
     }
+#else
+    
+    //Verify a CRC Checksum w/ Class B libraries
+    if (DIAG_EEPROM_ValidateCRC(0, DIAG_EEPROM_LENGTH,
+            DIAG_EEPROM_CRC_STORE_ADDR - DIAG_EEPROM_START_ADDR) != DIAG_PASS)
+    {
+        return false;
+    }
+#endif
     
     return true;
 }

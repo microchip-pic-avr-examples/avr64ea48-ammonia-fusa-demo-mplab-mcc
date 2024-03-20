@@ -21,9 +21,9 @@
  * THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, THAT YOU 
  * HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
  *
- * @file    diag_eeprom_crc16_direct.c
- * @brief   Contains the implementation of the APIs to test EEPROM using 
- *          CRC16 CCITT Direct Computation algorithm
+ * @file    diag_eeprom_crc16_lookup.c
+ * @brief   Contains the implementation of the APIs to test EEPROM using the
+ *          CRC16 CCITT Look-up Table algorithm
  * @ingroup diag_eeprom_crc16
  * @note 
  * Microchip Technology Inc. has followed development methods required by 
@@ -33,34 +33,19 @@
  */
 
 #include "diag_eeprom_crc16.h"
+#include "diag_crc16_lookup_table.h"
 #include <string.h>
 
 static void DIAG_EEPROM_CalculateCRC(eeprom_address_t startAddress, uint16_t length, uint16_t *crcSeed)
 {
     uint16_t i;
     uint8_t readByte;
-    uint8_t bit;
 
     for (i = 0U; i < length; i++)
     {
         readByte = EEPROM_Read(startAddress + i);
-
-        /* Bring the next byte into the checksum. */
-        *crcSeed ^= ((uint16_t) readByte << 8U);
-
-        /* Perform modulo-2 division. */
-        for (bit = 8U; bit > 0U; --bit)
-        {
-            /* ..only if MSB is set. */
-            if ((*crcSeed & ((uint32_t) 1 << 15U)) != 0U)
-            {
-                *crcSeed = (*crcSeed << 1U) ^ CRC16_CCITT_POLYNOMIAL;
-            }
-            else
-            {
-                *crcSeed <<= 1U;
-            }
-        }
+        readByte ^= *crcSeed >> 8U;
+        *crcSeed = READ_DIAG_CRC16Table(readByte) ^ (*crcSeed << 8U);
     }
 }
 

@@ -8,6 +8,7 @@
 #include "mcc_generated_files/timer/delay.h"
 #include "EEPROM.h"
 #include "Application.h"
+#include "mcc_generated_files/diagnostics/diag_library/memory/non_volatile/diag_eeprom_crc16.h"
 
 static float R_S0 = 0.0;
 static bool memValid = false;
@@ -109,13 +110,33 @@ bool GasSensor_writeEEPROM(uint16_t refValue)
     if (!Memory_writeEEPROM16(EEPROM_CKSM_H_ADDR, 0x0000))
         return false;
     
+    //Write Version ID
+    if (!Memory_writeEEPROM8(EEPROM_VERSION_ADDR, EEPROM_VERSION_ID))
+        return false;
+    
     //Write the Reference Value
     if (!Memory_writeEEPROM16(EEPROM_REF_VALUE_H_ADDR, refValue))
         return false;
     
-    //Write real checksum
+#ifndef FUSA_ENABLE_CRC_CHECK
+    //Write the real checksum
     if (!Memory_writeEEPROM16(EEPROM_CKSM_H_ADDR, Memory_calculateChecksum()))
         return false;
+#else
+    //Write the real CRC checksum
+    if (DIAG_EEPROM_CalculateStoreCRC(0, DIAG_EEPROM_LENGTH,
+            DIAG_EEPROM_CRC_STORE_ADDR - DIAG_EEPROM_START_ADDR) != DIAG_PASS)
+        return false;
+    
+    printf("CRC Checksum = 0x%x\r\n", Memory_readEEPROM16(EEPROM_CKSM_H_ADDR));
+    
+    if (DIAG_EEPROM_ValidateCRC(0, DIAG_EEPROM_LENGTH,
+            DIAG_EEPROM_CRC_STORE_ADDR - DIAG_EEPROM_START_ADDR) != DIAG_PASS)
+        return false;
+    
+    printf("CRC Verified\r\n");
+    
+#endif
     
     //Set the memory valid flag
     memValid = true;

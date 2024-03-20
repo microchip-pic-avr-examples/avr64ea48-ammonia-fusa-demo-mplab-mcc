@@ -19,6 +19,10 @@ extern "C" {
 //Number of hours to warmup for
 #define WARM_UP_HOURS 24
     
+//If defined, the class B library uses a 16-bit CRC to verify EEPROM
+//If not defined, a 16-bit checksum is used instead
+#define FUSA_ENABLE_CRC_CHECK
+    
     //Interrupt for an elapsed hour
     void Application_onHourTick(void);
     
