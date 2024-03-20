@@ -24,6 +24,7 @@
  *
  */
 
+#include "../../diag_library/wdt/diag_wdt_startup.h"
 #include "../../diag_library/memory/volatile/diag_sram_marchc_minus.h"
 
 /**
@@ -45,4 +46,5 @@
 static void INIT0_SECTION DIAG_OnStartup(void)
 {
     DIAG_SRAM_MarchStartup();
+    DIAG_WDT_Startup();
 }

@@ -62,6 +62,44 @@
 #define DIAG_MSG(msg,val,info) DIAG_MSG_EXPAND(msg,val, info)
 #endif //(DIAG_LINKER_OPTION_MSG_ENABLE != 0)
 
+/** 
+ * @ingroup diag_wdt_startup
+ * @def DIAG_WDT_FUSE_ENABLED
+ * Set to a value greater than zero if the WDT is enabled through the fuses. 
+ * If enabled, ensure the @ref DIAG_WDT_PERIOD macro is set equal to 
+ * the corresponding value in the PERIOD bit field in the FUSE.WDTCFG fuse.
+ * This is required because enabling the WDT through the fuses also sets the 
+ * LOCK bit in the WDT.STATUS register at boot time, disabling the possibility
+ * to reconfigure the WDT period during the diagnostic execution.  
+ */
+#define DIAG_WDT_FUSE_ENABLED (0U)
+
+#if (DIAG_WDT_FUSE_ENABLED != 0U)
+/** 
+ * @ingroup diag_wdt_startup
+ * @def DIAG_WDT_PERIOD
+ * Set equal to the corresponding value in the PERIOD bit field in the 
+ * FUSE.WDTCFG fuse, if not equal to zero.
+ */ 
+#define DIAG_WDT_PERIOD (WDT_PERIOD_OFF_gc)
+#endif
+
+/** 
+ * @ingroup diag_wdt_startup
+ * @def DIAG_WDT_TOLERANCE_PCT
+ * Configures the tolerance used in the WDT time-out threshold measurements as 
+ * a percentage. 
+ * 
+ * The WDT runs on a 1.024 kHz clock sourced from the internal Ultra Low-Power
+ * Oscillator (OSC32K). Since this oscillator is less accurate than other 
+ * oscillators featured on the device, the exact WDT time-out period may vary 
+ * between devices, requiring a threshold tolerance. Refer to the tolerance of 
+ * the OSC32K in the electrical characteristics in the device data sheet and the 
+ * tolerance of the main clock used during the diagnostic (as this is used as the
+ * input clock for the timer used for measurement) to calculate the appropriate 
+ * tolerance.
+ */ 
+#define DIAG_WDT_TOLERANCE_PCT (30U)
 
 #define DIAG_FLASH_START_ADDR 0x0U
 #define DIAG_FLASH_LENGTH 32766U

@@ -34,6 +34,9 @@ extern "C" {
     //Run a CPU test
     bool Fusa_testCPU(void);
     
+    //Get the WDT Test Results
+    bool Fusa_testWDT(void);
+    
     //Test the comparator
     bool Fusa_testAC(void);
     

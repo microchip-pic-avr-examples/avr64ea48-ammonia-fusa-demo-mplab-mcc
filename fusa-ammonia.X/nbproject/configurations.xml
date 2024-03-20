@@ -44,6 +44,9 @@
                 <itemPath>mcc_generated_files/diagnostics/diag_library/memory/volatile/diag_sram_marchc_minus.h</itemPath>
               </logicalFolder>
             </logicalFolder>
+            <logicalFolder name="wdt" displayName="wdt" projectFiles="true">
+              <itemPath>mcc_generated_files/diagnostics/diag_library/wdt/diag_wdt_startup.h</itemPath>
+            </logicalFolder>
           </logicalFolder>
         </logicalFolder>
         <logicalFolder name="nvm" displayName="nvm" projectFiles="true">
@@ -155,6 +158,9 @@
               <logicalFolder name="volatile" displayName="volatile" projectFiles="true">
                 <itemPath>mcc_generated_files/diagnostics/diag_library/memory/volatile/diag_sram_marchc_minus.c</itemPath>
               </logicalFolder>
+            </logicalFolder>
+            <logicalFolder name="wdt" displayName="wdt" projectFiles="true">
+              <itemPath>mcc_generated_files/diagnostics/diag_library/wdt/diag_wdt_startup.c</itemPath>
             </logicalFolder>
           </logicalFolder>
         </logicalFolder>
@@ -280,7 +286,8 @@
         <property key="additional-options-checksum" value=""/>
         <property key="additional-options-checksumAVR" value=""/>
         <property key="additional-options-code-offset" value=""/>
-        <property key="additional-options-command-line" value=""/>
+        <property key="additional-options-command-line"
+                  value="-Wl,--defsym=__TEXT_REGION_LENGTH__=0xF500"/>
         <property key="additional-options-errata" value=""/>
         <property key="additional-options-extend-address" value="false"/>
         <property key="additional-options-trace-type" value=""/>
@@ -428,7 +435,7 @@
         <property key="memories.programmemory.ranges" value="0-7fff"/>
         <property key="poweroptions.powerenable" value="false"/>
         <property key="programmerToGoFilePath"
-                  value="C:/Users/C62081/Documents/GIT Repos/avr64ea48-ammonia-fusa-demo-mplab-mcc/avr64ea48-ammonia-fusa-demo-mplab-mcc.X/debug/free/avr64ea48-ammonia-fusa-demo-mplab-mcc_ptg"/>
+                  value="C:/Users/c62081/Documents/Git Repos/avr64ea48-ammonia-fusa-demo-mplab-mcc/fusa-ammonia.X/debug/free/fusa-ammonia_ptg"/>
         <property key="programoptions.eraseb4program" value="true"/>
         <property key="programoptions.preservedataflash" value="false"/>
         <property key="programoptions.preservedataflash.ranges"
@@ -525,7 +532,8 @@
         <property key="additional-options-checksum" value=""/>
         <property key="additional-options-checksumAVR" value=""/>
         <property key="additional-options-code-offset" value=""/>
-        <property key="additional-options-command-line" value=""/>
+        <property key="additional-options-command-line"
+                  value="-Wl,--defsym=__TEXT_REGION_LENGTH__=0xF500"/>
         <property key="additional-options-errata" value=""/>
         <property key="additional-options-extend-address" value="false"/>
         <property key="additional-options-trace-type" value=""/>
@@ -569,9 +577,54 @@
         <property key="remove-unused-sections" value="true"/>
       </HI-TECH-LINK>
       <Tool>
+        <property key="AutoSelectMemRanges" value="auto"/>
+        <property key="communication.activationmode" value="nohv"/>
+        <property key="communication.interface" value="updi"/>
+        <property key="communication.speed" value="0.500"/>
+        <property key="debugoptions.debug-startup" value="Use system settings"/>
+        <property key="debugoptions.reset-behaviour" value="Use system settings"/>
+        <property key="debugoptions.useswbreakpoints" value="false"/>
+        <property key="event.recorder.debugger.behavior" value="Running"/>
+        <property key="event.recorder.enabled" value="false"/>
+        <property key="event.recorder.scvd.files" value=""/>
+        <property key="firmware.path"
+                  value="Press to browse for a specific firmware version"/>
+        <property key="firmware.toolpack"
+                  value="Press to select which tool pack to use"/>
+        <property key="firmware.update.action" value="firmware.update.use.latest"/>
+        <property key="freeze.timers" value="false"/>
+        <property key="lastid" value=""/>
+        <property key="memories.aux" value="false"/>
+        <property key="memories.bootflash" value="true"/>
+        <property key="memories.configurationmemory" value="true"/>
+        <property key="memories.configurationmemory2" value="true"/>
+        <property key="memories.dataflash" value="true"/>
+        <property key="memories.eeprom" value="true"/>
+        <property key="memories.exclude.configurationmemory" value="true"/>
+        <property key="memories.flashdata" value="true"/>
+        <property key="memories.id" value="true"/>
+        <property key="memories.instruction.ram.ranges"
+                  value="${memories.instruction.ram.ranges}"/>
+        <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="0-7fff"/>
+        <property key="poweroptions.powerenable" value="false"/>
         <property key="programmerToGoFilePath"
                   value="C:/Users/c62081/Documents/Git Repos/avr64ea48-ammonia-fusa-demo-mplab-mcc/fusa-ammonia.X/debug/pro/fusa-ammonia_ptg"/>
+        <property key="programoptions.eraseb4program" value="true"/>
+        <property key="programoptions.preservedataflash" value="false"/>
+        <property key="programoptions.preservedataflash.ranges"
+                  value="${memories.dataflash.default}"/>
+        <property key="programoptions.preserveeeprom" value="false"/>
+        <property key="programoptions.preserveeeprom.ranges" value="1400-15ff"/>
+        <property key="programoptions.preserveprogram.ranges" value=""/>
+        <property key="programoptions.preserveprogramrange" value="false"/>
+        <property key="programoptions.preserveuserid" value="false"/>
+        <property key="programoptions.programuserotp" value="false"/>
+        <property key="toolpack.updateoptions"
+                  value="toolpack.updateoptions.uselatestoolpack"/>
+        <property key="toolpack.updateoptions.packversion"
+                  value="Press to select which tool pack to use"/>
+        <property key="voltagevalue" value=""/>
       </Tool>
       <XC8-CO>
         <property key="coverage-enable" value=""/>
@@ -596,9 +649,54 @@
         <property key="wpo-lto" value="false"/>
       </XC8-config-global>
       <nEdbgTool>
+        <property key="AutoSelectMemRanges" value="auto"/>
+        <property key="communication.activationmode" value="nohv"/>
+        <property key="communication.interface" value="updi"/>
+        <property key="communication.speed" value="0.500"/>
+        <property key="debugoptions.debug-startup" value="Use system settings"/>
+        <property key="debugoptions.reset-behaviour" value="Use system settings"/>
+        <property key="debugoptions.useswbreakpoints" value="false"/>
+        <property key="event.recorder.debugger.behavior" value="Running"/>
+        <property key="event.recorder.enabled" value="false"/>
+        <property key="event.recorder.scvd.files" value=""/>
+        <property key="firmware.path"
+                  value="Press to browse for a specific firmware version"/>
+        <property key="firmware.toolpack"
+                  value="Press to select which tool pack to use"/>
+        <property key="firmware.update.action" value="firmware.update.use.latest"/>
+        <property key="freeze.timers" value="false"/>
+        <property key="lastid" value=""/>
+        <property key="memories.aux" value="false"/>
+        <property key="memories.bootflash" value="true"/>
+        <property key="memories.configurationmemory" value="true"/>
+        <property key="memories.configurationmemory2" value="true"/>
+        <property key="memories.dataflash" value="true"/>
+        <property key="memories.eeprom" value="true"/>
+        <property key="memories.exclude.configurationmemory" value="true"/>
+        <property key="memories.flashdata" value="true"/>
+        <property key="memories.id" value="true"/>
+        <property key="memories.instruction.ram.ranges"
+                  value="${memories.instruction.ram.ranges}"/>
+        <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="0-7fff"/>
+        <property key="poweroptions.powerenable" value="false"/>
         <property key="programmerToGoFilePath"
                   value="C:/Users/c62081/Documents/Git Repos/avr64ea48-ammonia-fusa-demo-mplab-mcc/fusa-ammonia.X/debug/pro/fusa-ammonia_ptg"/>
+        <property key="programoptions.eraseb4program" value="true"/>
+        <property key="programoptions.preservedataflash" value="false"/>
+        <property key="programoptions.preservedataflash.ranges"
+                  value="${memories.dataflash.default}"/>
+        <property key="programoptions.preserveeeprom" value="false"/>
+        <property key="programoptions.preserveeeprom.ranges" value="1400-15ff"/>
+        <property key="programoptions.preserveprogram.ranges" value=""/>
+        <property key="programoptions.preserveprogramrange" value="false"/>
+        <property key="programoptions.preserveuserid" value="false"/>
+        <property key="programoptions.programuserotp" value="false"/>
+        <property key="toolpack.updateoptions"
+                  value="toolpack.updateoptions.uselatestoolpack"/>
+        <property key="toolpack.updateoptions.packversion"
+                  value="Press to select which tool pack to use"/>
+        <property key="voltagevalue" value=""/>
       </nEdbgTool>
     </conf>
     <conf name="develop" type="2">
@@ -644,7 +742,6 @@
       </makeCustomizationType>
       <HI-TECH-COMP>
         <property key="additional-warnings" value="true"/>
-        <property key="appendMe" value=""/>
         <property key="asmlist" value="true"/>
         <property key="call-prologues" value="false"/>
         <property key="default-bitfield-type" value="true"/>
@@ -681,7 +778,8 @@
         <property key="additional-options-checksum" value=""/>
         <property key="additional-options-checksumAVR" value=""/>
         <property key="additional-options-code-offset" value=""/>
-        <property key="additional-options-command-line" value=""/>
+        <property key="additional-options-command-line"
+                  value="-Wl,--defsym=__TEXT_REGION_LENGTH__=0xF500"/>
         <property key="additional-options-errata" value=""/>
         <property key="additional-options-extend-address" value="false"/>
         <property key="additional-options-trace-type" value=""/>
@@ -829,7 +927,7 @@
         <property key="memories.programmemory.ranges" value="0-7fff"/>
         <property key="poweroptions.powerenable" value="false"/>
         <property key="programmerToGoFilePath"
-                  value="C:/Users/C62081/Documents/GIT Repos/avr64ea48-ammonia-fusa-demo-mplab-mcc/avr64ea48-ammonia-fusa-demo-mplab-mcc.X/debug/develop/avr64ea48-ammonia-fusa-demo-mplab-mcc_ptg"/>
+                  value="C:/Users/c62081/Documents/Git Repos/avr64ea48-ammonia-fusa-demo-mplab-mcc/fusa-ammonia.X/debug/develop/fusa-ammonia_ptg"/>
         <property key="programoptions.eraseb4program" value="true"/>
         <property key="programoptions.preservedataflash" value="false"/>
         <property key="programoptions.preservedataflash.ranges"
@@ -926,7 +1024,8 @@
         <property key="additional-options-checksum" value=""/>
         <property key="additional-options-checksumAVR" value=""/>
         <property key="additional-options-code-offset" value=""/>
-        <property key="additional-options-command-line" value=""/>
+        <property key="additional-options-command-line"
+                  value="-Wl,--defsym=__TEXT_REGION_LENGTH__=0xF500"/>
         <property key="additional-options-errata" value=""/>
         <property key="additional-options-extend-address" value="false"/>
         <property key="additional-options-trace-type" value=""/>
@@ -1074,7 +1173,7 @@
         <property key="memories.programmemory.ranges" value="0-7fff"/>
         <property key="poweroptions.powerenable" value="false"/>
         <property key="programmerToGoFilePath"
-                  value="C:/Users/C62081/Documents/GIT Repos/avr64ea48-ammonia-fusa-demo-mplab-mcc/avr64ea48-ammonia-fusa-demo-mplab-mcc.X/debug/free/avr64ea48-ammonia-fusa-demo-mplab-mcc_ptg"/>
+                  value="C:/Users/c62081/Documents/Git Repos/avr64ea48-ammonia-fusa-demo-mplab-mcc/fusa-ammonia.X/debug/develop_no_cksm/fusa-ammonia_ptg"/>
         <property key="programoptions.eraseb4program" value="true"/>
         <property key="programoptions.preservedataflash" value="false"/>
         <property key="programoptions.preservedataflash.ranges"

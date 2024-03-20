@@ -14,6 +14,7 @@
 #include "mcc_generated_files/diagnostics/diag_library/memory/non_volatile/diag_flash_crc32.h"
 #include "mcc_generated_files/diagnostics/diag_library/cpu/diag_cpu_registers.h"
 #include "mcc_generated_files/diagnostics/diag_library/memory/volatile/diag_sram_marchc_minus.h"
+#include "mcc_generated_files/diagnostics/diag_library/wdt/diag_wdt_startup.h"
 
 #define PASS_STRING "OK\r\n"
 #define FAIL_STRING "FAIL\r\n"
@@ -70,6 +71,17 @@ bool Fusa_runStartupSelfTest(void)
         sysState = SYS_ERROR;
     }
     
+    //Get the WDT Result
+    printf("Testing WDT...");
+    if (Fusa_testWDT())
+        printf(PASS_STRING);
+    else
+    {
+        printf(FAIL_STRING);
+        sysState = SYS_ERROR;
+    }
+
+    //Get the SRAM Result
     printf("Testing SRAM...");
     if (Fusa_testSRAM())
         printf(PASS_STRING);
@@ -173,6 +185,16 @@ bool Fusa_testCPU(void)
     return false;
 }
     
+//Get the WDT Test Results
+bool Fusa_testWDT(void)
+{
+    if (DIAG_WDT_GetResult() == DIAG_PASS)
+    {
+        return true;
+    }
+    return false;
+}
+
 //Test the comparator
 bool Fusa_testAC(void)
 {

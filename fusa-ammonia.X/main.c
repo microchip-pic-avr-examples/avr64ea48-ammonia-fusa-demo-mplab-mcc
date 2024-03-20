@@ -36,11 +36,12 @@
 #include "Application.h"
 #include "mcc_generated_files/reset/rstctrl.h"
 #include "mcc_generated_files/diagnostics/diag_library/memory/volatile/diag_sram_marchc_minus.h"
+#include "mcc_generated_files/diagnostics/diag_library/wdt/diag_wdt_startup.h"
 
 void printResetReasons(void)
 {
     //Get the RESET Flags
-    uint8_t flags = RSTCTRL_get_reset_cause();
+    uint8_t flags = DIAG_WDT_GetRSTFRCopy();
     
     //No flags were set
     if (flags == 0x00)
@@ -81,13 +82,6 @@ void printResetReasons(void)
     
     //Clear the Flags
     RSTCTRL_clear_reset_cause();
-}
-
-//Called immediately after startup
-static void __init(void)
-{
-    //Run SRAM Test
-    DIAG_SRAM_MarchStartup();
 }
 
 int main(void)
