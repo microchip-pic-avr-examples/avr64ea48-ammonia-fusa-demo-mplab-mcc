@@ -19,6 +19,33 @@
         <logicalFolder name="dac" displayName="dac" projectFiles="true">
           <itemPath>mcc_generated_files/dac/dac0.h</itemPath>
         </logicalFolder>
+        <logicalFolder name="diagnostics" displayName="diagnostics" projectFiles="true">
+          <logicalFolder name="diag_common" displayName="diag_common" projectFiles="true">
+            <logicalFolder name="config" displayName="config" projectFiles="true">
+              <itemPath>mcc_generated_files/diagnostics/diag_common/config/diag_config.h</itemPath>
+            </logicalFolder>
+            <itemPath>mcc_generated_files/diagnostics/diag_common/diag_result_type.h</itemPath>
+            <itemPath>mcc_generated_files/diagnostics/diag_common/diag_device_macros.h</itemPath>
+          </logicalFolder>
+          <logicalFolder name="diag_library"
+                         displayName="diag_library"
+                         projectFiles="true">
+            <logicalFolder name="cpu" displayName="cpu" projectFiles="true">
+              <itemPath>mcc_generated_files/diagnostics/diag_library/cpu/diag_cpu_registers.h</itemPath>
+            </logicalFolder>
+            <logicalFolder name="memory" displayName="memory" projectFiles="true">
+              <logicalFolder name="non_volatile"
+                             displayName="non_volatile"
+                             projectFiles="true">
+                <itemPath>mcc_generated_files/diagnostics/diag_library/memory/non_volatile/diag_eeprom_crc16.h</itemPath>
+                <itemPath>mcc_generated_files/diagnostics/diag_library/memory/non_volatile/diag_flash_crc32.h</itemPath>
+              </logicalFolder>
+              <logicalFolder name="volatile" displayName="volatile" projectFiles="true">
+                <itemPath>mcc_generated_files/diagnostics/diag_library/memory/volatile/diag_sram_marchc_minus.h</itemPath>
+              </logicalFolder>
+            </logicalFolder>
+          </logicalFolder>
+        </logicalFolder>
         <logicalFolder name="nvm" displayName="nvm" projectFiles="true">
           <itemPath>mcc_generated_files/nvm/nvm.h</itemPath>
         </logicalFolder>
@@ -104,6 +131,33 @@
             <itemPath>mcc_generated_files/dac/src/dac0.c</itemPath>
           </logicalFolder>
         </logicalFolder>
+        <logicalFolder name="diagnostics" displayName="diagnostics" projectFiles="true">
+          <logicalFolder name="diag_common" displayName="diag_common" projectFiles="true">
+            <logicalFolder name="diag_startup"
+                           displayName="diag_startup"
+                           projectFiles="true">
+              <itemPath>mcc_generated_files/diagnostics/diag_common/diag_startup/diag_startup.c</itemPath>
+            </logicalFolder>
+          </logicalFolder>
+          <logicalFolder name="diag_library"
+                         displayName="diag_library"
+                         projectFiles="true">
+            <logicalFolder name="cpu" displayName="cpu" projectFiles="true">
+              <itemPath>mcc_generated_files/diagnostics/diag_library/cpu/diag_cpu_registers.c</itemPath>
+            </logicalFolder>
+            <logicalFolder name="memory" displayName="memory" projectFiles="true">
+              <logicalFolder name="non_volatile"
+                             displayName="non_volatile"
+                             projectFiles="true">
+                <itemPath>mcc_generated_files/diagnostics/diag_library/memory/non_volatile/diag_eeprom_crc16_direct.c</itemPath>
+                <itemPath>mcc_generated_files/diagnostics/diag_library/memory/non_volatile/diag_flash_crc32_direct.c</itemPath>
+              </logicalFolder>
+              <logicalFolder name="volatile" displayName="volatile" projectFiles="true">
+                <itemPath>mcc_generated_files/diagnostics/diag_library/memory/volatile/diag_sram_marchc_minus.c</itemPath>
+              </logicalFolder>
+            </logicalFolder>
+          </logicalFolder>
+        </logicalFolder>
         <logicalFolder name="nvm" displayName="nvm" projectFiles="true">
           <logicalFolder name="src" displayName="src" projectFiles="true">
             <itemPath>mcc_generated_files/nvm/src/nvm.c</itemPath>
@@ -183,7 +237,7 @@
         <makeUseCleanTarget>false</makeUseCleanTarget>
         <makeCustomizationPreStep></makeCustomizationPreStep>
         <makeCustomizationPostStepEnabled>true</makeCustomizationPostStepEnabled>
-        <makeCustomizationPostStep>"hexmate"  ${ImagePath} -o${ImagePath}  -FILL=0xFFFF@0x0000:0xFFFB -CK=0x0000-0xFFFB@0xFFFC+0xFFFFFFFFw-4g-5p0x04C11DB7</makeCustomizationPostStep>
+        <makeCustomizationPostStep>"hexmate"  ${ImagePath} -o${ImagePath}  -FILL=0xFFFF@0x0000:0xFFFB -CK=0x0000-0xFFFB@0xFFFC+0xFFFFFFFFw-4g-5p0x04C11DB7o0xFFFFFFFF</makeCustomizationPostStep>
         <makeCustomizationPutChecksumInUserID>false</makeCustomizationPutChecksumInUserID>
         <makeCustomizationEnableLongLines>false</makeCustomizationEnableLongLines>
         <makeCustomizationNormalizeHexFile>false</makeCustomizationNormalizeHexFile>
@@ -196,7 +250,7 @@
         <property key="default-char-type" value="true"/>
         <property key="define-macros" value=""/>
         <property key="disable-optimizations" value="false"/>
-        <property key="extra-include-directories" value=""/>
+        <property key="extra-include-directories" value="mcc_generated_files"/>
         <property key="favor-optimization-for" value="-speed,+space"/>
         <property key="garbage-collect-data" value="false"/>
         <property key="garbage-collect-functions" value="true"/>
@@ -398,7 +452,7 @@
         <targetDevice>AVR64EA48</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>noID</platformTool>
+        <platformTool>nEdbgTool</platformTool>
         <languageToolchain>XC8</languageToolchain>
         <languageToolchainVersion>2.46</languageToolchainVersion>
         <platform>3</platform>
@@ -428,7 +482,7 @@
         <makeUseCleanTarget>false</makeUseCleanTarget>
         <makeCustomizationPreStep></makeCustomizationPreStep>
         <makeCustomizationPostStepEnabled>true</makeCustomizationPostStepEnabled>
-        <makeCustomizationPostStep>"hexmate"  ${ImagePath} -o${ImagePath}  -FILL=0xFFFF@0x0000:0xFFFB -CK=0x0000-0xFFFB@0xFFFC+0xFFFFFFFFw-4g-5p0x04C11DB7</makeCustomizationPostStep>
+        <makeCustomizationPostStep>"hexmate"  ${ImagePath} -o${ImagePath}  -FILL=0xFFFF@0x0000:0xFFFB -CK=0x0000-0xFFFB@0xFFFC+0xFFFFFFFFw-4g-5p0x04C11DB7o0xFFFFFFFF</makeCustomizationPostStep>
         <makeCustomizationPutChecksumInUserID>false</makeCustomizationPutChecksumInUserID>
         <makeCustomizationEnableLongLines>false</makeCustomizationEnableLongLines>
         <makeCustomizationNormalizeHexFile>false</makeCustomizationNormalizeHexFile>
@@ -514,6 +568,11 @@
         <property key="program-the-device-with-default-config-words" value="false"/>
         <property key="remove-unused-sections" value="true"/>
       </HI-TECH-LINK>
+      <Tool>
+        <property key="memories.programmemory.ranges" value="0-7fff"/>
+        <property key="programmerToGoFilePath"
+                  value="C:/Users/c62081/Documents/Git Repos/avr64ea48-ammonia-fusa-demo-mplab-mcc/fusa-ammonia.X/debug/pro/fusa-ammonia_ptg"/>
+      </Tool>
       <XC8-CO>
         <property key="coverage-enable" value=""/>
         <property key="stack-guidance" value="false"/>
@@ -536,6 +595,11 @@
         <property key="user-pack-device-support" value=""/>
         <property key="wpo-lto" value="false"/>
       </XC8-config-global>
+      <nEdbgTool>
+        <property key="memories.programmemory.ranges" value="0-7fff"/>
+        <property key="programmerToGoFilePath"
+                  value="C:/Users/c62081/Documents/Git Repos/avr64ea48-ammonia-fusa-demo-mplab-mcc/fusa-ammonia.X/debug/pro/fusa-ammonia_ptg"/>
+      </nEdbgTool>
     </conf>
     <conf name="develop" type="2">
       <toolsSet>
@@ -573,20 +637,21 @@
         <makeUseCleanTarget>false</makeUseCleanTarget>
         <makeCustomizationPreStep></makeCustomizationPreStep>
         <makeCustomizationPostStepEnabled>true</makeCustomizationPostStepEnabled>
-        <makeCustomizationPostStep>"hexmate"  ${ImagePath} -o${ImagePath}  -FILL=0xFFFF@0x0000:0xFFFB -CK=0x0000-0xFFFB@0xFFFC+0xFFFFFFFFw-4g-5p0x04C11DB7</makeCustomizationPostStep>
+        <makeCustomizationPostStep>"hexmate"  ${ImagePath} -o${ImagePath}  -FILL=0xFFFF@0x0000:0xFFFB -CK=0x0000-0xFFFB@0xFFFC+0xFFFFFFFFw-4g-5p0x04C11DB7o0xFFFFFFFF</makeCustomizationPostStep>
         <makeCustomizationPutChecksumInUserID>false</makeCustomizationPutChecksumInUserID>
         <makeCustomizationEnableLongLines>false</makeCustomizationEnableLongLines>
         <makeCustomizationNormalizeHexFile>false</makeCustomizationNormalizeHexFile>
       </makeCustomizationType>
       <HI-TECH-COMP>
         <property key="additional-warnings" value="true"/>
+        <property key="appendMe" value=""/>
         <property key="asmlist" value="true"/>
         <property key="call-prologues" value="false"/>
         <property key="default-bitfield-type" value="true"/>
         <property key="default-char-type" value="true"/>
         <property key="define-macros" value="DEVELOP_MODE"/>
         <property key="disable-optimizations" value="false"/>
-        <property key="extra-include-directories" value=""/>
+        <property key="extra-include-directories" value="mcc_generated_files"/>
         <property key="favor-optimization-for" value="-speed,+space"/>
         <property key="garbage-collect-data" value="false"/>
         <property key="garbage-collect-functions" value="true"/>

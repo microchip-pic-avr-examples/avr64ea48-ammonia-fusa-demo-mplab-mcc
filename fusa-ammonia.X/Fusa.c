@@ -11,6 +11,9 @@
 #include "Application.h"
 #include "GasSensor.h"
 #include "EEPROM.h"
+#include "mcc_generated_files/diagnostics/diag_library/memory/non_volatile/diag_flash_crc32.h"
+#include "mcc_generated_files/diagnostics/diag_library/cpu/diag_cpu_registers.h"
+#include "mcc_generated_files/diagnostics/diag_library/memory/volatile/diag_sram_marchc_minus.h"
 
 #define PASS_STRING "OK\r\n"
 #define FAIL_STRING "FAIL\r\n"
@@ -30,69 +33,9 @@ extern const uint32_t flashChecksum __at((CRC_ADDRESS_START));
  * Little Endian Order - Highest byte is the last byte
  */
 static volatile const uint32_t flashChecksum __at((CRC_ADDRESS_START)) = 0x87654321;
-
-
 #endif
 
 static volatile SystemState sysState = SYS_ERROR;
-
-bool _WriteFlashBlock(flash_address_t flash_address, uint8_t *data, size_t size)
-{
-    //If below voltage threshold, do not start a memory write
-    if (!Application_isVoltageOK())
-    {
-        return false;
-    }
-    
-    flash_address_t flashStartPageAddress;
-    uint16_t flashAddressOffset;
-    flash_data_t flashWriteData[PROGMEM_PAGE_SIZE];
-
-    //Get the starting address of the page containing the given address
-    flashStartPageAddress = FLASH_PageAddressGet(flash_address);
-
-    //Read entire row
-    for (flashAddressOffset = 0; flashAddressOffset < PROGMEM_PAGE_SIZE; flashAddressOffset++)
-    {
-        flashWriteData[flashAddressOffset] = FLASH_Read(flashStartPageAddress + flashAddressOffset);
-    }
-
-    //Get offset from the starting address of the page
-    flashAddressOffset = FLASH_PageOffsetGet(flash_address);
-
-    //Update data of required size
-    for (uint8_t i=0; i<size; i++)
-    {
-        flashWriteData[flashAddressOffset + i] = *(data+ i);
-    }
-
-    //Wait for any pending operations
-    while (FLASH_IsBusy());
-    
-    //Erase the entire Flash page
-    if (FLASH_PageErase(flashStartPageAddress) == NVM_ERROR)
-    {
-        return false;
-    }
-    
-    //Wait for Flash Erase to Complete
-    while (FLASH_IsBusy());
-    
-    NVM_StatusClear();
-
-    //Write data to the Flash row
-    if (FLASH_RowWrite(flashStartPageAddress, flashWriteData))
-    {
-        return false;
-    }
-    
-    NVM_StatusClear();
-    
-    //Wait for Flash Write to Complete
-    while (FLASH_IsBusy());
-    
-    return true;
-}
 
 //Runs a self-test of the system
 bool Fusa_runStartupSelfTest(void)
@@ -111,24 +54,8 @@ bool Fusa_runStartupSelfTest(void)
     {
         //Erase requested by user
         GasSensor_eraseEEPROM();
-        
-#ifdef DEVELOP_MODE
-        //Only invalidate CRC in Develop Modes
-        //In "production modes" this could brick the firmware by causing CRC to fail
-        Fusa_invalidateEEPROM();
-#endif
                 
         printf("Configuration ERASED\r\n");
-    }
-
-    
-    printf("Checksum...");
-    if (Fusa_prepareChecksum())
-        printf(PASS_STRING);
-    else
-    {
-        printf(FAIL_STRING);
-        sysState = SYS_ERROR;
     }
     
     printf("Flash Memory Checksum = 0x%lx\r\n\r\n", Fusa_getChecksumFromPFM());
@@ -143,9 +70,18 @@ bool Fusa_runStartupSelfTest(void)
         sysState = SYS_ERROR;
     }
     
+    printf("Testing SRAM...");
+    if (Fusa_testSRAM())
+        printf(PASS_STRING);
+    else
+    {
+        printf(FAIL_STRING);
+        sysState = SYS_ERROR;
+    }
+    
     //Check Memory
     printf("Testing Memory Integrity...");
-    if (Fusa_testMemory())
+    if (Fusa_testFlash())
         printf(PASS_STRING);
     else
     {
@@ -178,6 +114,12 @@ bool Fusa_runStartupSelfTest(void)
         //No valid calibration found in EEPROM
         printf("INVALID\r\n");
     }
+        
+    DELAY_microseconds(100);
+    
+    //Restart the RTC
+    RTC_Start();
+
     
     //In develop mode, ignore startup errors and accelerate warm-up
 #ifdef DEVELOP_MODE
@@ -214,40 +156,20 @@ bool Fusa_runStartupSelfTest(void)
     }
     else
     {
-        printf("Self Test Complete\r\n\r\n");
+        printf("Self Test Complete\r\n\r\nBeginning %u hour sensor warmup\r\n", WARM_UP_HOURS);
         sysState = SYS_WARMUP;
     }
     
     return false;
 }
 
-//Verifies the checksum has been XORed
-//Required for CRC-32
-bool Fusa_prepareChecksum(void)
-{
-    if (Memory_readEEPROM8(EEPROM_VERSION_ADDR) != EEPROM_VERSION_ID)
-    {
-        //Write the EEPROM Version ID
-        if (!Memory_writeEEPROM8(EEPROM_VERSION_ADDR, EEPROM_VERSION_ID))
-            return false;
-        
-        uint32_t sum = Fusa_getChecksumFromPFM() ^ 0xFFFFFFFF;
-    
-        uint8_t b[4];
-        b[3] = (uint8_t) ((sum & 0xFF000000) >> 24);
-        b[2] = (uint8_t) ((sum & 0x00FF0000) >> 16);
-        b[1] = (uint8_t) ((sum & 0x0000FF00) >> 8);
-        b[0] = (uint8_t) ((sum & 0x000000FF));
-
-        return _WriteFlashBlock(CRC_ADDRESS_START, b, 4);
-    }
-    
-    return true;
-}
-
 //Run a CPU test
 bool Fusa_testCPU(void)
 {
+    if (DIAG_CPU_Registers() == DIAG_PASS)
+    {
+        return true;
+    }
     return false;
 }
     
@@ -338,10 +260,26 @@ bool Fusa_testAC(void)
 }
 
 //Run a memory self-check
-bool Fusa_testMemory(void)
+bool Fusa_testFlash(void)
 {    
-    
-    return Application_runCRC();
+//    if (DIAG_FLASH_ValidateCRC(DIAG_FLASH_START_ADDR, DIAG_FLASH_LENGTH, DIAG_FLASH_CRC_STORE_ADDR)
+//            == DIAG_PASS)
+//    {
+//        return true;
+//    }
+//    return false;
+    return Application_runHWCRC();
+}
+
+//Run an SRAM self-test
+bool Fusa_testSRAM(void)
+{
+    //Did the SRAM test pass?
+    if (DIAG_SRAM_MarchGetStartupResult() == DIAG_PASS)
+    {
+        return true;
+    }
+    return false;
 }
 
 //Run a checksum of the EEPROM
@@ -399,7 +337,7 @@ void Fusa_invalidateEEPROM(void)
 
 //Runs the periodic self-test of the system
 void Fusa_runPeriodicSelfCheck(void)
-{
+{    
     //Clear WDT
     asm("WDR");
     

@@ -1,13 +1,13 @@
 /**
- * System Driver Source File
+ * CONFIGURATION BITS Generated Driver Source File
  * 
- * @file system.c
+ * @file config_bits.c
  * 
- * @ingroup systemdriver
+ * @ingroup config_bitsdriver
  * 
- * @brief This file contains the API implementation for the System driver.
+ * @brief This file contains the API implementation for the Device Configuration Bits driver.
  *
- * @version Driver Version 1.0.2
+ * @version Driver Version 1.0.5
  *
  * @version Package Version 4.2.13
 */
@@ -32,51 +32,18 @@
     THIS SOFTWARE.
 */
 
-#include "../system.h"
+#include <avr/io.h>
 
-int8_t BOD_Initialize();
-
-void SYSTEM_Initialize(void)
+/**
+ * Configures the Fuse bits.
+ */
+FUSES = 
 {
-    CLOCK_Initialize();
-    PIN_MANAGER_Initialize();
-    AC1_Initialize();
-    ADC0_Initialize();
-    BOD_Initialize();
-    CRC_Initialize();
-    DAC0_Initialize();
-    NVM_Initialize();
-    RTC_Initialize();
-    TCA0_Initialize();
-    TCB0_Initialize();
-    USART1_Initialize();
-    VREF_Initialize();
-    CPUINT_Initialize();
-}
-
-int8_t BOD_Initialize()
-{
-    //SLEEP Enabled in continuous mode; 
-    ccp_write_io((void*)&(BOD.CTRLA),0xD);
-    //
-    BOD.CTRLB = 0x1;
-    //VLMCFG VDD falls below VLM threshold; VLMIE disabled; 
-    BOD.INTCTRL = 0x0;
-    //VLMIF disabled; 
-    BOD.INTFLAGS = 0x0;
-    //
-    BOD.STATUS = 0x0;
-    //VLMLVL VLM threshold 15% above BOD level; 
-    BOD.VLMCTRLA = 0x2;
-
-    return 0;
-}
-
-ISR(BOD_VLM_vect)
-{
-	/* Insert your AC interrupt handling code here */
-
-	/* The interrupt flag has to be cleared manually */
-	BOD.INTFLAGS = BOD_VLMIE_bm;
-}
-
+  .BODCFG = ACTIVE_ENABLED_gc | LVL_BODLEVEL1_gc | SAMPFREQ_128HZ_gc | SLEEP_ENABLE_gc,
+  .BOOTSIZE = 0x5,
+  .CODESIZE = 0xF5,
+  .OSCCFG = OSCHFFRQ_20M_gc,
+  .SYSCFG0 = CRCSEL_CRC32_gc | CRCSRC_NOCRC_gc | RSTPINCFG_RESET_gc | UPDIPINCFG_UPDI_gc,
+  .SYSCFG1 = SUT_0MS_gc,
+  .WDTCFG = PERIOD_OFF_gc | WINDOW_OFF_gc,
+};

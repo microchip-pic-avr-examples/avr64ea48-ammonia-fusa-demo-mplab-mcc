@@ -126,7 +126,7 @@ void Application_setDACREF(uint8_t val)
 
 //Runs a CRC Scan (Blocking)
 //Returns true if successful 
-bool Application_runCRC(void)
+bool Application_runHWCRC(void)
 {
     //Reset the CRC
     CRCSCAN.CTRLA |= CRCSCAN_RESET_bm;

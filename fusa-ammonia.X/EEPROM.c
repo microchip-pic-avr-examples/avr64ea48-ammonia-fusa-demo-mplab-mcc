@@ -6,6 +6,7 @@
 #include <avr/io.h>
 
 #include "mcc_generated_files/system/system.h"
+#include "Application.h"
 
 //Writes and verifies a byte to the EEPROM. Returns true if successful
 bool Memory_writeEEPROM8(uint16_t addr, uint8_t data)

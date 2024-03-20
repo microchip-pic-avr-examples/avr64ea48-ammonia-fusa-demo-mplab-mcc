@@ -61,7 +61,7 @@ extern "C" {
     
     //Runs a CRC Scan (Blocking)
     //Returns true if successful 
-    bool Application_runCRC(void);
+    bool Application_runHWCRC(void);
     
     //Returns the VLM Status
     bool Application_isVoltageOK(void);

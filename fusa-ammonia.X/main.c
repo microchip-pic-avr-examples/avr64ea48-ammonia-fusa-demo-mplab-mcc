@@ -35,6 +35,7 @@
 #include "Fusa.h"
 #include "Application.h"
 #include "mcc_generated_files/reset/rstctrl.h"
+#include "mcc_generated_files/diagnostics/diag_library/memory/volatile/diag_sram_marchc_minus.h"
 
 void printResetReasons(void)
 {
@@ -76,10 +77,17 @@ void printResetReasons(void)
     }
     
     //Newline
-    printf("\r\n\r\n");
+    printf("\r\n");
     
     //Clear the Flags
     RSTCTRL_clear_reset_cause();
+}
+
+//Called immediately after startup
+static void __init(void)
+{
+    //Run SRAM Test
+    DIAG_SRAM_MarchStartup();
 }
 
 int main(void)

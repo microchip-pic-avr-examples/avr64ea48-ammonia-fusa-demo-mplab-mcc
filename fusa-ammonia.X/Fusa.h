@@ -37,8 +37,11 @@ extern "C" {
     //Test the comparator
     bool Fusa_testAC(void);
     
-    //Run a memory self-check
-    bool Fusa_testMemory(void);
+    //Run a memory self-test
+    bool Fusa_testFlash(void);
+    
+    //Run an SRAM self-test
+    bool Fusa_testSRAM(void);
     
     //Run a checksum of the EEPROM
     bool Fusa_testEEPROM(void);
