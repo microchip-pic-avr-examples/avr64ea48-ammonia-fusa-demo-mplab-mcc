@@ -14,7 +14,7 @@ When handling the ammonia containing solution, excerise caution and follow manuf
 
 ## Changes to Class B Libraries
 
-A minor change was made to the Class B library to convert the CRC from big-endian to little-endian when stored in flash. This enables the SW checksum to work identically to the HW checksum.  
+A minor change was made to the Class B library to convert the CRC from big-endian to little-endian when stored in flash. This enables the SW checksum to be compatiable with the HW checksum.  
 
 ## Related Documentation
 

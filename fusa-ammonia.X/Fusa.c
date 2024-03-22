@@ -376,6 +376,9 @@ void Fusa_invalidateEEPROM(void)
 //Runs the periodic self-test of the system
 void Fusa_runPeriodicSelfCheck(void)
 {    
+    static bool prevButtonState = false;
+    bool isPressed = false;
+    
     //Clear WDT
     asm("WDR");
     
@@ -392,6 +395,20 @@ void Fusa_runPeriodicSelfCheck(void)
         printf("SRAM Failed Self-Test\r\n");
         sysState = SYS_ERROR;
     }
+    
+    //Simple one-shot button handler
+    if (SW0_GetValue())
+    {
+        //Button is pressed - was it pressed since the last check
+        if (!prevButtonState)
+        {
+            //Recently pressed
+            isPressed = true;
+        }
+    }
+    
+    //Update state
+    prevButtonState = SW0_GetValue();
     
     //Run state machine
     switch (sysState)
@@ -447,7 +464,7 @@ void Fusa_runPeriodicSelfCheck(void)
             //Need to calibrate
             
             //If SW0 was pressed
-            if (SW0_GetValue())
+            if (isPressed)
             {
                 //Run calibration
                 
@@ -502,7 +519,7 @@ void Fusa_runPeriodicSelfCheck(void)
                     printf("AC failed self-check.\r\n");
                     sysState = SYS_ERROR;
                 }
-                else if (SW0_GetValue())
+                else if (isPressed)
                 {
                     //Re-calibrate
                     printf("Ready to recalibrate. Press SW0 to set new zero-point.\r\n");
