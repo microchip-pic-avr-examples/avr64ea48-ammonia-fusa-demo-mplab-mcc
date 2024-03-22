@@ -41,7 +41,7 @@ A minor change was made to the Class B library to convert the CRC from big-endia
 
 ## Setup
 
-**TODO: Image**
+![Board Setup](./images/boardSetup.JPG)
 
 ### Hardware Setup
 1. With the power off, insert the AVR64EA48 Curiosity Nano into the Curiosity Nano Base.
