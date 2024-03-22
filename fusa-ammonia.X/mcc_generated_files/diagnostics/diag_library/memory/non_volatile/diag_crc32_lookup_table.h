@@ -19,17 +19,22 @@
  *  CLAIMS RELATED TO THE SOFTWARE WILL NOT EXCEED AMOUNT OF FEES, IF ANY,
  *  YOU PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
  *
- *  @file    diag_common_example.h
- *  @brief   This file contains examples prototypes to demonstrate diagnostics API usage
+ *  @file    diag_crc32_lookup_table.h
+ *  @brief   Contains the prototype of the API to read the look-up table contents 
+ *           for the 32-bit CRC algorithm.
+ * 
+ *  @note 
+ *  Microchip Technology Inc. has followed development methods required by 
+ *  Functional Safety Standards and performed extensive validation and static
+ *  testing to ensure that the code operates as intended. Any modification to the 
+ *  code can invalidate the results of Microchip's validation and testing.
  *
  */
+ 
+#ifndef DIAG_CRC32_LOOKUP_TABLE_H
+/* cppcheck-suppress misra-c2012-2.5 */
+#define DIAG_CRC32_LOOKUP_TABLE_H
 
-#ifndef DIAG_COMMON_EXAMPLE_H
-#define DIAG_COMMON_EXAMPLE_H
+uint32_t READ_DIAG_CRC32Table(uint8_t readByte);
 
-void DIAG_EEPROM_Example(void);
-
-#endif /* DIAG_COMMON_EXAMPLE_H */
-/**
-End of File
- */
+#endif //DIAG_CRC32_LOOKUP_TABLE_H

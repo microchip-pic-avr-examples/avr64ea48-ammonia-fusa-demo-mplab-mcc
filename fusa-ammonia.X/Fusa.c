@@ -285,13 +285,16 @@ bool Fusa_testAC(void)
 //Run a memory self-check
 bool Fusa_testFlash(void)
 {    
-//    if (DIAG_FLASH_ValidateCRC(DIAG_FLASH_START_ADDR, DIAG_FLASH_LENGTH, DIAG_FLASH_CRC_STORE_ADDR)
-//            == DIAG_PASS)
-//    {
-//        return true;
-//    }
-//    return false;
+#ifdef FUSA_ENABLE_FLASH_SW_SCAN
+    if (DIAG_FLASH_ValidateCRC(DIAG_FLASH_START_ADDR, (DIAG_FLASH_CRC_STORE_ADDR), DIAG_FLASH_CRC_STORE_ADDR)
+            == DIAG_PASS)
+    {
+        return true;
+    }
+    return false;
+#else
     return Application_runHWCRC();
+#endif
 }
 
 //Run an SRAM self-test
@@ -319,7 +322,7 @@ bool Fusa_testEEPROM(void)
         return false;
     }
         
-#ifndef FUSA_ENABLE_CRC_CHECK
+#ifndef FUSA_ENABLE_EEPROM_CRC_CHECK
     //Verify Checksum (Simple)
     if (Memory_calculateChecksum() != EEPROM_CHECKSUM_GOOD)
     {
