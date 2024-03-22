@@ -21,19 +21,19 @@ A minor change was made to the Class B library to convert the CRC from big-endia
 - [Introduction to Functional Safety](https://mu.microchip.com/introduction-to-functional-safety)
 - [Class B Diagnostic Libraries for Functional Safety](https://mu.microchip.com/class-b-diagnostic-libraries-for-functional-safety)
 - [MQ137 Ammonia Sensor Product Page](https://www.winsen-sensor.com/product/mq137.html)
-- [AVR64EA48 Product Page](#)
+- [AVR64EA48 Product Page](https://www.microchip.com/en-us/product/avr64ea32?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_AVR-EA&utm_content=avr64ea48-ammonia-fusa-demo-mplab-mcc-github&utm_bu=MCU08)
 
 ## Software Used
 
-- [MPLAB&reg; X IDE v6.20 or newer](#)
-- [MPLAB XC8 v2.46 or newer](#)
-- [MPLAB Code Configurator (MCC)](#)
+- [MPLAB&reg; X IDE v6.20 or newer](https://www.microchip.com/en-us/tools-resources/develop/mplab-x-ide?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_AVR-EA&utm_content=avr64ea48-ammonia-fusa-demo-mplab-mcc-github&utm_bu=MCU08)
+- [MPLAB XC8 v2.46 or newer](https://www.microchip.com/en-us/tools-resources/develop/mplab-xc-compilers?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_AVR-EA&utm_content=avr64ea48-ammonia-fusa-demo-mplab-mcc-github&utm_bu=MCU08)
+- [MPLAB Code Configurator (MCC)](https://www.microchip.com/en-us/tools-resources/configure/mplab-code-configurator?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_AVR-EA&utm_content=avr64ea48-ammonia-fusa-demo-mplab-mcc-github&utm_bu=MCU08)
 - AVR-Ex_DFP v2.8.189 or newer
 
 ## Hardware Used
 
-- [AVR64EA48 Curiosity Nano Evaluation Kit (EV66E56A)](#)
-- [Curiosity Nano Base for Click Boards&trade; (AC164162)](#)
+- [AVR64EA48 Curiosity Nano Evaluation Kit (EV66E56A)](https://www.microchip.com/en-us/development-tool/EV66E56A?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_AVR-EA&utm_content=avr64ea48-ammonia-fusa-demo-mplab-mcc-github&utm_bu=MCU08)
+- [Curiosity Nano Base for Click Boards&trade; (AC164162)](https://www.microchip.com/en-us/development-tool/AC164162?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_AVR-EA&utm_content=avr64ea48-ammonia-fusa-demo-mplab-mcc-github&utm_bu=MCU08)
 - [Ammonia Click (MIKROE-4151)](https://www.mikroe.com/ammonia-click)
 - [(Optional) BUZZ 2 Click (MIKROE-2720)](https://www.mikroe.com/buzz-2-click)
 - [2x2 Key Click (MIKROE-2152)](https://www.mikroe.com/2x2-key-click)
