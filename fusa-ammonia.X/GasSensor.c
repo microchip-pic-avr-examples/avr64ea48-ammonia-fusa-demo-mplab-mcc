@@ -118,7 +118,7 @@ bool GasSensor_writeEEPROM(uint16_t refValue)
     if (!Memory_writeEEPROM16(EEPROM_REF_VALUE_H_ADDR, refValue))
         return false;
     
-#ifndef FUSA_ENABLE_EEPROM_CRC_CHECK
+#ifdef FUSA_ENABLE_EEPROM_SIMPLE_CHECKSUM
     //Write the real checksum
     if (!Memory_writeEEPROM16(EEPROM_CKSM_H_ADDR, Memory_calculateChecksum()))
         return false;

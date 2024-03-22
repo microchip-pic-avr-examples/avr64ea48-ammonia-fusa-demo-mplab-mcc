@@ -12,6 +12,10 @@ This application is an example ofs how to develop a class B Functional Safety (F
 
 When handling the ammonia containing solution, excerise caution and follow manufacturer's recommendations for ventilation and safety. 
 
+## Changes to Class B Libraries
+
+A minor change was made to the Class B library to convert the CRC from big-endian to little-endian when stored in flash. This enables the SW checksum to work identically to the HW checksum.  
+
 ## Related Documentation
 
 - [Introduction to Functional Safety](https://mu.microchip.com/introduction-to-functional-safety)
@@ -21,8 +25,8 @@ When handling the ammonia containing solution, excerise caution and follow manuf
 
 ## Software Used
 
-- [MPLAB® X IDE 6.15](#)
-- [MPLAB XC8 v2.45 or newer](#)
+- [MPLAB&reg; X IDE v6.20 or newer](#)
+- [MPLAB XC8 v2.46 or newer](#)
 - [MPLAB Code Configurator (MCC)](#)
 - AVR-Ex_DFP v2.8.189 or newer
 
@@ -108,7 +112,22 @@ Please consult the table below to determine which configuration to use. **For in
 | PF6 | nRESET
 | PF7 | UPDI
 
-*Note*: Reserved pins are not used in the example, but are allocated by hardware. 
+**Note**: Reserved pins are not used in the example, but are allocated by hardware. 
+
+## Class B Tests Enabled
+
+* CPU
+    - Verifies the CPU registers are functioning correctly
+* Flash*
+    - Verifies the program flash memory 
+* EEPROM*
+    - Verifies the EEPROM data has not been corrupted
+* SRAM 
+    - Verify the SRAM integrity on Power-on-Reset (POR)
+* Watchdog Timer (WDT)
+    - Verifies the WDT hardware is functioning
+
+**Note**: The Flash and EEPROM have alternative verification modes that do not use the Class B libraries. For the Flash, set the macro `FUSA_ENABLE_FLASH_HW_SCAN` to use the CRC hardware to perform the scan, rather than the Class B library. For the EEPROM, set `FUSA_ENABLE_EEPROM_SIMPLE_CHECKSUM` to use a simpler checksum for calculations, rather than the Class B library. Both of these macros are defined in `application.h`.
 
 ## Operation
 

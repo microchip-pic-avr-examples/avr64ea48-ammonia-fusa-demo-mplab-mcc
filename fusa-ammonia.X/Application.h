@@ -21,11 +21,11 @@ extern "C" {
     
 //If defined, the class B library uses a 16-bit CRC to verify EEPROM
 //If not defined, a 16-bit checksum is used instead
-#define FUSA_ENABLE_EEPROM_CRC_CHECK
+//#define FUSA_ENABLE_EEPROM_SIMPLE_CHECKSUM
     
 //If defined, the class B library will perform a flash scan in HW
 //If not defined, the HW CRC will be used instead
-#define FUSA_ENABLE_FLASH_SW_SCAN
+//#define FUSA_ENABLE_FLASH_HW_SCAN
     
     //Interrupt for an elapsed hour
     void Application_onHourTick(void);

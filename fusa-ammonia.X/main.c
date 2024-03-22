@@ -110,7 +110,7 @@ int main(void)
     
     //Run system self-test
     Fusa_runStartupSelfTest();
-        
+            
     //Enable interrupts
     sei();
     

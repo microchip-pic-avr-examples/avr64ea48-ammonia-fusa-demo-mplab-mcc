@@ -285,7 +285,8 @@ bool Fusa_testAC(void)
 //Run a memory self-check
 bool Fusa_testFlash(void)
 {    
-#ifdef FUSA_ENABLE_FLASH_SW_SCAN
+#ifndef FUSA_ENABLE_FLASH_HW_SCAN
+    //Class B Library Mode
     if (DIAG_FLASH_ValidateCRC(DIAG_FLASH_START_ADDR, (DIAG_FLASH_CRC_STORE_ADDR), DIAG_FLASH_CRC_STORE_ADDR)
             == DIAG_PASS)
     {
@@ -293,6 +294,7 @@ bool Fusa_testFlash(void)
     }
     return false;
 #else
+    //Hardware Mode
     return Application_runHWCRC();
 #endif
 }
@@ -322,7 +324,7 @@ bool Fusa_testEEPROM(void)
         return false;
     }
         
-#ifndef FUSA_ENABLE_EEPROM_CRC_CHECK
+#ifdef FUSA_ENABLE_EEPROM_SIMPLE_CHECKSUM
     //Verify Checksum (Simple)
     if (Memory_calculateChecksum() != EEPROM_CHECKSUM_GOOD)
     {
@@ -383,6 +385,13 @@ void Fusa_runPeriodicSelfCheck(void)
 #ifdef VIEW_RAW_ADC
     printf("ADC Result: 0x%x\r\n", meas);
 #endif
+    
+    //Test SRAM
+    if (DIAG_SRAM_MarchPeriodic() != DIAG_PASS)
+    {
+        printf("SRAM Failed Self-Test\r\n");
+        sysState = SYS_ERROR;
+    }
     
     //Run state machine
     switch (sysState)

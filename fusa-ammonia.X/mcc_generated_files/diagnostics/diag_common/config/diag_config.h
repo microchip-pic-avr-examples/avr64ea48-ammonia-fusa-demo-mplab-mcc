@@ -204,7 +204,7 @@
  This macro enables the use of the @ref DIAG_SRAM_MarchPeriodic() API, if not 
  set to zero. 
  */
-#define DIAG_SRAM_MARCH_PERIODIC_ENABLED (0U)
+#define DIAG_SRAM_MARCH_PERIODIC_ENABLED (1U)
 
 #if (DIAG_SRAM_MARCH_PERIODIC_ENABLED != 0)
 /**
