@@ -123,7 +123,8 @@ Please consult the table below to determine which configuration to use. **For in
 * EEPROM*
     - Verifies the EEPROM data has not been corrupted
 * SRAM 
-    - Verify the SRAM integrity on Power-on-Reset (POR)
+    - Verifies the SRAM operation on Power-on-Reset (POR)
+    - Periodically scan the memory for errors
 * Watchdog Timer (WDT)
     - Verifies the WDT hardware is functioning
 

@@ -262,7 +262,7 @@
  address in the SRAM used by the application, coupling faults between that 
  address and at least the 192 closests addresses in each direction are covered. 
  */
-#define DIAG_SRAM_MARCH_SEC_OVERLAP (0x0U)
+#define DIAG_SRAM_MARCH_SEC_OVERLAP (0x80U)
 #endif //(DIAG_SRAM_MARCH_PERIODIC_ENABLE != 0)
 
 #endif //DIAG_CONFIG_H
