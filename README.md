@@ -4,7 +4,7 @@
 
 # Fusa Class B - Ammonia Gas Sensor with AVR64EA48
 
-This application is an example ofs how to develop a class B Functional Safety (FuSa) application using the AVR64EA48 family of microcontrollers.
+Gas leak detection systems are prevalent in many industries and residences around the world today. To develop a safe and reliable device, functional safety should be implemented into its' design. Gas leak detection systems can fall under various functional safety standards depending on where the system's intended use is. For this example, the Microchip PIC&reg; and AVR&reg; UL-certified IEC 60730 Class B software diagnostic library was used to implement functional safety tests. These tests help ensure hardware faults are identified and dealt with if they occur. If a fault were to occur and it were not to be identified, the application could act differently than expected which poses potential harm to users or the environment. This example uses the AVR64EA32 family of microcontrollers (MCUs) to implement a simple ammonia gas detector which uses the Class B Functional Safety (FuSa) libraries. 
 
 ## Warnings
 
