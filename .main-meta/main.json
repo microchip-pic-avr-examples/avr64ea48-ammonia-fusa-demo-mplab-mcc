@@ -5,7 +5,7 @@
         "metaDataVersion": "1.3.0",
         "name": "com.microchip.mcu8.mplabx.project.avr64ea48-ammonia-fusa-demo-mplab-mcc",
         "version": "1.0.0",
-        "displayName": "Fusa Class B - Ammonia Gas Sensor with AVR64EA48",
+        "displayName": "Functional Safety Class B - Ammonia Gas Sensor with AVR64EA48",
         "projectName": "avr64ea48-ammonia-fusa-demo-mplab-mcc",
         "shortDescription": "Demonstration of the Functional Safety (FuSa) class B libraries in a gas monitor application with AVR64EA48.",
         "ide": {

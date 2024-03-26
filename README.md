@@ -2,9 +2,9 @@
 
 [![MCHP](images/microchip.png)](https://www.microchip.com)
 
-# Fusa Class B - Ammonia Gas Sensor with AVR64EA48
+# Functional Safety Class B - Ammonia Gas Sensor with AVR64EA48
 
-Gas leak detection systems are prevalent in many industries and residences around the world today. To develop a safe and reliable device, functional safety should be implemented into its' design. Gas leak detection systems can fall under various functional safety standards depending on where the system's intended use is. For this example, the Microchip PIC&reg; and AVR&reg; UL-certified IEC 60730 Class B software diagnostic library was used to implement functional safety tests. These tests help ensure hardware faults are identified and dealt with if they occur. If a fault were to occur and it were not to be identified, the application could act differently than expected which poses potential harm to users or the environment. This example uses the AVR64EA32 family of microcontrollers (MCUs) to implement a simple ammonia gas detector which uses the Class B Functional Safety (FuSa) libraries. 
+Gas leak detection systems are prevalent in many industries and residences today. To develop a safe and reliable device, functional safety must be implemented into its' design. Gas leak detection systems can fall under various functional safety standards depending on where the system's intended use is. For this example, the Microchip PIC&reg; and AVR&reg; UL-certified IEC 60730 Class B software diagnostic library implements functional safety tests. These tests help ensure hardware faults are identified and dealt with if they occur. If a fault occurs and it is not identified, the application could act differently than expected, which poses potential harm to users or the environment. This example uses the AVR64EA32 family of microcontrollers (MCUs) to implement a simple ammonia gas detector which uses the Class B Functional Safety (FuSa) libraries. 
 
 ## Warnings
 
@@ -14,7 +14,7 @@ When handling the ammonia containing solution, excerise caution and follow manuf
 
 ## Changes to Class B Libraries
 
-A minor change was made to the Class B library to convert the CRC from big-endian to little-endian when stored in flash. This enables the SW checksum to be compatiable with the HW checksum.  
+A minor change was made to the Class B library to convert the Cyclic Redundancy Check (CRC) from big-endian to little-endian when stored in flash. This enables the SW checksum to be compatiable with the HW checksum.  
 
 ## Related Documentation
 
@@ -37,7 +37,7 @@ A minor change was made to the Class B library to convert the CRC from big-endia
 - [Ammonia Click (MIKROE-4151)](https://www.mikroe.com/ammonia-click)
 - [(Optional) BUZZ 2 Click (MIKROE-2720)](https://www.mikroe.com/buzz-2-click)
 - [2x2 Key Click (MIKROE-2152)](https://www.mikroe.com/2x2-key-click)
-- Ammonia Solution (such as household glass cleaner)
+- Ammonia Solution, such as household glass cleaner
 
 ## Setup
 
@@ -45,25 +45,25 @@ A minor change was made to the Class B library to convert the CRC from big-endia
 
 ### Hardware Setup
 1. With the power off, insert the AVR64EA48 Curiosity Nano into the Curiosity Nano Base.
-2. In Slot 1, insert the Ammonia Click.
+2. Insert the Ammonia Click into Slot 1.
 3. On the Ammonia Click, turn the gain potentiometer to the minimum position. 
-4. In Slot 2, insert the Buzz 2 Click, if using.
-5. In Slot 3, insert the 2x2 Key Click.
+4. Insert the Buzz 2 Click in Slot 2, if using one.
+5. Insert the 2x2 Key Click into Slot 3.
 6. Connect the Curiosity Nano to the Computer with a USB cable.
-7. Program the Curiosity Nano with the `Free` or `Pro` configuration. (See Program Setup for more information.)
+7. Program the Curiosity Nano with the `Free` or `Pro` configuration. (For more information, please see Program Setup).
 8. Wait for the sensor to warm-up.
 9. Once warmed up, press and hold SW0 until the calibration completes.
-10. Spray a solution containing ammonia near the sensor or apply the liquid to a towel or cloth and waft it over the element. The sensor should react to the change in environmental conditions within a few seconds.
+10. Spray a solution containing ammonia near the sensor or apply the liquid to a towel or cloth and waft it over the element. The sensor will react to the change in environmental conditions within a few seconds.
 
 ### Program Configuration Setup
 
-There are 4 configurations of the program inside of the IDE. **The sensor requires a 24 hour warm-up time before becoming stable.** If the microcontroller is power cycled during programming, the timer will restart. For evaluation purposes, only `free` and `pro` configurations should be used as these are the "production" versions. 
+There are four program configurations inside the project. **Note** The sensor requires a 24 hour warm-up time before becoming stable. If the microcontroller is power cycled during programming, the timer will restart. For evaluation purposes, only `free` and `pro` configurations should be used as these are the "production" versions. 
 
-For development, only `develop` and `develop_no_cksm` should be used. These development versions do not enforce the 24 hour warm-up time, will power-up even if the system fails self-check, and retain EEPROM values across programming cycles. Note, only the `develop_no_cksm` version is capable of entering debug mode, but will fail the flash checksum on startup. **The user is responsible for ensuring the sensor has warmed up in these modes.**
+For development, only `develop` and `develop_no_cksm` should be used. These development versions do not enforce the 24 hour warm-up time, they will power-up even if the system fails self-check, and retain EEPROM values across programming cycles. Note, only the `develop_no_cksm` version is capable of entering debug mode, but will fail the flash checksum on startup. **Note:** The user is responsible for ensuring the sensor has warmed up in these modes.
 
 Please consult the table below to determine which configuration to use. **For initial evaluation purposes, `free` or `pro` is recommended.**
 
-| Configuration | Optimization Level | Debug Mode Capable | 24 Hour Warm-Up Time Enforced? | EEPROM Retained | Checksum Valid
+| Configuration | Optimization Level | Debug Mode Capable | 24 Hour Warm-Up Time | EEPROM Retained | Checksum Valid
 | --- | ---- | ---- | ---- | ---- | ----- 
 | free | 1 | No | Yes | No | Yes
 | pro | S | No | Yes | No | Yes
@@ -72,8 +72,8 @@ Please consult the table below to determine which configuration to use. **For in
 
 #### Setting Program Configuration
 
-1. Open the project inside of MPLAB X IDE
-2. At the top left side of the screen, press the white dropdown box (develop in the image).  
+1. Open the project inside of MPLAB X IDE.
+2. At the top left side of the screen, press the white drop-down box (develop in the image).  
 ![Program Configuration Dropdown](./images/programConfig.PNG)  
 3. Select the desired configuration from the list.  
 ![Program Configurations](./images/programConfigs.PNG)
@@ -81,13 +81,13 @@ Please consult the table below to determine which configuration to use. **For in
 
 ### Data Visualizer Setup
 
-1. In MPLAB X IDE, press the Data Visualizer Icon (below) in the top toolbar.  
+1. In MPLAB X IDE, press the Data Visualizer Icon (shown below) in the top toolbar.  
 ![Data Visualizer Icon](./images/dvIcon.PNG)  
 2. On the left side of the screen, click the gear icon next to the COM port. The port number may vary.  
 ![Port Number](./images/portNumber.PNG)  
 3. Set the baud rate to 115200. No other changes are needed.
 4. Press the play button next to the gear.
-5. When prompted, press "Send to Terminal", then close.  
+5. When prompted, press Send to Terminal, then close.  
 
 ### I/O Usage
 
@@ -136,13 +136,13 @@ Please consult the table below to determine which configuration to use. **For in
 
 **Important: Set the ammonia click to minimum gain before power on!**
 
-On Power-on-Reset (POR), the system boots up and performs a self-check of the hardware. If no issues are encountered, the system will enter a 24 hour warm-up phase for the sensor. During this period, the sensor will get warm to the touch. Once per hour, the microcontroller will print a message to the UART indicating the current time remaining.
+On Power-on-Reset (POR), the system boots up and performs a self-check of the hardware. If no issues are encountered, the system will enter a 24 hour warm-up phase for the sensor. During this period, the sensor will get warm to the touch. Once per hour, the microcontroller will print a message to the UART to indicate the current time remaining.
 
-After warm-up, the system will check to see if a calibration is stored in internal EEPROM. If the calibration data is not present, it will print a message to the UART. The user must press and hold SW0 to begin the zero-point calibration of the sensor. 
+After warm-up, the system will check to see if a calibration is stored in internal EEPROM. If the calibration data is not present, it will print a message to the UART. The user must press and hold SW0 to begin the zero-point sensor calibration. 
 
-Once complete, the system will switch to the monitor mode. Once per minute, the system flashes the LED, measures the output of the ammonia sensor, performs a self-test of the analog comparator, and then checks for any user inputs. If the ammonia level rises above 50 ppm, the system will enter the alarm state, sounding the buzzer and blinking the LED. The system will remain in the alarm state until the concentration drops below 30 ppm. 
+Once complete, the system will switch to the Monitor state. Once per minute, the system flashes the LED, measures the output of the ammonia sensor, performs a self-test of the analog comparator, and then checks for any user inputs. If the ammonia level rises above 50 ppm, the system will enter the Alarm state, sounding the buzzer and blinking the LED. The system will remain in the Alarm state until the concentration drops below 30 ppm. 
 
-Calibration mode can be re-entered by pressing SW0 in the monitor state.
+The Calibration state can be re-entered by pressing SW0 in the Monitor state.
 
 ### Pushbutton Functionality
 
@@ -152,13 +152,13 @@ Button 2 will reset the microcontroller.
 
 ### Errors
 
-If at any point during the above an error occurs, the system will enter a fault state, where it will blink the LED and sound the buzzer in a pattern. The message `SYSTEM FAULT` is printed to the UART once every 10 seconds. This is an infinite loop, and can only be exited by power-cycling the microcontroller or by pulling the hardware reset on PF6 to ground.
+If at any point during the above an error occurs, the system will enter a Fault state, where it will blink the LED and sound the buzzer in a pattern. The message `SYSTEM FAULT` is printed to the UART every 10 seconds. This is an infinite loop, and can only be exited by power-cycling the microcontroller or by pulling the hardware reset on PF6 to ground.
 
-*Note:* Button 2 will not reset the microcontroller when in this state.
+**Note:** Button 2 will not reset the microcontroller when in this state.
 
 ## System States
 
-This application is controlled by a state machine, shown below. The state machine is called once per second to run the Watchdog Timer, get a sample from the sensor, move states, and perform self-checks.
+This application is controlled by a state machine, as shown below. The state machine is called once per second to run the Watchdog Timer (WDT), get a sample from the sensor, move states, and perform self-checks.
 
 TODO: State Machine Image
 
@@ -178,7 +178,7 @@ This state is used to handle the sensor calibration. To properly use the sensor,
 
 ### SYS_MONITOR
 
-This state is used to monitor the sensor. The analog comparator is polled to see if the ammonia value is above the `ALARM_THRESHOLD_HIGH` point. If it is, the system transitions to `SYS_ALARM`. Otherwise, the analog comparator is checked by the function `Fusa_testAC`. During this function, the system temporarily enters the `SYS_SELF_TEST` state, but returns to `SYS_MONITOR` after executing. An error during self-test function will cause the system to enter the `SYS_ERROR` state. Finally, if no other issues have occurred and the Alarm Test button is pressed, then the system will transition to `SYS_ALARM`.
+This state is used to monitor the sensor. The analog comparator is polled to see if the ammonia value is above the `ALARM_THRESHOLD_HIGH` point. If it is, the system transitions to `SYS_ALARM`. Otherwise, the analog comparator is checked by the function `Fusa_testAC`. During this function, the system temporarily enters the `SYS_SELF_TEST` state, but returns to `SYS_MONITOR` after executing. An error during self-test function will cause the system to enter the `SYS_ERROR` state. Finally, if no other issues have occurred and the Alarm Test button is pressed, then the system switches to `SYS_ALARM`.
 
 ### SYS_SELF_TEST
 
