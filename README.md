@@ -126,7 +126,7 @@ Please consult the table below to determine which configuration to use. **For in
     - Verifies the SRAM operation on Power-on-Reset (POR)
     - Periodically scan the memory for errors
 * Watchdog Timer (WDT)
-    - Verifies the WDT hardware is functioning
+    - Verifies the WDT hardware is functioning (at start-up)
 
 **Note**: The Flash and EEPROM have alternative verification modes that do not use the Class B libraries. For the Flash, set the macro `FUSA_ENABLE_FLASH_HW_SCAN` to use the CRC hardware to perform the scan, rather than the Class B library. For the EEPROM, set `FUSA_ENABLE_EEPROM_SIMPLE_CHECKSUM` to use a simpler checksum for calculations, rather than the Class B library. Both of these macros are defined in `application.h`.
 
