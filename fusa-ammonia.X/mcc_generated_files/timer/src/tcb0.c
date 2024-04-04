@@ -42,18 +42,7 @@ const struct TMR_INTERFACE TCB0_Interface = {
 };
 
 void (*TCB0_OVF_isr_cb)(void) = NULL;
-
-void TCB0_OverflowCallbackRegister(TCB0_cb_t cb)
-{
-	TCB0_OVF_isr_cb = cb;
-}
-
 void (*TCB0_CAPT_isr_cb)(void) = NULL;
-
-void TCB0_CaptureCallbackRegister(TCB0_cb_t cb)
-{
-	TCB0_CAPT_isr_cb = cb;
-}
 
 
 void TCB0_Initialize(void)

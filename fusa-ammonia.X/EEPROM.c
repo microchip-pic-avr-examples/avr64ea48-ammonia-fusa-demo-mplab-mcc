@@ -15,14 +15,14 @@ bool Memory_writeEEPROM8(uint16_t addr, uint8_t data)
     //If VLM is 1, then we are below threshold
     if (!Application_isVoltageOK())
     {
-        printf("BOD = 0x%x\r\n", BOD.STATUS);
+        printf("BOD ERROR\r\n");
         return false;
     }
     
     //Address is out of bounds
-    if (addr >= EEPROM_SIZE)
+    if (addr > EEPROM_END)
     {
-        printf("ADDR\r\n");
+        printf("ADDR ERROR\r\n");
         return false;
     }
    
@@ -38,7 +38,7 @@ bool Memory_writeEEPROM8(uint16_t addr, uint8_t data)
     //Did an error occur?
     if (status == NVM_ERROR)
     {
-        printf("NVM_ERROR\r\n");
+        printf("NVM ERROR\r\n");
         return false;
     }
     
@@ -48,7 +48,7 @@ bool Memory_writeEEPROM8(uint16_t addr, uint8_t data)
     //Verify write
     if (EEPROM_Read(addr) != data)
     {
-        printf("VERIFY\r\n");
+        printf("VERIFY ERROR\r\n");
         return false;
     }
     

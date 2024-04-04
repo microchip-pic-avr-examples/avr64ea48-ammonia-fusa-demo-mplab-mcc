@@ -124,14 +124,14 @@ bool GasSensor_writeEEPROM(uint16_t refValue)
         return false;
 #else
     //Write the real CRC checksum
-    if (DIAG_EEPROM_CalculateStoreCRC(0, DIAG_EEPROM_LENGTH,
-            DIAG_EEPROM_CRC_STORE_ADDR - DIAG_EEPROM_START_ADDR) != DIAG_PASS)
+    if (DIAG_EEPROM_CalculateStoreCRC(DIAG_EEPROM_START_ADDR, DIAG_EEPROM_LENGTH,
+            DIAG_EEPROM_CRC_STORE_ADDR) != DIAG_PASS)
         return false;
     
     printf("CRC Checksum = 0x%x\r\n", Memory_readEEPROM16(EEPROM_CKSM_H_ADDR));
     
-    if (DIAG_EEPROM_ValidateCRC(0, DIAG_EEPROM_LENGTH,
-            DIAG_EEPROM_CRC_STORE_ADDR - DIAG_EEPROM_START_ADDR) != DIAG_PASS)
+    if (DIAG_EEPROM_ValidateCRC(DIAG_EEPROM_START_ADDR, DIAG_EEPROM_LENGTH,
+            DIAG_EEPROM_CRC_STORE_ADDR) != DIAG_PASS)
         return false;
     
     printf("EEPROM Verified\r\n");

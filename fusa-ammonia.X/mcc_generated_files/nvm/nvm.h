@@ -6,7 +6,7 @@
  *
  * @brief This file contains API prototypes and other data types for the Non-Volatile Memory (NVM) driver.
  *
- * @version NVM Driver Version 2.1.1
+ * @version NVM Driver Version 2.1.2
  */
 
 #ifndef NVM_H

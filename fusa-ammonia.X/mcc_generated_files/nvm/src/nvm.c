@@ -6,7 +6,7 @@
  *
  * @brief This file contains the implementation for the NVM driver.
  *
- * @version NVM Driver Version 2.1.1
+ * @version NVM Driver Version 2.1.2
  */
 /*
 © [2024] Microchip Technology Inc. and its subsidiaries.
@@ -119,7 +119,7 @@ flash_address_t FLASH_PageOffsetGet(flash_address_t address)
 
 eeprom_data_t EEPROM_Read(eeprom_address_t address)
 {	
-	return *(eeprom_data_t *)(EEPROM_START + address);
+	return *(eeprom_data_t *)(address);
 	
 }
 
@@ -127,7 +127,7 @@ nvm_status_t EEPROM_Write(eeprom_address_t address, eeprom_data_t data)
 {
         NVM_NoOperation_Command();
 		// Write byte to page buffer 
-		*(eeprom_data_t *)(EEPROM_START + address) = data;
+		*(eeprom_data_t *)(address) = data;
 		
 		// Erase byte and program it with desired value 
 		_PROTECTED_WRITE_SPM(NVMCTRL.CTRLA, NVMCTRL_CMD_EEPERW_gc); 

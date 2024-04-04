@@ -333,8 +333,8 @@ bool Fusa_testEEPROM(void)
 #else
     
     //Verify a CRC Checksum w/ Class B libraries
-    if (DIAG_EEPROM_ValidateCRC(0, DIAG_EEPROM_LENGTH,
-            DIAG_EEPROM_CRC_STORE_ADDR - DIAG_EEPROM_START_ADDR) != DIAG_PASS)
+    if (DIAG_EEPROM_ValidateCRC(DIAG_EEPROM_START_ADDR, DIAG_EEPROM_LENGTH,
+            DIAG_EEPROM_CRC_STORE_ADDR) != DIAG_PASS)
     {
         return false;
     }

@@ -15,7 +15,7 @@ extern "C" {
 #define EEPROM_VERSION_ID 1
 
 //Address of the EEPROM Version
-#define EEPROM_VERSION_ADDR 0
+#define EEPROM_VERSION_ADDR (0 + EEPROM_START)
     
 //Address of the Zero-Point / Reference Value
 #define EEPROM_REF_VALUE_H_ADDR (EEPROM_VERSION_ADDR + 1)
