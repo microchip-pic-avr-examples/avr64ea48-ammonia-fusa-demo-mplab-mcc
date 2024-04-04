@@ -140,7 +140,7 @@ On Power-on-Reset (POR), the system boots up and performs a self-check of the ha
 
 After warm-up, the system will check to see if a calibration is stored in internal EEPROM. If the calibration data is not present, it will print a message to the UART. The user must press and hold SW0 to begin the zero-point sensor calibration. 
 
-Once complete, the system will switch to the Monitor state. Once per minute, the system flashes the LED, measures the output of the ammonia sensor, performs a self-test of the analog comparator, and then checks for any user inputs. If the ammonia level rises above 50 ppm, the system will enter the Alarm state, sounding the buzzer and blinking the LED. The system will remain in the Alarm state until the concentration drops below 30 ppm. 
+Once complete, the system will switch to the Monitor state. Once per second, the system flashes the LED, measures the output of the ammonia sensor, performs a self-test of the analog comparator, and then checks for any user inputs. If the ammonia level rises above 50 ppm, the system will enter the Alarm state, sounding the buzzer and blinking the LED. The system will remain in the Alarm state until the concentration drops below 30 ppm. 
 
 The Calibration state can be re-entered by pressing SW0 in the Monitor state.
 
