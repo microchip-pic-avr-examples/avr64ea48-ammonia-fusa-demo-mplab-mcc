@@ -28,51 +28,51 @@ extern "C" {
 //#define FUSA_ENABLE_FLASH_HW_SCAN
     
     //Interrupt for an elapsed hour
-    void Application_onHourTick(void);
+    void APP_HourTick(void);
     
     //Interrupt from the PIT (used for periodic self-test)
-    void Application_onPITTick(void);
+    void APP_PITTick(void);
     
     //Reset the device
-    void Application_reset(void);
+    void APP_Reset(void);
     
     //Returns true if an hour has ticked
-    bool Application_hasHourTicked(void);
+    bool APP_HasHourTicked(void);
     
     //Clear the hour tick flag
-    void Application_clearHourTick(void);
+    void APP_HourTickClear(void);
     
     //Prints hours remaining in warmup
-    void Application_printHoursRemaining(void);
+    void APP_RemainingHoursPrint(void);
     
     //Returns true if sensor is ready
-    bool Application_isSensorReady(void);
+    bool APP_IsSensorReady(void);
 
     //Returns true if ready to self-test
-    bool Application_shouldSelfTest(void);
+    bool APP_IsReadyForSelfTest(void);
     
     //Clears the self-test flag
-    void Application_clearSelfTestFlag(void);
+    void APP_SelfTestFlashClear(void);
     
     //Connect the comparator to the gas sensor 
-    void Application_connectToSensor(void);
+    void APP_SensorConnect(void);
     
     //Connect the comparator to the DAC output
-    void Application_connectToDAC(void);
+    void APP_DACConnect(void);
     
     //Gets the current DACREF on AC1
-    uint8_t Application_getDACREF(void);
+    uint8_t APP_DACREFGet(void);
     
     //Sets a new DACREF on AC1
     //Disables AC1 interrupt, updates value, waits, then re-enables
-    void Application_setDACREF(uint8_t val);
+    void APP_DACREFSet(uint8_t val);
     
     //Runs a CRC Scan (Blocking)
     //Returns true if successful 
-    bool Application_runHWCRC(void);
+    bool APP_HardwareCRCRun(void);
     
     //Returns the VLM Status
-    bool Application_isVoltageOK(void);
+    bool APP_VLMStatusGet(void);
     
 #ifdef	__cplusplus
 }

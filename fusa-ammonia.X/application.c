@@ -1,4 +1,4 @@
-#include "Application.h"
+#include "application.h"
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -12,7 +12,7 @@ static volatile bool hasHourTicked = false;
 
 
 //Interrupt for an elapsed hour
-void Application_onHourTick(void)
+void APP_HourTick(void)
 {
     //Increment hours count
     warmupHours++;
@@ -28,37 +28,37 @@ void Application_onHourTick(void)
 }
 
 //Interrupt from the PIT (used for periodic self-test)
-void Application_onPITTick(void)
+void APP_PITTick(void)
 {
     WDT_ready = true;
 }
 
 //Reset the device
-void Application_reset(void)
+void APP_Reset(void)
 {
     ccp_write_io((void*) &RSTCTRL.SWRR, RSTCTRL_SWRE_bm);
 }
 
 //Returns true if an hour has ticked
-bool Application_hasHourTicked(void)
+bool APP_HasHourTicked(void)
 {
     return hasHourTicked;
 }
 
 //Clear the hour tick flag
-void Application_clearHourTick(void)
+void APP_HourTickClear(void)
 {
     hasHourTicked = false;
 }
 
 //Prints hours remaining in warmup
-void Application_printHoursRemaining(void)
+void APP_RemainingHoursPrint(void)
 {
     printf("Warmup time remaining: %d / %d hrs\r\n", warmupHours, WARM_UP_HOURS);
 }
 
 //Returns true if sensor is ready
-bool Application_isSensorReady(void)
+bool APP_IsSensorReady(void)
 {
     if (warmupHours >= WARM_UP_HOURS)
     {
@@ -68,19 +68,19 @@ bool Application_isSensorReady(void)
 }
 
 //Returns true if ready to self-test
-bool Application_shouldSelfTest(void)
+bool APP_IsReadyForSelfTest(void)
 {
     return WDT_ready;
 }
 
 //Clears the self-test flag
-void Application_clearSelfTestFlag(void)
+void APP_SelfTestFlashClear(void)
 {
     WDT_ready = false;
 }
 
 //Connect the comparator to the gas sensor 
-void Application_connectToSensor(void)
+void APP_SensorConnect(void)
 {
     //Clear the MUXPOS bits
     AC1.MUXCTRL &= ~(AC_MUXPOS_gm);
@@ -90,7 +90,7 @@ void Application_connectToSensor(void)
 }
 
 //Connect the comparator to the DAC output
-void Application_connectToDAC(void)
+void APP_DACConnect(void)
 {
     //Clear the MUXPOS bits
     AC1.MUXCTRL &= ~(AC_MUXPOS_gm);
@@ -100,13 +100,13 @@ void Application_connectToDAC(void)
 }
 
 //Gets the current DACREF on AC1
-uint8_t Application_getDACREF(void)
+uint8_t APP_DACREFGet(void)
 {
     return AC1.DACREF;
 }
 
 //Sets a new DACREF on AC1
-void Application_setDACREF(uint8_t val)
+void APP_DACREFSet(uint8_t val)
 {
     //Disable Interrupts
     AC1.INTCTRL &= ~AC_CMP_bm;
@@ -126,7 +126,7 @@ void Application_setDACREF(uint8_t val)
 
 //Runs a CRC Scan (Blocking)
 //Returns true if successful 
-bool Application_runHWCRC(void)
+bool APP_HardwareCRCRun(void)
 {
     //Reset the CRC
     CRCSCAN.CTRLA |= CRCSCAN_RESET_bm;
@@ -143,7 +143,7 @@ bool Application_runHWCRC(void)
 }
 
 //Returns the VLM Status
-bool Application_isVoltageOK(void)
+bool APP_VLMStatusGet(void)
 {
     //If VLMS is 1, then we're below the threshold
     if (BOD.STATUS & BOD_VLMS_bm)

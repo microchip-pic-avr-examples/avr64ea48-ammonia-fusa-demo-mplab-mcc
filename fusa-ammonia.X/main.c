@@ -32,8 +32,8 @@
 */
 #include "mcc_generated_files/system/system.h"
 #include "mcc_generated_files/timer/delay.h"
-#include "Fusa.h"
-#include "Application.h"
+#include "fusa.h"
+#include "application.h"
 #include "mcc_generated_files/reset/rstctrl.h"
 #include "mcc_generated_files/diagnostics/diag_library/memory/volatile/diag_sram_marchc_minus.h"
 #include "mcc_generated_files/diagnostics/diag_library/wdt/diag_wdt_startup.h"
@@ -92,13 +92,13 @@ int main(void)
     HEATER_SetHigh();
     
     //Interrupt callback for an hour passing
-    RTC_SetOVFIsrCallback(Application_onHourTick);
+    RTC_SetOVFIsrCallback(APP_HourTick);
     
     //Interrupt callback for the PIT
-    RTC_SetPITIsrCallback(Application_onPITTick);
+    RTC_SetPITIsrCallback(APP_PITTick);
     
     //Interrupt callback for Button 2 - RESET
-    T2OUT_SetInterruptHandler(Application_reset);
+    T2OUT_SetInterruptHandler(APP_Reset);
     
     printf("AVR64EA48 Ammonia Gas Functional Safety Demo\r\n");
     printf("Built %s at %s\r\n", __DATE__, __TIME__);
@@ -109,24 +109,24 @@ int main(void)
 #endif
     
     //Run system self-test
-    Fusa_runStartupSelfTest();
+    Fusa_StartupSelfTestRun();
             
     //Enable interrupts
     sei();
     
     //Clear self-test flag
-    Application_clearSelfTestFlag();
+    APP_SelfTestFlashClear();
     
     while(1)
     {        
         //Do we need to self test and clear WDT?
-        if (Application_shouldSelfTest())
+        if (APP_IsReadyForSelfTest())
         {
             //Clear self-test flag
-            Application_clearSelfTestFlag();
+            APP_SelfTestFlashClear();
             
             //Run periodic self-check
-            Fusa_runPeriodicSelfCheck();
+            Fusa_PeriodicSelfCheckRun();
         }
     }    
 }

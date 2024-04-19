@@ -6,21 +6,21 @@
 #include <avr/io.h>
 
 #include "mcc_generated_files/system/system.h"
-#include "Application.h"
+#include "application.h"
 
 //Writes and verifies a byte to the EEPROM. Returns true if successful
-bool Memory_writeEEPROM8(uint16_t addr, uint8_t data)
+bool EEPROM_ByteWrite(uint16_t address, uint8_t data)
 {
     //Check to see if VDD is OK
     //If VLM is 1, then we are below threshold
-    if (!Application_isVoltageOK())
+    if (!APP_VLMStatusGet())
     {
         printf("BOD ERROR\r\n");
         return false;
     }
     
     //Address is out of bounds
-    if (addr > EEPROM_END)
+    if (address > EEPROM_END)
     {
         printf("ADDR ERROR\r\n");
         return false;
@@ -33,7 +33,7 @@ bool Memory_writeEEPROM8(uint16_t addr, uint8_t data)
     NVM_StatusClear();
     
     //Write the byte
-    nvm_status_t status = EEPROM_Write(addr, data);
+    nvm_status_t status = EEPROM_Write(address, data);
     
     //Did an error occur?
     if (status == NVM_ERROR)
@@ -46,7 +46,7 @@ bool Memory_writeEEPROM8(uint16_t addr, uint8_t data)
     while (EEPROM_IsBusy());
     
     //Verify write
-    if (EEPROM_Read(addr) != data)
+    if (EEPROM_Read(address) != data)
     {
         printf("VERIFY ERROR\r\n");
         return false;
@@ -56,44 +56,44 @@ bool Memory_writeEEPROM8(uint16_t addr, uint8_t data)
 }
 
 //Writes and verifies a 16-bit word to the EEPROM. Returns true if successful
-bool Memory_writeEEPROM16(uint16_t addr, uint16_t data)
+bool EEPROM_WordWrite(uint16_t address, uint16_t data)
 {
     //High Byte
-    if (!Memory_writeEEPROM8(addr, ((data & 0xFF00) >> 8)))
+    if (!EEPROM_ByteWrite(address, ((data & 0xFF00) >> 8)))
         return false;
     
     //Low Byte
-    if (!Memory_writeEEPROM8((addr + 1), (data & 0xFF)))
+    if (!EEPROM_ByteWrite((address + 1), (data & 0xFF)))
         return false;
     
     return true;
 }
 
 //Reads an 8-bit word from the EEPROM
-uint8_t Memory_readEEPROM8(uint16_t addr)
+uint8_t EEPROM_ByteRead(uint16_t address)
 {
-    return EEPROM_Read(addr);
+    return EEPROM_Read(address);
 }
 
 //Reads a 16-bit word from the EEPROM
-uint16_t Memory_readEEPROM16(uint16_t addr)
+uint16_t EEPROM_WordRead(uint16_t address)
 {
     uint16_t val;
     
     //Load the high byte
-    val = Memory_readEEPROM8(addr);
+    val = EEPROM_ByteRead(address);
     
     //Shift Data
     val <<= 8;
     
     //Load the low byte
-    val |= Memory_readEEPROM8(addr + 1);
+    val |= EEPROM_ByteRead(address + 1);
     
     return val;
 }
 
 //Run a checksum of the EEPROM
-uint16_t Memory_calculateChecksum(void)
+uint16_t EEPROM_ChecksumCalculate(void)
 {
     bool isLoaded = false;
     uint32_t sum = 0;
@@ -102,7 +102,7 @@ uint16_t Memory_calculateChecksum(void)
     //Sum the bytes as 16-bit words
     for (uint16_t index = 0; index < EEPROM_SIZE; index++)
     {
-        addWord |= Memory_readEEPROM8(index);
+        addWord |= EEPROM_ByteRead(index);
         
         if (isLoaded)
         {

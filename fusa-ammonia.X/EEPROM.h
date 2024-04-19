@@ -28,19 +28,19 @@ extern "C" {
 #define EEPROM_CHECKSUM_GOOD 0x0000
     
     //Writes and verifies a byte to the EEPROM. Returns true if successful
-    bool Memory_writeEEPROM8(uint16_t addr, uint8_t data);
+    bool EEPROM_ByteWrite(uint16_t address, uint8_t data);
     
     //Writes and verifies a 16-bit word to the EEPROM. Returns true if successful
-    bool Memory_writeEEPROM16(uint16_t addr, uint16_t data);
+    bool EEPROM_WordWrite(uint16_t address, uint16_t data);
     
     //Reads an 8-bit word from the EEPROM
-    uint8_t Memory_readEEPROM8(uint16_t addr);
+    uint8_t EEPROM_ByteRead(uint16_t address);
     
     //Reads a 16-bit word from the EEPROM
-    uint16_t Memory_readEEPROM16(uint16_t addr);
+    uint16_t EEPROM_WordRead(uint16_t address);
     
     //Calculates the checksum over the EEPROM
-    uint16_t Memory_calculateChecksum(void);
+    uint16_t EEPROM_ChecksumCalculate(void);
     
 #ifdef	__cplusplus
 }

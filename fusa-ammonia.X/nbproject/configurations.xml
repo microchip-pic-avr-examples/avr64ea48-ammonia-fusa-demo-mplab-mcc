@@ -95,10 +95,10 @@
           <itemPath>mcc_generated_files/vref/vref.h</itemPath>
         </logicalFolder>
       </logicalFolder>
-      <itemPath>Fusa.h</itemPath>
-      <itemPath>Application.h</itemPath>
       <itemPath>GasSensor.h</itemPath>
       <itemPath>EEPROM.h</itemPath>
+      <itemPath>application.h</itemPath>
+      <itemPath>fusa.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -203,10 +203,10 @@
         </logicalFolder>
       </logicalFolder>
       <itemPath>main.c</itemPath>
-      <itemPath>Fusa.c</itemPath>
-      <itemPath>Application.c</itemPath>
       <itemPath>GasSensor.c</itemPath>
       <itemPath>EEPROM.c</itemPath>
+      <itemPath>application.c</itemPath>
+      <itemPath>fusa.c</itemPath>
     </logicalFolder>
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>

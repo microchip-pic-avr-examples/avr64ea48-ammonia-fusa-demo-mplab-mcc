@@ -22,50 +22,46 @@ extern "C" {
     typedef enum {
         SYS_ERROR = -1, SYS_INIT = 0, SYS_WARMUP, 
         SYS_CALIBRATE, SYS_MONITOR, SYS_SELF_TEST, SYS_ALARM
-    } SystemState;
+    } system_state_t;
     
     //Runs a self-test of the system on startup
-    bool Fusa_runStartupSelfTest(void);
-    
-    //Verifies the checksum has been XORed
-    //Required for CRC-32
-    bool Fusa_prepareChecksum(void);
+    bool Fusa_StartupSelfTestRun(void);
     
     //Run a CPU test
-    bool Fusa_testCPU(void);
+    bool Fusa_CPUTest(void);
     
     //Get the WDT Test Results
-    bool Fusa_testWDT(void);
+    bool Fusa_WDTTest(void);
     
     //Test the comparator
-    bool Fusa_testAC(void);
+    bool Fusa_ACTest(void);
     
     //Run a memory self-test
-    bool Fusa_testFlash(void);
+    bool Fusa_FlashTest(void);
     
     //Run an SRAM self-test
-    bool Fusa_testSRAM(void);
+    bool Fusa_SRAMTest(void);
     
     //Run a checksum of the EEPROM
-    bool Fusa_testEEPROM(void);
+    bool Fusa_EEPROMTest(void);
     
     //Gets the 32-bit CRC from memory
-    uint32_t Fusa_getChecksumFromPFM(void);
+    uint32_t Fusa_PFMChecksumGet(void);
     
     //Invalidates the EEPROM
-    void Fusa_invalidateEEPROM(void);
+    void Fusa_EEPROMInvalidate(void);
     
     //Runs the periodic self-test of the system
-    void Fusa_runPeriodicSelfCheck(void);
+    void Fusa_PeriodicSelfCheckRun(void);
     
     //Infinite loop for a system failure
-    void Fusa_onSystemFailure(void);
+    void Fusa_HandleSystemFailure(void);
     
     //Activate the alarm
-    void Fusa_activateAlarm(void);
+    void Fusa_AlarmActivate(void);
     
     //Deactivate the alarm
-    void Fusa_deactivateAlarm(void);
+    void Fusa_AlarmDeactivate(void);
 
 #ifdef	__cplusplus
 }

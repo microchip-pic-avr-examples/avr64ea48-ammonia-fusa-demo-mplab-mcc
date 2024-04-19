@@ -44,40 +44,40 @@ extern "C" {
 #define GAS_SENSOR_LOGIC_NOT_TRIPPED true
     
     //Initialize the constants and parameters for the sensor
-    void GasSensor_initFromEEPROM(void);
+    void GasSensor_EEPROMInit(void);
     
     //Erases the EEPROM
-    void GasSensor_eraseEEPROM(void);
+    void GasSensor_EEPROMErase(void);
     
     //Sets the sensor to the low range
-    void GasSensor_setThresholdLow(void);
+    void GasSensor_ThresholdLowSet(void);
     
     //Sets the sensor to the high range
-    void GasSensor_setThresholdHigh(void);
+    void GasSensor_ThresholdHighSet(void);
     
     //Returns true if the EEPROM is valid
-    bool GasSensor_isEEPROMValid(void);
+    bool GasSensor_IsEEPROMValid(void);
     
     //Write the reference value to EEPROM
-    bool GasSensor_writeEEPROM(uint16_t refValue);
+    bool GasSensor_EEPROMWrite(uint16_t refValue);
     
     //Returns the state of the AC
-    bool GasSensor_isTripped(void);
+    bool GasSensor_IsTripped(void);
     
     //This function uses the current sensor output as a reference zero, write it to memory, and sets the AC
-    bool GasSensor_calibrate(void);
+    bool GasSensor_Calibrate(void);
         
     //Starts and returns the analog value of the gas sensor
-    uint16_t GasSensor_sampleSensor(void);
+    uint16_t GasSensor_SampleSensor(void);
     
     //Returns the stored reference value
-    uint16_t GasSensor_getReferenceValue(void);
+    uint16_t GasSensor_ReferenceValueGet(void);
     
     //Converts a measurement value into PPM
-    uint16_t GasSensor_convertToPPM(uint16_t measurement);
+    uint16_t GasSensor_MeasurementConvert(uint16_t measurement);
     
     //Called whenever a rising edge occurs on the AC
-    void GasSensor_onAlert(void);
+    void GasSensor_HandleAlert(void);
 
 #ifdef	__cplusplus
 }

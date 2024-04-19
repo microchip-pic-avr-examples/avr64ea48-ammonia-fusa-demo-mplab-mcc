@@ -7,7 +7,7 @@
 #include "mcc_generated_files/system/system.h"
 #include "mcc_generated_files/timer/delay.h"
 #include "EEPROM.h"
-#include "Application.h"
+#include "application.h"
 #include "mcc_generated_files/diagnostics/diag_library/memory/non_volatile/diag_eeprom_crc16.h"
 
 static float R_S0 = 0.0;
@@ -63,64 +63,64 @@ void _initParameters(uint16_t ref)
     alarmLowVal = (uint8_t) setPtLow;
     
     //Default to the high threshold
-    GasSensor_setThresholdHigh();
+    GasSensor_ThresholdHighSet();
 }
 
 //Initialize the constants and parameters for the sensor
-void GasSensor_initFromEEPROM(void)
+void GasSensor_EEPROMInit(void)
 {
-    _initParameters(GasSensor_getReferenceValue());
+    _initParameters(GasSensor_ReferenceValueGet());
     memValid = true;
 }
 
 //Erases the EEPROM
-void GasSensor_eraseEEPROM(void)
+void GasSensor_EEPROMErase(void)
 {
-    Memory_writeEEPROM16(EEPROM_CKSM_H_ADDR, 0xFFFF);
-    Memory_writeEEPROM16(EEPROM_REF_VALUE_H_ADDR, 0xFFFF);
+    EEPROM_WordWrite(EEPROM_CKSM_H_ADDR, 0xFFFF);
+    EEPROM_WordWrite(EEPROM_REF_VALUE_H_ADDR, 0xFFFF);
 }
 
 //Sets the sensor to the low range
-void GasSensor_setThresholdLow(void)
+void GasSensor_ThresholdLowSet(void)
 {
     //Set the new DACREF
-    Application_setDACREF(alarmLowVal);
+    APP_DACREFSet(alarmLowVal);
 }
     
 //Sets the sensor to the high range
-void GasSensor_setThresholdHigh(void)
+void GasSensor_ThresholdHighSet(void)
 {
     //Set the new DACREF
-    Application_setDACREF(alarmHighVal);
+    APP_DACREFSet(alarmHighVal);
 }
 
 //Returns true if the EEPROM is valid
-bool GasSensor_isEEPROMValid(void)
+bool GasSensor_IsEEPROMValid(void)
 {
     return memValid;
 }
 
 //Write the reference value to EEPROM
-bool GasSensor_writeEEPROM(uint16_t refValue)
+bool GasSensor_EEPROMWrite(uint16_t refValue)
 {
     //Invalidate memory valid flag
     memValid = false;
     
     //Write 0x0000 as a placeholder for the Checksum
-    if (!Memory_writeEEPROM16(EEPROM_CKSM_H_ADDR, 0x0000))
+    if (!EEPROM_WordWrite(EEPROM_CKSM_H_ADDR, 0x0000))
         return false;
     
     //Write Version ID
-    if (!Memory_writeEEPROM8(EEPROM_VERSION_ADDR, EEPROM_VERSION_ID))
+    if (!EEPROM_ByteWrite(EEPROM_VERSION_ADDR, EEPROM_VERSION_ID))
         return false;
     
     //Write the Reference Value
-    if (!Memory_writeEEPROM16(EEPROM_REF_VALUE_H_ADDR, refValue))
+    if (!EEPROM_WordWrite(EEPROM_REF_VALUE_H_ADDR, refValue))
         return false;
     
 #ifdef FUSA_ENABLE_EEPROM_SIMPLE_CHECKSUM
     //Write the real checksum
-    if (!Memory_writeEEPROM16(EEPROM_CKSM_H_ADDR, Memory_calculateChecksum()))
+    if (!EEPROM_WordWrite(EEPROM_CKSM_H_ADDR, EEPROM_ChecksumCalculate()))
         return false;
 #else
     //Write the real CRC checksum
@@ -128,7 +128,7 @@ bool GasSensor_writeEEPROM(uint16_t refValue)
             DIAG_EEPROM_CRC_STORE_ADDR) != DIAG_PASS)
         return false;
     
-    printf("CRC Checksum = 0x%x\r\n", Memory_readEEPROM16(EEPROM_CKSM_H_ADDR));
+    printf("CRC Checksum = 0x%x\r\n", EEPROM_WordRead(EEPROM_CKSM_H_ADDR));
     
     if (DIAG_EEPROM_ValidateCRC(DIAG_EEPROM_START_ADDR, DIAG_EEPROM_LENGTH,
             DIAG_EEPROM_CRC_STORE_ADDR) != DIAG_PASS)
@@ -145,7 +145,7 @@ bool GasSensor_writeEEPROM(uint16_t refValue)
 }
 
 //Returns the state of the AC
-bool GasSensor_isTripped(void)
+bool GasSensor_IsTripped(void)
 {
     //Above max allowable level
     if (AC1_Read() == GAS_SENSOR_LOGIC_TRIPPED)
@@ -157,13 +157,13 @@ bool GasSensor_isTripped(void)
 }
 
 //This function uses the current sensor output as a reference zero, write it to memory, and sets the AC
-bool GasSensor_calibrate(void)
+bool GasSensor_Calibrate(void)
 {
     //Get the current value
-    uint16_t result = GasSensor_sampleSensor();
+    uint16_t result = GasSensor_SampleSensor();
 
     //Write data to EEPROM
-    if (!GasSensor_writeEEPROM(result))
+    if (!GasSensor_EEPROMWrite(result))
     {
         printf("An error occurred when writing EEPROM.\r\n");
         return false;
@@ -177,20 +177,20 @@ bool GasSensor_calibrate(void)
 }
 
 //Starts and returns the analog value of the gas sensor
-uint16_t GasSensor_sampleSensor(void)
+uint16_t GasSensor_SampleSensor(void)
 {
     //PD4, AIN4
     return ADC0_GetConversion(ADC_MUXPOS_AIN4_gc);
 }
 
 //Returns the stored reference value
-uint16_t GasSensor_getReferenceValue(void)
+uint16_t GasSensor_ReferenceValueGet(void)
 {
-    return Memory_readEEPROM16(EEPROM_REF_VALUE_H_ADDR);
+    return EEPROM_WordRead(EEPROM_REF_VALUE_H_ADDR);
 }
 
 //Converts a measurement value into PPM
-uint16_t GasSensor_convertToPPM(uint16_t measurement)
+uint16_t GasSensor_MeasurementConvert(uint16_t measurement)
 {
     //Check for bad conditions
     if (measurement == 0)
@@ -231,7 +231,7 @@ uint16_t GasSensor_convertToPPM(uint16_t measurement)
 }
 
 //Called whenever a rising edge occurs on the AC
-void GasSensor_onAlert(void)
+void GasSensor_HandleAlert(void)
 {
     
 }

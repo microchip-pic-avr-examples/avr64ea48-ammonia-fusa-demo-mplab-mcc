@@ -1,4 +1,4 @@
-#include "Fusa.h"
+#include "fusa.h"
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -8,7 +8,7 @@
 #include "mcc_generated_files/system/system.h"
 #include "mcc_generated_files/timer/delay.h"
 
-#include "Application.h"
+#include "application.h"
 #include "GasSensor.h"
 #include "EEPROM.h"
 #include "mcc_generated_files/diagnostics/diag_library/memory/non_volatile/diag_flash_crc32.h"
@@ -37,10 +37,10 @@ extern const uint32_t flashChecksum __at((CRC_ADDRESS_START));
 static volatile const uint32_t flashChecksum __at((CRC_ADDRESS_START)) = 0x87654321;
 #endif
 
-static volatile SystemState sysState = SYS_ERROR;
+static volatile system_state_t sysState = SYS_ERROR;
 
 //Runs a self-test of the system
-bool Fusa_runStartupSelfTest(void)
+bool Fusa_StartupSelfTestRun(void)
 {
     printf("\r\nRunning Self Test\r\n");
     
@@ -55,16 +55,16 @@ bool Fusa_runStartupSelfTest(void)
     if (SW0_GetValue())
     {
         //Erase requested by user
-        GasSensor_eraseEEPROM();
+        GasSensor_EEPROMErase();
                 
         printf("Configuration ERASED\r\n");
     }
     
-    printf("Flash Memory Checksum = 0x%lx\r\n\r\n", Fusa_getChecksumFromPFM());
+    printf("Flash Memory Checksum = 0x%lx\r\n\r\n", Fusa_PFMChecksumGet());
     
     //Check CPU
     printf("Testing CPU...");
-    if (Fusa_testCPU())
+    if (Fusa_CPUTest())
         printf(PASS_STRING);
     else
     {
@@ -74,7 +74,7 @@ bool Fusa_runStartupSelfTest(void)
     
     //Get the WDT Result
     printf("Testing WDT...");
-    if (Fusa_testWDT())
+    if (Fusa_WDTTest())
         printf(PASS_STRING);
     else
     {
@@ -84,7 +84,7 @@ bool Fusa_runStartupSelfTest(void)
 
     //Get the SRAM Result
     printf("Testing SRAM...");
-    if (Fusa_testSRAM())
+    if (Fusa_SRAMTest())
         printf(PASS_STRING);
     else
     {
@@ -94,7 +94,7 @@ bool Fusa_runStartupSelfTest(void)
     
     //Check Memory
     printf("Testing Memory Integrity...");
-    if (Fusa_testFlash())
+    if (Fusa_FlashTest())
         printf(PASS_STRING);
     else
     {
@@ -104,7 +104,7 @@ bool Fusa_runStartupSelfTest(void)
     
     //Check Comparator
     printf("Testing Analog Comparator...");
-    if (Fusa_testAC())
+    if (Fusa_ACTest())
         printf(PASS_STRING);
     else
     {
@@ -114,10 +114,10 @@ bool Fusa_runStartupSelfTest(void)
         
     //Check EEPROM for valid constants
     printf("Calibration data...");
-    if (Fusa_testEEPROM())
+    if (Fusa_EEPROMTest())
     {        
         //Init R_L constant from EEPROM
-        GasSensor_initFromEEPROM();
+        GasSensor_EEPROMInit();
         
         //EEPROM OK
         printf(PASS_STRING);
@@ -177,7 +177,7 @@ bool Fusa_runStartupSelfTest(void)
 }
 
 //Run a CPU test
-bool Fusa_testCPU(void)
+bool Fusa_CPUTest(void)
 {
     if (DIAG_CPU_Registers() == DIAG_PASS)
     {
@@ -187,7 +187,7 @@ bool Fusa_testCPU(void)
 }
     
 //Get the WDT Test Results
-bool Fusa_testWDT(void)
+bool Fusa_WDTTest(void)
 {
     if (DIAG_WDT_GetResult() == DIAG_PASS)
     {
@@ -197,7 +197,7 @@ bool Fusa_testWDT(void)
 }
 
 //Test the comparator
-bool Fusa_testAC(void)
+bool Fusa_ACTest(void)
 {
     /* Test Setup
      * Verify DACREF and CMP are operational by using DAC0's output
@@ -217,18 +217,18 @@ bool Fusa_testAC(void)
      */
     
     //Save current state
-    SystemState prevState = sysState;
+    system_state_t prevState = sysState;
     
     //Switch to test state
     sysState = SYS_SELF_TEST;
     
     //Switch AC0 Input
-    Application_connectToDAC();
+    APP_DACConnect();
     
     //DAC0 is 10-bit, DACREF is 8-bit
     
     //Set to DACREF + MARGIN
-    int16_t testVal = (Application_getDACREF() << 2) + TEST_MARGIN;
+    int16_t testVal = (APP_DACREFGet() << 2) + TEST_MARGIN;
     
     //Limit to a 10-bit number
     if (testVal >= 0x3FF)
@@ -251,7 +251,7 @@ bool Fusa_testAC(void)
     }
     
     //Set to DACREF - TEST_MARGIN
-    testVal = (Application_getDACREF() << 2) - TEST_MARGIN;
+    testVal = (APP_DACREFGet() << 2) - TEST_MARGIN;
     
     //If less than 0, set to 0
     if (testVal < 0)
@@ -274,7 +274,7 @@ bool Fusa_testAC(void)
     }
     
     //Switch AC back to Sensor
-    Application_connectToSensor();
+    APP_SensorConnect();
     
     //Restore system state
     sysState = prevState;
@@ -283,7 +283,7 @@ bool Fusa_testAC(void)
 }
 
 //Run a memory self-check
-bool Fusa_testFlash(void)
+bool Fusa_FlashTest(void)
 {    
 #ifndef FUSA_ENABLE_FLASH_HW_SCAN
     //Class B Library Mode
@@ -295,12 +295,12 @@ bool Fusa_testFlash(void)
     return false;
 #else
     //Hardware Mode
-    return Application_runHWCRC();
+    return APP_HardwareCRCRun();
 #endif
 }
 
 //Run an SRAM self-test
-bool Fusa_testSRAM(void)
+bool Fusa_SRAMTest(void)
 {
     //Did the SRAM test pass?
     if (DIAG_SRAM_MarchGetStartupResult() == DIAG_PASS)
@@ -311,7 +311,7 @@ bool Fusa_testSRAM(void)
 }
 
 //Run a checksum of the EEPROM
-bool Fusa_testEEPROM(void)
+bool Fusa_EEPROMTest(void)
 {
     /* Test Procedure:
      * 1. Verify the EEPROM Version ID matches expected
@@ -319,14 +319,14 @@ bool Fusa_testEEPROM(void)
      */
     
     //Verify Version ID
-    if (Memory_readEEPROM8(EEPROM_VERSION_ADDR) != EEPROM_VERSION_ID)
+    if (EEPROM_ByteRead(EEPROM_VERSION_ADDR) != EEPROM_VERSION_ID)
     {
         return false;
     }
         
 #ifdef FUSA_ENABLE_EEPROM_SIMPLE_CHECKSUM
     //Verify Checksum (Simple)
-    if (Memory_calculateChecksum() != EEPROM_CHECKSUM_GOOD)
+    if (EEPROM_ChecksumCalculate() != EEPROM_CHECKSUM_GOOD)
     {
         return false;
     }
@@ -344,7 +344,7 @@ bool Fusa_testEEPROM(void)
 }
 
 //Gets the 32-bit CRC from memory
-uint32_t Fusa_getChecksumFromPFM(void)
+uint32_t Fusa_PFMChecksumGet(void)
 {
     uint32_t addr = CRC_ADDRESS_START;
     
@@ -367,14 +367,14 @@ uint32_t Fusa_getChecksumFromPFM(void)
 }
     
 //Invalidates the EEPROM
-void Fusa_invalidateEEPROM(void)
+void Fusa_EEPROMInvalidate(void)
 {
-    Memory_writeEEPROM8(EEPROM_VERSION_ADDR, 0xFF);
-    Memory_writeEEPROM16(EEPROM_CKSM_H_ADDR, 0xFFFF);
+    EEPROM_ByteWrite(EEPROM_VERSION_ADDR, 0xFF);
+    EEPROM_WordWrite(EEPROM_CKSM_H_ADDR, 0xFFFF);
 }
 
 //Runs the periodic self-test of the system
-void Fusa_runPeriodicSelfCheck(void)
+void Fusa_PeriodicSelfCheckRun(void)
 {    
     static bool prevButtonState = false;
     bool isPressed = false;
@@ -383,7 +383,7 @@ void Fusa_runPeriodicSelfCheck(void)
     asm("WDR");
     
     //Get a new ADC reading from the sensor (blocking!)
-    uint16_t meas = GasSensor_sampleSensor();
+    uint16_t meas = GasSensor_SampleSensor();
             
 #ifdef VIEW_RAW_ADC
     printf("ADC Result: 0x%x\r\n", meas);
@@ -418,19 +418,19 @@ void Fusa_runPeriodicSelfCheck(void)
             //System is in warm-up
             
             //Sensor is now ready
-            if (Application_isSensorReady())
+            if (APP_IsSensorReady())
             {
                 printf("\r\nWarmup complete.\r\n");
                 
-                if (GasSensor_isEEPROMValid())
+                if (GasSensor_IsEEPROMValid())
                 {
                     //Ready to begin active monitoring
                     
                     //If the alarm is active, jump to alarm
-                    if (GasSensor_isTripped())
+                    if (GasSensor_IsTripped())
                     {
                         //Activate the alarm, and transition to a new state
-                        Fusa_activateAlarm();
+                        Fusa_AlarmActivate();
                     }
                     else
                     {
@@ -447,13 +447,13 @@ void Fusa_runPeriodicSelfCheck(void)
             else
             {
                 //Has an hour elapsed?
-                if (Application_hasHourTicked())
+                if (APP_HasHourTicked())
                 {
                     //Clear flag
-                    Application_clearHourTick();
+                    APP_HourTickClear();
                     
                     //Print message
-                    Application_printHoursRemaining();
+                    APP_RemainingHoursPrint();
                 }
             }
             
@@ -470,7 +470,7 @@ void Fusa_runPeriodicSelfCheck(void)
                 
                 printf("Running calibration.\r\n");
                 
-                if (GasSensor_calibrate())
+                if (GasSensor_Calibrate())
                 {
                     //No errors
                     
@@ -501,20 +501,20 @@ void Fusa_runPeriodicSelfCheck(void)
             LED0_SetLow();
             
             //System is running
-            printf("[MONITOR] Estimated Ammonia: %d ppm\r\n", GasSensor_convertToPPM(meas));
+            printf("[MONITOR] Estimated Ammonia: %d ppm\r\n", GasSensor_MeasurementConvert(meas));
             
             //Did the alarm activate?
-            if (GasSensor_isTripped())
+            if (GasSensor_IsTripped())
             {
                 //Activate the alarm and transition to a new state
-                Fusa_activateAlarm();
+                Fusa_AlarmActivate();
                 
                 printf("Alarm is tripped!\r\n");
             }
             else
             {
                 //Run self-test
-                if (!Fusa_testAC())
+                if (!Fusa_ACTest())
                 {
                     printf("AC failed self-check.\r\n");
                     sysState = SYS_ERROR;
@@ -528,7 +528,7 @@ void Fusa_runPeriodicSelfCheck(void)
                 else if (TEST_BUTTON_GetValue())
                 {
                     //No errors, and request
-                    Fusa_activateAlarm();
+                    Fusa_AlarmActivate();
                 }
             }
             break;
@@ -538,13 +538,13 @@ void Fusa_runPeriodicSelfCheck(void)
             //System alarm is tripped
             LED0_Toggle();
             
-            printf("[ALARM] Estimated Ammonia: %d ppm\r\n", GasSensor_convertToPPM(meas));
+            printf("[ALARM] Estimated Ammonia: %d ppm\r\n", GasSensor_MeasurementConvert(meas));
             
             //Did the alarm go off?
-            if (!GasSensor_isTripped())
+            if (!GasSensor_IsTripped())
             {
                 //Deactivate the alarm and transition to SYS_MONITOR
-                Fusa_deactivateAlarm();
+                Fusa_AlarmDeactivate();
                 
                 printf("Alarm has cleared!\r\n");
             }
@@ -561,7 +561,7 @@ void Fusa_runPeriodicSelfCheck(void)
             //SYS_TEST should never be possible outside of periodic self-tests
             
             //Enter an infinite loop
-            Fusa_onSystemFailure();
+            Fusa_HandleSystemFailure();
             break;
         }
 
@@ -569,7 +569,7 @@ void Fusa_runPeriodicSelfCheck(void)
 }
 
 //Infinite loop for a system failure
-void Fusa_onSystemFailure(void)
+void Fusa_HandleSystemFailure(void)
 {
     //Disable interrupts
     cli();
@@ -605,26 +605,26 @@ void Fusa_onSystemFailure(void)
 }
 
 //Activate the alarm
-void Fusa_activateAlarm(void)
+void Fusa_AlarmActivate(void)
 {
     //Enable the Buzzer
     BUZZER_ENABLE();
     
     //Switch to low threshold - concentration must fall to here to clear
-    GasSensor_setThresholdLow();
+    GasSensor_ThresholdLowSet();
     
     //Switch to alarm state
     sysState = SYS_ALARM;
 }
 
 //Deactivate the alarm
-void Fusa_deactivateAlarm(void)
+void Fusa_AlarmDeactivate(void)
 {
     //Disable the buzzer
     BUZZER_DISABLE();
     
     //Switch to high threshold - concentration must rise to here to activate
-    GasSensor_setThresholdHigh();
+    GasSensor_ThresholdHighSet();
     
     //Switch to monitor state
     sysState = SYS_MONITOR;
