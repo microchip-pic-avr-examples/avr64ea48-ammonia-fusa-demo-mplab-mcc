@@ -10,9 +10,14 @@
 #include "application.h"
 #include "mcc_generated_files/diagnostics/diag_library/memory/non_volatile/diag_eeprom_crc16.h"
 
+typedef enum {
+    GAS_SENSOR_INVALID = 0, GAS_SENSOR_LOW, GAS_SENSOR_HIGH
+} gas_sensor_threshold_t;
+
 static float R_S0 = 0.0;
 static bool memValid = false;
 
+static gas_sensor_threshold_t sensorThreshold = GAS_SENSOR_INVALID;
 static uint8_t alarmHighVal, alarmLowVal;
 
 void _initParameters(uint16_t ref)
@@ -85,6 +90,7 @@ void GasSensor_ThresholdLowSet(void)
 {
     //Set the new DACREF
     APP_DACREFSet(alarmLowVal);
+    sensorThreshold = GAS_SENSOR_LOW;
 }
     
 //Sets the sensor to the high range
@@ -92,6 +98,7 @@ void GasSensor_ThresholdHighSet(void)
 {
     //Set the new DACREF
     APP_DACREFSet(alarmHighVal);
+    sensorThreshold = GAS_SENSOR_HIGH;
 }
 
 //Returns true if the EEPROM is valid
@@ -176,6 +183,28 @@ bool GasSensor_Calibrate(void)
     return true;
 }
 
+//Verifies the DACREF value is set correctly
+diag_result_t GasSensor_SetpointVerify(void)
+{
+    if (sensorThreshold == GAS_SENSOR_LOW)
+    {
+        if (APP_DACREFGet() != alarmLowVal)
+        {
+            return DIAG_FAIL;
+        }
+
+    }
+    else if (sensorThreshold == GAS_SENSOR_HIGH)
+    {
+        if (APP_DACREFGet() != alarmHighVal)
+        {
+            return DIAG_FAIL;
+        }
+    }
+    
+    return DIAG_PASS;
+}
+
 //Starts and returns the analog value of the gas sensor
 uint16_t GasSensor_SampleSensor(void)
 {
@@ -228,10 +257,4 @@ uint16_t GasSensor_MeasurementConvert(uint16_t measurement)
     uint16_t result = round(0.1282 * powf(ratio, -3.833));
     
     return result;
-}
-
-//Called whenever a rising edge occurs on the AC
-void GasSensor_HandleAlert(void)
-{
-    
 }

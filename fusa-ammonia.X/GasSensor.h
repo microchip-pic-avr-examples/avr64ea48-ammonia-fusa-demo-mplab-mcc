@@ -7,6 +7,8 @@ extern "C" {
     
 #include <stdint.h>
 #include <stdbool.h>
+
+#include "mcc_generated_files/diagnostics/diag_common/diag_result_type.h"
     
 //Prints the measured sensor parameters
 #define PRINT_SENSOR_PARAMETERS
@@ -66,6 +68,9 @@ extern "C" {
     
     //This function uses the current sensor output as a reference zero, write it to memory, and sets the AC
     bool GasSensor_Calibrate(void);
+    
+    //Verifies the DACREF value is set correctly
+    diag_result_t GasSensor_SetpointVerify(void);
         
     //Starts and returns the analog value of the gas sensor
     uint16_t GasSensor_SampleSensor(void);
@@ -75,9 +80,6 @@ extern "C" {
     
     //Converts a measurement value into PPM
     uint16_t GasSensor_MeasurementConvert(uint16_t measurement);
-    
-    //Called whenever a rising edge occurs on the AC
-    void GasSensor_HandleAlert(void);
 
 #ifdef	__cplusplus
 }

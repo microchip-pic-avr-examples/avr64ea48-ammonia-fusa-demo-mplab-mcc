@@ -38,6 +38,24 @@ static volatile const uint32_t flashChecksum __at((CRC_ADDRESS_START)) = 0x87654
 #endif
 
 static volatile system_state_t sysState = SYS_ERROR;
+static volatile system_state_t sysStateCheck = SYS_ERROR;
+
+//Sets the system state
+void Fusa_SystemStateSet(system_state_t state)
+{
+    sysState = state;
+    sysStateCheck = state;
+}
+
+//Returns DIAG_FAIL if unable to verify the system state
+diag_result_t Fusa_SystemStateVerify(void)
+{
+    if (sysState != sysStateCheck)
+    {
+        return DIAG_FAIL;
+    }
+    return DIAG_PASS;
+}
 
 //Runs a self-test of the system
 bool Fusa_StartupSelfTestRun(void)
@@ -50,7 +68,7 @@ bool Fusa_StartupSelfTestRun(void)
     //Set the state to INIT
     //If an error occurs, then it will be moved to ERROR
     //If in INIT at the end of this function, then it will be moved to warm-up
-    sysState = SYS_INIT;
+    Fusa_SystemStateSet(SYS_INIT);
     
     if (SW0_GetValue())
     {
@@ -69,7 +87,7 @@ bool Fusa_StartupSelfTestRun(void)
     else
     {
         printf(FAIL_STRING);
-        sysState = SYS_ERROR;
+        Fusa_SystemStateSet(SYS_ERROR);
     }
     
     //Get the WDT Result
@@ -79,7 +97,7 @@ bool Fusa_StartupSelfTestRun(void)
     else
     {
         printf(FAIL_STRING);
-        sysState = SYS_ERROR;
+        Fusa_SystemStateSet(SYS_ERROR);
     }
 
     //Get the SRAM Result
@@ -89,7 +107,7 @@ bool Fusa_StartupSelfTestRun(void)
     else
     {
         printf(FAIL_STRING);
-        sysState = SYS_ERROR;
+        Fusa_SystemStateSet(SYS_ERROR);
     }
     
     //Check Memory
@@ -99,7 +117,7 @@ bool Fusa_StartupSelfTestRun(void)
     else
     {
         printf(FAIL_STRING);
-        sysState = SYS_ERROR;
+        Fusa_SystemStateSet(SYS_ERROR);
     }
     
     //Check Comparator
@@ -109,7 +127,7 @@ bool Fusa_StartupSelfTestRun(void)
     else
     {
         printf(FAIL_STRING);
-        sysState = SYS_ERROR;
+        Fusa_SystemStateSet(SYS_ERROR);
     }
         
     //Check EEPROM for valid constants
@@ -155,7 +173,7 @@ bool Fusa_StartupSelfTestRun(void)
     if (sysState == SYS_ERROR)
     {
         printf("\r\nWARNING: Start-up test failed. Continuing startup...\r\n");
-        sysState = SYS_WARMUP;
+        Fusa_SystemStateSet(SYS_WARMUP);
     }
 #endif
     
@@ -170,7 +188,7 @@ bool Fusa_StartupSelfTestRun(void)
     else
     {
         printf("Self Test Complete\r\n\r\nBeginning %u hour sensor warmup\r\n", WARM_UP_HOURS);
-        sysState = SYS_WARMUP;
+        Fusa_SystemStateSet(SYS_WARMUP);
     }
     
     return false;
@@ -220,7 +238,7 @@ bool Fusa_ACTest(void)
     system_state_t prevState = sysState;
     
     //Switch to test state
-    sysState = SYS_SELF_TEST;
+    Fusa_SystemStateSet(SYS_SELF_TEST);
     
     //Switch AC0 Input
     APP_DACConnect();
@@ -246,7 +264,7 @@ bool Fusa_ACTest(void)
     if (AC1_Read())
     {
         //AC0 is malfunctioning, change to SYS_ERROR
-        sysState = SYS_ERROR;
+        Fusa_SystemStateSet(SYS_ERROR);
         return false;
     }
     
@@ -269,7 +287,7 @@ bool Fusa_ACTest(void)
     if (!AC1_Read())
     {
         //AC0 is malfunctioning, change to SYS_ERROR
-        sysState = SYS_ERROR;
+        Fusa_SystemStateSet(SYS_ERROR);
         return false;
     }
     
@@ -277,7 +295,7 @@ bool Fusa_ACTest(void)
     APP_SensorConnect();
     
     //Restore system state
-    sysState = prevState;
+    Fusa_SystemStateSet(prevState);
     
     return true;
 }
@@ -393,7 +411,21 @@ void Fusa_PeriodicSelfCheckRun(void)
     if (DIAG_SRAM_MarchPeriodic() != DIAG_PASS)
     {
         printf("SRAM Failed Self-Test\r\n");
-        sysState = SYS_ERROR;
+        Fusa_SystemStateSet(SYS_ERROR);
+    }
+    
+    //Verify the State Machine Variable
+    if (Fusa_SystemStateVerify() != DIAG_PASS)
+    {
+        printf("State Machine RAM Error\r\n");
+        Fusa_SystemStateSet(SYS_ERROR);
+    }
+    
+    //Verify the DACREF Value
+    if (GasSensor_SetpointVerify() != DIAG_PASS)
+    {
+        printf("DACREF Register Error\r\n");
+        Fusa_SystemStateSet(SYS_ERROR);
     }
     
     //Simple one-shot button handler
@@ -434,14 +466,14 @@ void Fusa_PeriodicSelfCheckRun(void)
                     }
                     else
                     {
-                        sysState = SYS_MONITOR;
+                        Fusa_SystemStateSet(SYS_MONITOR);
                     }
                 }
                 else
                 {
                     //Calibration Required
                     printf("Calibration data not found. Press SW0 to set new zero-point.\r\n");
-                    sysState = SYS_CALIBRATE;
+                    Fusa_SystemStateSet(SYS_CALIBRATE);
                 }
             }
             else
@@ -479,14 +511,14 @@ void Fusa_PeriodicSelfCheckRun(void)
                     
                     //Since calibration just completed, it would be odd to immediately switch to SYS_ALARM
                     //So, it's probably safe to go to SYS_MONITOR
-                    sysState = SYS_MONITOR;
+                    Fusa_SystemStateSet(SYS_MONITOR);
                 }
                 else
                 {
                     //Something went wrong
                     
                     printf("Calibration failed to complete.\r\n");
-                    sysState = SYS_ERROR;
+                    Fusa_SystemStateSet(SYS_ERROR);
                 }
                 
             }
@@ -517,13 +549,13 @@ void Fusa_PeriodicSelfCheckRun(void)
                 if (!Fusa_ACTest())
                 {
                     printf("AC failed self-check.\r\n");
-                    sysState = SYS_ERROR;
+                    Fusa_SystemStateSet(SYS_ERROR);
                 }
                 else if (isPressed)
                 {
                     //Re-calibrate
                     printf("Ready to recalibrate. Press SW0 to set new zero-point.\r\n");
-                    sysState = SYS_CALIBRATE;
+                    Fusa_SystemStateSet(SYS_CALIBRATE);
                 }
                 else if (TEST_BUTTON_GetValue())
                 {
@@ -614,7 +646,7 @@ void Fusa_AlarmActivate(void)
     GasSensor_ThresholdLowSet();
     
     //Switch to alarm state
-    sysState = SYS_ALARM;
+    Fusa_SystemStateSet(SYS_ALARM);
 }
 
 //Deactivate the alarm
@@ -627,5 +659,5 @@ void Fusa_AlarmDeactivate(void)
     GasSensor_ThresholdHighSet();
     
     //Switch to monitor state
-    sysState = SYS_MONITOR;
+    Fusa_SystemStateSet(SYS_MONITOR);
 }
