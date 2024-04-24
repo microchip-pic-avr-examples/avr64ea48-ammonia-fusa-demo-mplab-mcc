@@ -107,7 +107,7 @@ Please consult the table below to determine which configuration to use. **For in
 | PD6 | DAC0 Output
 | PD7 | Button 1 (2x2 Click)
 | PE0 | Button Interrupt, Reserved (2x2 Click)
-| PE1 | Button 3, Reserved (2x2 Click)
+| PE1 | Button 3 (2x2 Click)
 | PE3 | Button 2 (2x2 Click)
 | PF6 | nRESET
 | PF7 | UPDI
@@ -118,17 +118,20 @@ Please consult the table below to determine which configuration to use. **For in
 
 * CPU
     - Verifies the CPU registers are functioning correctly
+    - Periodically checks the CPU registers
 * Flash*
     - Verifies the program flash memory 
+    - Periodically scan the memory for errors
 * EEPROM*
     - Verifies the EEPROM data has not been corrupted
+    - Periodically scan the memory for errors
 * SRAM 
     - Verifies the SRAM operation on Power-on-Reset (POR)
     - Periodically scan the memory for errors
 * Watchdog Timer (WDT)
     - Verifies the WDT hardware is functioning (at start-up)
 
-**Note**: The Flash and EEPROM have alternative verification modes that do not use the Class B libraries. For the Flash, set the macro `FUSA_ENABLE_FLASH_HW_SCAN` to use the CRC hardware to perform the scan, rather than the Class B library. For the EEPROM, set `FUSA_ENABLE_EEPROM_SIMPLE_CHECKSUM` to use a simpler checksum for calculations, rather than the Class B library. Both of these macros are defined in `application.h`.
+**Note**: The Flash and EEPROM have alternative verification modes that do not use the Class B libraries. For the Flash, set the macro `FUSA_ENABLE_FLASH_HW_SCAN` to use the CRC hardware to perform the scan, rather than the Class B library. The Hardware scan will execute faster. For the EEPROM, set `FUSA_ENABLE_EEPROM_SIMPLE_CHECKSUM` to use a simpler checksum for calculations, rather than the Class B library. Both of these macros are defined in `application.h`.
 
 ## Operation
 
@@ -136,7 +139,7 @@ Please consult the table below to determine which configuration to use. **For in
 
 **Important: Set the ammonia click to minimum gain before power on!**
 
-On Power-on-Reset (POR), the system boots up and performs a self-check of the hardware. If no issues are encountered, the system will enter a 24 hour warm-up phase for the sensor. During this period, the sensor will get warm to the touch. Once per hour, the microcontroller will print a message to the UART to indicate the current time remaining.
+On Power-on-Reset (POR), the system boots up and performs a self-check of the hardware. If no issues are encountered, the system will enter a 24 hour warm-up phase for the sensor. During this period, the sensor will get warm to the touch. Once per hour, the microcontroller will print a message to the UART to indicate the current time remaining as well as run a memory scan to verify the flash memory and EEPROM (EEPROM is only scanned in the Monitor state).
 
 After warm-up, the system will check to see if a calibration is stored in internal EEPROM. If the calibration data is not present, it will print a message to the UART. The user must press and hold SW0 to begin the zero-point sensor calibration. 
 
@@ -146,9 +149,9 @@ The Calibration state can be re-entered by pressing SW0 in the Monitor state.
 
 ### Pushbutton Functionality
 
-Button 1 on the 2x2 Click will force the system from monitor to alarm to test the buzzer.
-
-Button 2 will reset the microcontroller.
+- Button 1 on the 2x2 Click will force the system from monitor to alarm to test the buzzer.  
+- Button 2 will reset the microcontroller.  
+- Button 3 will trigger an out-of-cycle memory scan after the next self-check operation.  
 
 ### Errors
 
@@ -159,8 +162,6 @@ If at any point during the above an error occurs, the system will enter a Fault 
 ## System States
 
 This application is controlled by a state machine, as shown below. The state machine is called once per second to run the Watchdog Timer (WDT), get a sample from the sensor, move states, and perform self-checks.
-
-TODO: State Machine Image
 
 ### SYS_INIT
 
