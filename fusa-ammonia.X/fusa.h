@@ -54,6 +54,9 @@ extern "C" {
     //Runs the periodic self-test of the system
     void Fusa_PeriodicSelfCheckRun(void);
     
+    //Periodically scans the FLASH
+    void Fusa_PeriodicMemoryScanRun(void);
+    
     //Infinite loop for a system failure
     void Fusa_HandleSystemFailure(void);
     

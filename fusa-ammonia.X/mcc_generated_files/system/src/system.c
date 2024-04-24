@@ -85,11 +85,11 @@ ISR(BOD_VLM_vect)
 
 int8_t WDT_Initialize()
 {
-    //PERIOD 2K cycles (2.0s); WINDOW 256 cycles (0.256s); 
-    ccp_write_io((void*)&(WDT.CTRLA),0x69);
+    //PERIOD 4K cycles (4.1s); WINDOW 256 cycles (0.256s); 
+    ccp_write_io((void*)&(WDT.CTRLA),0x6A);
     
-    //LOCK disabled; 
-    ccp_write_io((void*)&(WDT.STATUS),0x0);
+    //LOCK enabled; 
+    ccp_write_io((void*)&(WDT.STATUS),0x80);
     
 
     return 0;

@@ -18,13 +18,6 @@ void APP_HourTick(void)
     warmupHours++;
     
     hasHourTicked = true;
-    
-//    //Check to see if sensor is ready
-//    if (Application_isSensorReady())
-//    {
-//        //Disable 1 hour interrupts
-//        RTC_DisableOVFInterrupt();
-//    }
 }
 
 //Interrupt from the PIT (used for periodic self-test)

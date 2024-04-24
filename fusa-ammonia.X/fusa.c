@@ -480,9 +480,6 @@ void Fusa_PeriodicSelfCheckRun(void)
                 //Has an hour elapsed?
                 if (APP_HasHourTicked())
                 {
-                    //Clear flag
-                    APP_HourTickClear();
-                    
                     //Print message
                     APP_RemainingHoursPrint();
                 }
@@ -596,6 +593,19 @@ void Fusa_PeriodicSelfCheckRun(void)
             break;
         }
 
+    }
+}
+
+//Periodically scans the FLASH
+void Fusa_PeriodicMemoryScanRun(void)
+{
+    if (!Fusa_FlashTest())
+    {
+        //Faulty FLASH
+        printf("FLASH has failed self-test\r\n");
+        
+        Fusa_SystemStateSet(SYS_ERROR);
+        Fusa_HandleSystemFailure();
     }
 }
 

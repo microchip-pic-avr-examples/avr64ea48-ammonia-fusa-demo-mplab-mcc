@@ -127,6 +127,17 @@ int main(void)
             
             //Run periodic self-check
             Fusa_PeriodicSelfCheckRun();
+            
+            if (APP_HasHourTicked())
+            {
+                //Clear hour tick
+                APP_HourTickClear();
+                
+                //Run memory scans
+                Fusa_PeriodicMemoryScanRun();
+            }
+
         }
+        
     }    
 }
