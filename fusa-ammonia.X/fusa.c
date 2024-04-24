@@ -184,6 +184,7 @@ bool FUSA_StartupSelfTestRun(void)
     if (sysState == SYS_ERROR)
     {
         printf("Self Test Failed\r\n\r\n");
+        FUSA_HandleSystemFailure();
     }
     else
     {
