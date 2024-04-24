@@ -1,4 +1,4 @@
-#include "GasSensor.h"
+#include "SENSOR.h"
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -72,25 +72,25 @@ void _initParameters(uint16_t ref)
     alarmValidate = alarmHighVal ^ alarmLowVal;
     
     //Default to the high threshold
-    GasSensor_ThresholdHighSet();
+    SENSOR_ThresholdHighSet();
 }
 
 //Initialize the constants and parameters for the sensor
-void GasSensor_EEPROMInit(void)
+void SENSOR_EEPROMInit(void)
 {
-    _initParameters(GasSensor_ReferenceValueGet());
+    _initParameters(SENSOR_ReferenceValueGet());
     memValid = true;
 }
 
 //Erases the EEPROM
-void GasSensor_EEPROMErase(void)
+void SENSOR_EEPROMErase(void)
 {
     EEPROM_WordWrite(EEPROM_CKSM_H_ADDR, 0xFFFF);
     EEPROM_WordWrite(EEPROM_REF_VALUE_H_ADDR, 0xFFFF);
 }
 
 //Sets the sensor to the low range
-void GasSensor_ThresholdLowSet(void)
+void SENSOR_ThresholdLowSet(void)
 {
     //Set the new DACREF
     APP_DACREFSet(alarmLowVal);
@@ -98,7 +98,7 @@ void GasSensor_ThresholdLowSet(void)
 }
     
 //Sets the sensor to the high range
-void GasSensor_ThresholdHighSet(void)
+void SENSOR_ThresholdHighSet(void)
 {
     //Set the new DACREF
     APP_DACREFSet(alarmHighVal);
@@ -106,13 +106,13 @@ void GasSensor_ThresholdHighSet(void)
 }
 
 //Returns true if the EEPROM is valid
-bool GasSensor_IsEEPROMValid(void)
+bool SENSOR_IsEEPROMValid(void)
 {
     return memValid;
 }
 
 //Write the reference value to EEPROM
-bool GasSensor_EEPROMWrite(uint16_t refValue)
+bool SENSOR_EEPROMWrite(uint16_t refValue)
 {
     //Invalidate memory valid flag
     memValid = false;
@@ -156,7 +156,7 @@ bool GasSensor_EEPROMWrite(uint16_t refValue)
 }
 
 //Returns the state of the AC
-bool GasSensor_IsTripped(void)
+bool SENSOR_IsTripped(void)
 {
     //Above max allowable level
     if (AC1_Read() == GAS_SENSOR_LOGIC_TRIPPED)
@@ -168,13 +168,13 @@ bool GasSensor_IsTripped(void)
 }
 
 //This function uses the current sensor output as a reference zero, write it to memory, and sets the AC
-bool GasSensor_Calibrate(void)
+bool SENSOR_Calibrate(void)
 {
     //Get the current value
-    uint16_t result = GasSensor_SampleSensor();
+    uint16_t result = SENSOR_SampleSensor();
 
     //Write data to EEPROM
-    if (!GasSensor_EEPROMWrite(result))
+    if (!SENSOR_EEPROMWrite(result))
     {
         printf("An error occurred when writing EEPROM.\r\n");
         return false;
@@ -188,7 +188,7 @@ bool GasSensor_Calibrate(void)
 }
 
 //Verifies the DACREF value is set correctly
-diag_result_t GasSensor_SetpointVerify(void)
+diag_result_t SENSOR_SetpointVerify(void)
 {
     if (sensorThreshold == GAS_SENSOR_LOW)
     {
@@ -217,20 +217,20 @@ diag_result_t GasSensor_SetpointVerify(void)
 }
 
 //Starts and returns the analog value of the gas sensor
-uint16_t GasSensor_SampleSensor(void)
+uint16_t SENSOR_SampleSensor(void)
 {
     //PD4, AIN4
     return ADC0_GetConversion(ADC_MUXPOS_AIN4_gc);
 }
 
 //Returns the stored reference value
-uint16_t GasSensor_ReferenceValueGet(void)
+uint16_t SENSOR_ReferenceValueGet(void)
 {
     return EEPROM_WordRead(EEPROM_REF_VALUE_H_ADDR);
 }
 
 //Converts a measurement value into PPM
-uint16_t GasSensor_MeasurementConvert(uint16_t measurement)
+uint16_t SENSOR_MeasurementConvert(uint16_t measurement)
 {
     //Check for bad conditions
     if (measurement == 0)

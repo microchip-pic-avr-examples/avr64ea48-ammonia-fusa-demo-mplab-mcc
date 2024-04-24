@@ -25,46 +25,46 @@ extern "C" {
     } system_state_t;
     
     //Runs a self-test of the system on startup
-    bool Fusa_StartupSelfTestRun(void);
+    bool FUSA_StartupSelfTestRun(void);
     
     //Run a CPU test
-    bool Fusa_CPUTest(void);
+    bool FUSA_CPUTest(void);
     
     //Get the WDT Test Results
-    bool Fusa_WDTTest(void);
+    bool FUSA_WDTTest(void);
     
     //Test the comparator
-    bool Fusa_ACTest(void);
+    bool FUSA_ACTest(void);
     
     //Run a memory self-test
-    bool Fusa_FlashTest(void);
+    bool FUSA_FlashTest(void);
     
     //Run an SRAM self-test
-    bool Fusa_SRAMTest(void);
+    bool FUSA_SRAMTest(void);
     
     //Run a checksum of the EEPROM
-    bool Fusa_EEPROMTest(void);
+    bool FUSA_EEPROMTest(void);
     
     //Gets the 32-bit CRC from memory
-    uint32_t Fusa_PFMChecksumGet(void);
+    uint32_t FUSA_PFMChecksumGet(void);
     
     //Invalidates the EEPROM
-    void Fusa_EEPROMInvalidate(void);
+    void FUSA_EEPROMInvalidate(void);
     
     //Runs the periodic self-test of the system
-    void Fusa_PeriodicSelfCheckRun(void);
+    void FUSA_PeriodicSelfCheckRun(void);
     
     //Periodically scans the FLASH
-    void Fusa_PeriodicMemoryScanRun(void);
+    void FUSA_PeriodicMemoryScanRun(void);
     
     //Infinite loop for a system failure
-    void Fusa_HandleSystemFailure(void);
+    void FUSA_HandleSystemFailure(void);
     
     //Activate the alarm
-    void Fusa_AlarmActivate(void);
+    void FUSA_AlarmActivate(void);
     
     //Deactivate the alarm
-    void Fusa_AlarmDeactivate(void);
+    void FUSA_AlarmDeactivate(void);
 
 #ifdef	__cplusplus
 }

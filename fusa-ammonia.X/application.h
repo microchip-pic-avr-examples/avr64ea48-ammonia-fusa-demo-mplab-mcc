@@ -14,7 +14,7 @@ extern "C" {
 #define BUZZER_ENABLE() do { TCA0_Start(); } while (0)
     
 //Disables the alarm buzzer
-#define BUZZER_DISABLE() do { TCA0_Stop(); } while (0)
+#define BUZZER_DISABLE() do { TCA0_Stop(); BUZZER_SetLow(); } while (0)
 
 //Number of hours to warmup for
 #define WARM_UP_HOURS 24

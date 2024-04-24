@@ -84,6 +84,13 @@ void printResetReasons(void)
     RSTCTRL_clear_reset_cause();
 }
 
+static volatile bool memoryScan = false;
+
+void requestMemoryVerification(void)
+{
+    memoryScan = true;
+}
+
 int main(void)
 {
     SYSTEM_Initialize();
@@ -92,13 +99,16 @@ int main(void)
     HEATER_SetHigh();
     
     //Interrupt callback for an hour passing
-    RTC_SetOVFIsrCallback(APP_HourTick);
+    RTC_SetOVFIsrCallback(&APP_HourTick);
     
     //Interrupt callback for the PIT
-    RTC_SetPITIsrCallback(APP_PITTick);
+    RTC_SetPITIsrCallback(&APP_PITTick);
     
     //Interrupt callback for Button 2 - RESET
-    T2OUT_SetInterruptHandler(APP_Reset);
+    T2OUT_SetInterruptHandler(&APP_Reset);
+    
+    //Interrupt callback for Button 3 - Memory Verification
+    T3OUT_SetInterruptHandler(&requestMemoryVerification);
     
     printf("AVR64EA48 Ammonia Gas Functional Safety Demo\r\n");
     printf("Built %s at %s\r\n", __DATE__, __TIME__);
@@ -109,7 +119,7 @@ int main(void)
 #endif
     
     //Run system self-test
-    Fusa_StartupSelfTestRun();
+    FUSA_StartupSelfTestRun();
             
     //Enable interrupts
     sei();
@@ -121,23 +131,31 @@ int main(void)
     {        
         //Do we need to self test and clear WDT?
         if (APP_IsReadyForSelfTest())
-        {
+        {            
             //Clear self-test flag
             APP_SelfTestFlashClear();
             
             //Run periodic self-check
-            Fusa_PeriodicSelfCheckRun();
+            FUSA_PeriodicSelfCheckRun();
             
             if (APP_HasHourTicked())
             {
                 //Clear hour tick
                 APP_HourTickClear();
                 
-                //Run memory scans
-                Fusa_PeriodicMemoryScanRun();
+                //Run memory scan
+                FUSA_PeriodicMemoryScanRun();
+                printf("Memory Self Test Complete\r\n");
             }
-
+            else if (memoryScan)
+            {
+                //User requested memory validation
+                memoryScan = false;
+                
+                //Run memory scan
+                FUSA_PeriodicMemoryScanRun();
+                printf("Memory Self Test Complete\r\n");
+            }
         }
-        
     }    
 }
