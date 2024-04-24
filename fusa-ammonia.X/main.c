@@ -145,7 +145,7 @@ int main(void)
                 
                 //Run memory scan
                 FUSA_PeriodicMemoryScanRun();
-                printf("Memory Self Test Complete\r\n");
+                printf("Memory self test complete\r\n");
             }
             else if (memoryScan)
             {
@@ -154,7 +154,7 @@ int main(void)
                 
                 //Run memory scan
                 FUSA_PeriodicMemoryScanRun();
-                printf("Memory Self Test Complete\r\n");
+                printf("Memory self test complete\r\n");
             }
         }
     }    
