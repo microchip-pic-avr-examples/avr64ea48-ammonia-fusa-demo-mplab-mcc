@@ -4,7 +4,7 @@
 
 # Functional Safety Class B - Ammonia Gas Sensor with AVR64EA48
 
-Gas leak detection systems are prevalent in many industries and residences today. To develop a safe and reliable device, functional safety must be implemented into its' design. Gas leak detection systems can fall under various functional safety standards depending on where the system's intended use is. For this example, the Microchip PIC&reg; and AVR&reg; UL-certified IEC 60730 Class B software diagnostic library implements functional safety tests. These tests help ensure hardware faults are identified and dealt with if they occur. If a fault occurs and it is not identified, the application could act differently than expected, which poses potential harm to users or the environment. This example uses the AVR64EA32 family of microcontrollers (MCUs) to implement a simple ammonia gas detector which uses the Class B Functional Safety (FuSa) libraries. 
+Gas leak detection systems are prevalent in many industries and residences today. To develop a safe and reliable device, functional safety must be implemented into its' design. Gas leak detection systems can fall under various functional safety standards depending on where the system's intended use is. For this example, the Microchip PIC&reg; and AVR&reg; UL-certified IEC 60730 Class B software diagnostic library implements functional safety tests. These tests help ensure hardware faults are identified and dealt with if they occur. If a fault occurs and it is not identified, the application could act differently than expected, which poses potential harm to users or the environment. This example uses the [AVR EA family of microcontrollers (MCUs)](https://www.microchip.com/en-us/products/microcontrollers-and-microprocessors/8-bit-mcus/avr-mcus/avr-ea?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_AVR-EA&utm_content=avr64ea48-ammonia-fusa-demo-mplab-mcc-github&utm_bu=MCU08) to implement a simple ammonia gas detector which uses the Class B Functional Safety (FuSa) libraries. 
 
 ## Warnings
 
@@ -19,9 +19,10 @@ A minor change was made to the Class B library to convert the Cyclic Redundancy 
 ## Related Documentation
 
 - [Introduction to Functional Safety](https://mu.microchip.com/introduction-to-functional-safety)
-- [Class B Diagnostic Libraries for Functional Safety](https://mu.microchip.com/class-b-diagnostic-libraries-for-functional-safety)
+- [Class B Diagnostic Libraries for Functional Safety, Microchip University](https://mu.microchip.com/class-b-diagnostic-libraries-for-functional-safety)
 - [MQ137 Ammonia Sensor Product Page](https://www.winsen-sensor.com/product/mq137.html)
 - [AVR64EA48 Product Page](https://www.microchip.com/en-us/product/avr64ea32?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_AVR-EA&utm_content=avr64ea48-ammonia-fusa-demo-mplab-mcc-github&utm_bu=MCU08)
+- [AVR EA Family of MCUs](https://www.microchip.com/en-us/products/microcontrollers-and-microprocessors/8-bit-mcus/avr-mcus/avr-ea?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_AVR-EA&utm_content=avr64ea48-ammonia-fusa-demo-mplab-mcc-github&utm_bu=MCU08)
 
 ## Software Used
 
@@ -57,11 +58,11 @@ A minor change was made to the Class B library to convert the Cyclic Redundancy 
 
 ### Program Configuration Setup
 
-There are four program configurations inside the project. **Note** The sensor requires a 24 hour warm-up time before becoming stable. If the microcontroller is power cycled during programming, the timer will restart. For evaluation purposes, only `free` and `pro` configurations should be used as these are the "production" versions. 
+There are four program configurations inside the project. **Note:** The sensor requires a 24 hour warm-up time before becoming stable. If the microcontroller is power cycled during programming, the timer will restart. For evaluation purposes, only `free` and `pro` configurations should be used as these are the "production" versions. 
 
-For development, only `develop` and `develop_no_cksm` should be used. These development versions do not enforce the 24 hour warm-up time, they will power-up even if the system fails self-check, and retain EEPROM values across programming cycles. Note, only the `develop_no_cksm` version is capable of entering debug mode, but will fail the flash checksum on startup. **Note:** The user is responsible for ensuring the sensor has warmed up in these modes.
+For development, only `develop` and `develop_no_cksm` should be used. These development versions do not enforce the 24 hour warm-up time, they will power-up even if the system fails self-check, and retain EEPROM values across programming cycles. However, only the `develop_no_cksm` version is capable of entering debug mode, but will fail the flash checksum on startup. **Note:** The user is responsible for ensuring the sensor has warmed up in these modes.
 
-Please consult the table below to determine which configuration to use. **For initial evaluation purposes, `free` or `pro` is recommended.**
+Please consult the table below to determine which configuration to use. **For initial evaluation purposes, `free` or `pro` are recommended.**
 
 | Configuration | Optimization Level | Debug Mode Capable | 24 Hour Warm-Up Time | EEPROM Retained | Checksum Valid
 | --- | ---- | ---- | ---- | ---- | ----- 
@@ -121,13 +122,13 @@ Please consult the table below to determine which configuration to use. **For in
     - Periodically checks the CPU registers
 * Flash*
     - Verifies the program flash memory 
-    - Periodically scan the memory for errors
+    - Periodically scan the Program Flash Memory (PFM) for errors
 * EEPROM*
     - Verifies the EEPROM data has not been corrupted
-    - Periodically scan the memory for errors
+    - Periodically scans the EEPROM for errors
 * SRAM 
     - Verifies the SRAM operation on Power-on-Reset (POR)
-    - Periodically scan the memory for errors
+    - Periodically scans the SRAM for errors
 * Watchdog Timer (WDT)
     - Verifies the WDT hardware is functioning (at start-up)
 
@@ -139,7 +140,7 @@ Please consult the table below to determine which configuration to use. **For in
 
 **Important: Set the ammonia click to minimum gain before power on!**
 
-On Power-on-Reset (POR), the system boots up and performs a self-check of the hardware. If no issues are encountered, the system will enter a 24 hour warm-up phase for the sensor. During this period, the sensor will get warm to the touch. Once per hour, the microcontroller will print a message to the UART to indicate the current time remaining as well as run a memory scan to verify the flash memory and EEPROM (EEPROM is only scanned in the Monitor state).
+On Power-on Reset (POR), the system boots up and performs a self-check of the hardware. If no issues are encountered, the system will enter a 24 hour warm-up phase for the sensor. During this period, the sensor will get warm to the touch. Once per hour, the microcontroller will print a message to the UART to indicate the current time remaining as well as run a memory scan to verify the flash memory and EEPROM (EEPROM is only scanned in the Monitor state).
 
 After warm-up, the system will check to see if a calibration is stored in internal EEPROM. If the calibration data is not present, it will print a message to the UART. The user must press and hold SW0 to begin the zero-point sensor calibration. 
 
@@ -169,7 +170,7 @@ This state is used for initializing the system on POR. The `SYS_INIT` state only
 
 ### SYS_WARMUP
 
-This state is active during the sensor warmup. Once an hour, a tick from the Real Timer Clock  (RTC) sets a flag and updates the remaining time. The polled function checks the flag status, clears it, and prints a message for the remaining time.
+This state is active during the sensor warmup. Once an hour, a tick from the Real Timer Clock (RTC) sets a flag and updates the remaining time. The polled function checks the flag status, clears it, and prints a message for the remaining time.
 
 After 24 hours, the function `Application_isSensorReady` returns `true`, indicating the sensor is ready for use. If the internal EEPROM is valid, then the system switches to the `SYS_MONITOR` state or the `SYS_ALARM` state, depending on the status of the alarm. Otherwise, the system switches to the `SYS_CALIBRATE` state. 
 
@@ -195,4 +196,4 @@ This state is active if a self-test fails or the state machine enters an unexpec
 
 ## Summary
 
-This example has shown how to implement an ammonia monitor using the Class B libraries on the AVR&reg; EA family of MCUs.
+This example is an example of implementing an ammonia monitor using the Class B libraries on the AVR EA family of MCUs.
