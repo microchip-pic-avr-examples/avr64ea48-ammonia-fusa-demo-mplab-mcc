@@ -220,18 +220,17 @@ bool Fusa_ACTest(void)
     /* Test Setup
      * Verify DACREF and CMP are operational by using DAC0's output
      * 
-     * 1. Verify DACREF > MIN_ALLOWED
-     * 2. Save current system state.
-     * 3. Switch to SYS_TEST state.
-     * 4. Switch In+ to DAC0 Output (PD6, AINP3)
-     * 5. Set DAC0 to a value greater than DACREF
-     * 6. Wait for value to stabilize 
-     * 7. Check comparator output is HIGH
-     * 8. Set DAC0 to 0
-     * 9. Wait for value to stabilize
-     * 10. Check comparator output is LOW
-     * 11. Switch In+ back to Ammonia Sensor (PD4, AINP2)
-     * 12. Return to previous state
+     * 1. Save current system state.
+     * 2. Set state to SYS_SELF_TEST.
+     * 3. Switch In+ to DAC0 Output (PD6, AINP3)
+     * 4. Set DAC0 to a value greater than DACREF
+     * 5. Wait for value to stabilize 
+     * 6. Check comparator output is HIGH
+     * 7. Set DAC0 to a value lower than DACREF
+     * 8. Wait for value to stabilize
+     * 9. Check comparator output is LOW
+     * 10. Switch In+ back to Ammonia Sensor (PD4, AINP2)
+     * 11. Return to previous state
      */
     
     //Save current state

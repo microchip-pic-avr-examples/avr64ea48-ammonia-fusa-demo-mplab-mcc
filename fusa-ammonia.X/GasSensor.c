@@ -19,6 +19,7 @@ static bool memValid = false;
 
 static gas_sensor_threshold_t sensorThreshold = GAS_SENSOR_INVALID;
 static uint8_t alarmHighVal, alarmLowVal;
+static volatile uint8_t alarmValidate = 0x00;
 
 void _initParameters(uint16_t ref)
 {
@@ -66,6 +67,9 @@ void _initParameters(uint16_t ref)
     //Store the DAC values
     alarmHighVal = (uint8_t) setPtHigh;
     alarmLowVal = (uint8_t) setPtLow;
+    
+    //Variable used to verify the values have not been corrupted
+    alarmValidate = alarmHighVal ^ alarmLowVal;
     
     //Default to the high threshold
     GasSensor_ThresholdHighSet();
@@ -192,11 +196,18 @@ diag_result_t GasSensor_SetpointVerify(void)
         {
             return DIAG_FAIL;
         }
-
+        else if (alarmValidate != (alarmLowVal ^ alarmHighVal))
+        {
+            return DIAG_FAIL;
+        }
     }
     else if (sensorThreshold == GAS_SENSOR_HIGH)
     {
         if (APP_DACREFGet() != alarmHighVal)
+        {
+            return DIAG_FAIL;
+        }
+        else if (alarmValidate != (alarmLowVal ^ alarmHighVal))
         {
             return DIAG_FAIL;
         }
