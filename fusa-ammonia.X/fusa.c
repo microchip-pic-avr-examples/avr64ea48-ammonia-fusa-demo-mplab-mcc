@@ -428,6 +428,7 @@ void FUSA_PeriodicSelfCheckRun(void)
         FUSA_SystemStateSet(SYS_ERROR);
     }
     
+    //Run CPU Register Test
     if (!FUSA_CPUTest())
     {
         printf("CPU Failure\r\n");
