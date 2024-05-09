@@ -42,7 +42,6 @@ extern "C" {
 
 #include "../system/utils/compiler.h"
 #include "config_bits.h"
-#include "../system/clock.h"
 #include "../system/pins.h"
 #include "../ac/ac1.h"
 #include "../adc/adc0.h"
@@ -55,6 +54,7 @@ extern "C" {
 #include "../uart/usart1.h"
 #include "../vref/vref.h"
 #include "../system/interrupt.h"
+#include "../system/clock.h"
 /**
  * @ingroup systemdriver
  * @brief Initializes the System module. This routine is called only once during system initialization, before calling any other API.
