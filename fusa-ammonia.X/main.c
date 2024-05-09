@@ -94,10 +94,7 @@ void requestMemoryVerification(void)
 int main(void)
 {
     SYSTEM_Initialize();
-    
-    //Start the sensor heater
-    HEATER_SetHigh();
-    
+        
     //Interrupt callback for an hour passing
     RTC_SetOVFIsrCallback(&APP_HourTick);
     
@@ -121,6 +118,9 @@ int main(void)
     //Run system self-test
     FUSA_StartupSelfTestRun();
             
+    //Start the sensor heater
+    HEATER_SetHigh();
+    
     //Enable interrupts
     sei();
     

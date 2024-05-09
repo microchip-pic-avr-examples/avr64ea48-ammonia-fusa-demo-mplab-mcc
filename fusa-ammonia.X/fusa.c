@@ -634,6 +634,9 @@ void FUSA_HandleSystemFailure(void)
     //Disable interrupts
     cli();
     
+    //Disable heater
+    HEATER_SetLow();
+    
     //Variable used for printing the failure message
     uint8_t timeCount = 10;
     
